@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History Map</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+html,body{
+height:100%;
+margin:0;
+font-family:Arial,sans-serif;
+background:#111827;
+}
+
+#map{
+height:100%;
+width:100%;
+}
+
+header{
+position:absolute;
+top:15px;
+left:50%;
+transform:translateX(-50%);
+z-index:1000;
+background:white;
+padding:10px 20px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,.25);
+font-weight:bold;
+font-size:24px;
+}
+
+#search{
+position:absolute;
+top:70px;
+left:50%;
+transform:translateX(-50%);
+z-index:1000;
+width:300px;
+padding:10px;
+border-radius:8px;
+border:none;
+font-size:16px;
+}
+
+#timeline{
+position:absolute;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+z-index:1000;
+width:70%;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>🌍 History Map</header>
+
+<input id="search" placeholder="Search history...">
+
+<div id="map"></div>
+
+<input id="timeline" type="range" min="-3000" max="2026" value="2026">
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+const map=L.map('map').setView([20,0],2);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:19
+}).addTo(map);
+
+L.marker([30.0444,31.2357]).addTo(map)
+.bindPopup("<b>Ancient Egypt</b><br>One of the world's oldest civilizations.");
+
+L.marker([41.9028,12.4964]).addTo(map)
+.bindPopup("<b>Rome</b><br>Center of the Roman Empire.");
+
+L.marker([39.9042,116.4074]).addTo(map)
+.bindPopup("<b>Ancient China</b>");
+
+</script>
+
+</body>
+</html>
