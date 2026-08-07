@@ -1,13 +1,42 @@
+// =====================================================================
+// NHIRA — script.js
+// Loads incidents from history.json, draws typed markers, drives the
+// timeline, and fills the detail panel.
+// =====================================================================
+
+// ---------------------------------------------------------------------
+// Type registry — markers, legend, and severity rings all read from here
+// ---------------------------------------------------------------------
+
+const INCIDENT_TYPES = {
+    shooting: { label: "Shooting", color: "#B3322B" },
+    explosion: { label: "Explosion / bombing", color: "#D97A17" },
+    fire: { label: "Fire", color: "#E0521C" },
+    structural: { label: "Structural collapse", color: "#8A6A3D" },
+    transport: { label: "Transportation", color: "#256B9A" },
+    weather: { label: "Severe weather", color: "#2E7D5B" },
+    civil: { label: "Civil unrest", color: "#7A3E9D" },
+    other: { label: "Other incident", color: "#4A5560" }
+};
+
+// A hot zone ring is drawn around any incident at or above this fatality count.
+const HOTZONE_THRESHOLD = 25;
+const HOTZONE_COLOR = "#7A3E9D";
+
 // ---------------------------------------------------------------------
 // Map setup
 // ---------------------------------------------------------------------
 
-const map = L.map("map").setView([20, 0], 2);
+const map = L.map("map", { zoomControl: false }).setView([20, 0], 2);
+
+L.control.zoom({ position: "bottomright" }).addTo(map);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
+
+const markerLayer = L.layerGroup().addTo(map);
 
 // ---------------------------------------------------------------------
 // Element references
@@ -15,24 +44,29 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 const slider = document.getElementById("timeline");
 const yearDisplay = document.getElementById("yearDisplay");
+const eraTag = document.getElementById("eraTag");
 const search = document.getElementById("search");
 const playBtn = document.getElementById("playBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const sidePanel = document.getElementById("sidePanel");
 const panelContent = document.getElementById("panelContent");
 const closePanel = document.getElementById("closePanel");
+const scrim = document.getElementById("scrim");
+const legend = document.getElementById("legend");
+const legendToggle = document.getElementById("legendToggle");
+const legendList = document.getElementById("legendList");
 
 const MIN_YEAR = Number(slider.min);
 const MAX_YEAR = Number(slider.max);
-const PLAY_STEP_MS = 200; // how often the year advances while playing
-const PLAY_STEP_YEARS = 1; // how many years advance per tick
+const THIS_YEAR = new Date().getFullYear();
+const PLAY_STEP_MS = 200;
+const PLAY_STEP_YEARS = 1;
 
 // ---------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------
 
 let events = [];
-let markers = [];
 let playTimer = null;
 
 // ---------------------------------------------------------------------
@@ -57,6 +91,63 @@ function debounce(fn, delay) {
     };
 }
 
+function toNumber(value) {
+    const n = Number(String(value ?? "").replace(/[^0-9.-]/g, ""));
+    return Number.isFinite(n) ? n : 0;
+}
+
+// ---------------------------------------------------------------------
+// Type resolution
+//
+// Preferred: add "type": "shooting" to each record in history.json.
+// Until then, this guesses from the text so the legend still means something.
+// ---------------------------------------------------------------------
+
+const TYPE_HINTS = [
+    [/shoot|gunman|gunfire|sniper|firearm/i, "shooting"],
+    [/bomb|explos|detonat|blast|\bied\b/i, "explosion"],
+    [/fire|blaze|arson|inferno|burn/i, "fire"],
+    [/collapse|structural|bridge fail|building fail/i, "structural"],
+    [/crash|derail|train|airline|flight|ferry|aviation|\bbus\b/i, "transport"],
+    [/hurricane|tornado|flood|storm|blizzard|wildfire|earthquake/i, "weather"],
+    [/riot|unrest|protest|clash|uprising/i, "civil"]
+];
+
+function resolveType(event) {
+    if (event.type && INCIDENT_TYPES[event.type]) return event.type;
+
+    const haystack = [event.title, event.description, event.venue]
+        .filter(Boolean)
+        .join(" ");
+
+    for (const [pattern, type] of TYPE_HINTS) {
+        if (pattern.test(haystack)) return type;
+    }
+    return "other";
+}
+
+// ---------------------------------------------------------------------
+// Legend
+// ---------------------------------------------------------------------
+
+function buildLegend() {
+    const rows = Object.entries(INCIDENT_TYPES).map(([, t]) =>
+        `<li><span class="swatch" style="background:${t.color}"></span>${t.label}</li>`
+    );
+
+    rows.push(
+        `<li><span class="swatch is-zone" style="background:${HOTZONE_COLOR}"></span>Hot zone (${HOTZONE_THRESHOLD}+ fatalities)</li>`,
+        `<li><span class="swatch is-projected"></span>Projected / future</li>`
+    );
+
+    legendList.innerHTML = rows.join("");
+}
+
+legendToggle.addEventListener("click", () => {
+    const open = !legend.classList.toggle("collapsed");
+    legendToggle.setAttribute("aria-expanded", String(open));
+});
+
 // ---------------------------------------------------------------------
 // Data load
 // ---------------------------------------------------------------------
@@ -69,12 +160,36 @@ fetch("history.json")
         return response.json();
     })
     .then(data => {
-        events = data;
+        events = data.map(event => ({
+            ...event,
+            year: Number(event.year),
+            lat: Number(event.lat),
+            lng: Number(event.lng),
+            resolvedType: resolveType(event),
+            fatalityCount: toNumber(event.fatalities)
+        }));
+
+        const outOfRange = events.filter(e => e.year < MIN_YEAR || e.year > MAX_YEAR);
+        if (outOfRange.length) {
+            console.warn(
+                `${outOfRange.length} incident(s) fall outside ${MIN_YEAR}-${MAX_YEAR} and will never appear:`,
+                outOfRange.map(e => `${e.year} ${e.title}`)
+            );
+        }
+
+        const badCoords = events.filter(e => !Number.isFinite(e.lat) || !Number.isFinite(e.lng));
+        if (badCoords.length) {
+            console.warn("Incident(s) missing usable coordinates:", badCoords.map(e => e.title));
+            events = events.filter(e => Number.isFinite(e.lat) && Number.isFinite(e.lng));
+        }
+
         applyFilters();
     })
     .catch(error => {
         console.error(error);
-        panelContent.innerHTML = `<p>Could not load incident data. Please try again later.</p>`;
+        panelContent.innerHTML =
+            `<h2>Data unavailable</h2><p>history.json did not load. Check that the file is deployed next to index.html, then reload.</p>`;
+        openSheet();
     });
 
 // ---------------------------------------------------------------------
@@ -82,17 +197,44 @@ fetch("history.json")
 // ---------------------------------------------------------------------
 
 function addMarker(event) {
-    const marker = L.marker([event.lat, event.lng])
-        .addTo(map)
-        .on("click", () => openPanel(event));
+    const type = INCIDENT_TYPES[event.resolvedType] || INCIDENT_TYPES.other;
+    const projected = event.year > THIS_YEAR;
 
-    markers.push(marker);
-    return marker;
+    // Hot zone ring for high-casualty incidents
+    if (event.fatalityCount >= HOTZONE_THRESHOLD) {
+        const radius = Math.min(600000, 40000 + event.fatalityCount * 3000);
+        L.circle([event.lat, event.lng], {
+            radius,
+            color: HOTZONE_COLOR,
+            weight: 1,
+            dashArray: projected ? "5,5" : null,
+            fillColor: HOTZONE_COLOR,
+            fillOpacity: projected ? 0.04 : 0.12,
+            interactive: false
+        }).addTo(markerLayer);
+    }
+
+    // Marker scales gently with fatalities so severity reads at a glance
+    const radius = 6 + Math.min(8, Math.sqrt(event.fatalityCount));
+
+    L.circleMarker([event.lat, event.lng], {
+        radius,
+        color: projected ? type.color : "#0E1116",
+        weight: 2,
+        dashArray: projected ? "3,3" : null,
+        fillColor: type.color,
+        fillOpacity: projected ? 0 : 0.85
+    })
+        .addTo(markerLayer)
+        .bindTooltip(`${event.title} (${event.year})`, { direction: "top" })
+        .on("click", e => {
+            L.DomEvent.stop(e);
+            openPanel(event);
+        });
 }
 
 function clearMarkers() {
-    markers.forEach(marker => map.removeLayer(marker));
-    markers = [];
+    markerLayer.clearLayers();
 }
 
 // ---------------------------------------------------------------------
@@ -108,21 +250,26 @@ function getMatchedEvents() {
 
         const matchesText =
             !text ||
-            event.title.toLowerCase().includes(text) ||
-            event.city.toLowerCase().includes(text) ||
-            event.state.toLowerCase().includes(text) ||
-            event.country.toLowerCase().includes(text);
+            [event.title, event.city, event.state, event.country, event.venue]
+                .filter(Boolean)
+                .some(field => String(field).toLowerCase().includes(text));
 
         return withinYear && matchesText;
     });
+}
+
+function updateYearReadout(year) {
+    yearDisplay.textContent = year;
+    const projected = Number(year) > THIS_YEAR;
+    eraTag.textContent = projected ? "projected" : "recorded";
+    eraTag.classList.toggle("is-projected", projected);
 }
 
 function applyFilters() {
     const year = Number(slider.value);
     const text = search.value.trim().toLowerCase();
 
-    yearDisplay.textContent = "Year: " + year;
-
+    updateYearReadout(year);
     clearMarkers();
 
     const matchedEvents = getMatchedEvents();
@@ -138,7 +285,7 @@ function applyFilters() {
 const debouncedApplyFilters = debounce(applyFilters, 150);
 
 slider.addEventListener("input", () => {
-    yearDisplay.textContent = "Year: " + slider.value; // instant feedback while dragging
+    updateYearReadout(slider.value); // instant feedback while dragging
     debouncedApplyFilters();
 });
 
@@ -158,9 +305,8 @@ function stopPlayback() {
 }
 
 function startPlayback() {
-    if (playTimer) return; // already playing
+    if (playTimer) return;
 
-    // If already at the end, restart from the beginning
     if (Number(slider.value) >= MAX_YEAR) {
         slider.value = MIN_YEAR;
     }
@@ -185,46 +331,76 @@ function startPlayback() {
 
 playBtn.addEventListener("click", startPlayback);
 pauseBtn.addEventListener("click", stopPlayback);
-
-// If the user manually drags the slider, treat it as a pause
 slider.addEventListener("pointerdown", stopPlayback);
-
-// Start with Pause disabled since nothing is playing yet
 pauseBtn.disabled = true;
 
 // ---------------------------------------------------------------------
 // Side panel
 // ---------------------------------------------------------------------
 
+function openSheet() {
+    sidePanel.classList.add("open");
+    sidePanel.setAttribute("aria-hidden", "false");
+    if (window.innerWidth < 760) scrim.hidden = false;
+    setTimeout(() => map.invalidateSize(), 300);
+}
+
+function closeSheet() {
+    sidePanel.classList.remove("open");
+    sidePanel.setAttribute("aria-hidden", "true");
+    scrim.hidden = true;
+    setTimeout(() => map.invalidateSize(), 300);
+}
+
 function openPanel(event) {
-    const sourcesHtml = event.sources
+    const type = INCIDENT_TYPES[event.resolvedType] || INCIDENT_TYPES.other;
+    const projected = event.year > THIS_YEAR;
+
+    const place = [event.city, event.state, event.country]
+        .filter(Boolean)
+        .map(escapeHtml)
+        .join(", ");
+
+    const sourcesHtml = Array.isArray(event.sources) && event.sources.length
         ? event.sources
               .map(s => `<a href="${escapeHtml(s)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s)}</a>`)
               .join("<br>")
-        : "No sources available";
+        : "No sources on file";
 
     panelContent.innerHTML = `
+        <span class="tag" style="--tag:${type.color}">${escapeHtml(type.label)}${projected ? " &middot; projected" : ""}</span>
+
         <h2>${escapeHtml(event.title)}</h2>
-        <div class="meta">${escapeHtml(event.city)}, ${escapeHtml(event.state)}, ${escapeHtml(event.country)} &middot; ${escapeHtml(event.date)}</div>
+        <p class="meta">${place} &middot; ${escapeHtml(event.date || event.year)}</p>
 
-        <div class="stat"><b>${escapeHtml(event.fatalities)}</b> Fatalities</div>
-        <div class="stat"><b>${escapeHtml(event.injuries)}</b> Injuries</div>
-
-        <hr>
+        <div class="stats">
+            <div class="stat"><b>${escapeHtml(event.fatalities ?? "—")}</b><span>Fatalities</span></div>
+            <div class="stat"><b>${escapeHtml(event.injuries ?? "—")}</b><span>Injuries</span></div>
+        </div>
 
         <p>${escapeHtml(event.description)}</p>
 
         <hr>
 
-        <b>🏢 Venue:</b> ${escapeHtml(event.venue)}<br><br>
-        <b>🔗 Sources:</b><br>
-        ${sourcesHtml}
+        <p class="field"><b>Venue</b><br>${escapeHtml(event.venue) || "Not recorded"}</p>
+        <p class="field"><b>Sources</b><br>${sourcesHtml}</p>
     `;
 
-    sidePanel.classList.add("open");
+    openSheet();
 }
 
-closePanel.addEventListener("click", () => {
-    sidePanel.classList.remove("open");
-
+closePanel.addEventListener("click", closeSheet);
+scrim.addEventListener("click", closeSheet);
+map.on("click", closeSheet);
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeSheet();
 });
+
+// ---------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------
+
+window.addEventListener("resize", () => map.invalidateSize());
+
+buildLegend();
+updateYearReadout(slider.value);
