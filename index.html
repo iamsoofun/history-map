@@ -2,73 +2,73 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0E1116">
+  <title>NHIRA — National Historical Incident Research &amp; Analysis</title>
 
-    <title>NHIRA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
-
-    <link rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+  <header id="topbar">
+    <div class="brand">
+      <span class="shield" aria-hidden="true">🛡️</span>
+      <div class="brand-text">
+        <h1>NHIRA</h1>
+        <p class="subtitle">National Historical Incident Research &amp; Analysis</p>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Search incidents" autocomplete="off">
+    </div>
+  </header>
+
+  <main id="stage">
     <div id="map"></div>
-<div id="sidePanel">
-    <button id="closePanel">✕</button>
 
+    <div id="legend" class="collapsed">
+      <button id="legendToggle" aria-expanded="false" aria-controls="legendList">
+        <span class="legend-icon" aria-hidden="true">◈</span>
+        <span class="legend-word">Legend</span>
+      </button>
+      <ul id="legendList"></ul>
+    </div>
+  </main>
+
+  <div id="timebar">
+    <div class="timebar-row">
+      <button id="playBtn" class="transport" aria-label="Play timeline">▶</button>
+      <button id="pauseBtn" class="transport" aria-label="Pause timeline">❚❚</button>
+      <output id="yearDisplay" for="timeline">1900</output>
+      <span id="eraTag" class="era">recorded</span>
+    </div>
+    <input id="timeline" type="range" min="1900" max="2100" step="1" value="1900" aria-label="Year">
+    <div class="scale" aria-hidden="true">
+      <span>1900</span><span>1950</span><span>2000</span><span>2050</span><span>2100</span>
+    </div>
+  </div>
+
+  <aside id="sidePanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closePanel" aria-label="Close details">✕</button>
     <div id="panelContent">
-        <h2>Select an Incident</h2>
-        <p>Click a marker on the map to view details.</p>
+      <h2>Select an incident</h2>
+      <p>Tap a marker to read the record.</p>
     </div>
-</div>
-    <header>
+  </aside>
 
-        <h1>🛡️ NHIRA</h1>
+  <div id="scrim" hidden></div>
 
-        <p class="subtitle">
-            National Historical Incident Research & Analysis
-        </p>
-
-        <input
-            id="search"
-            type="text"
-            placeholder="Search incidents..."
-        >
-
-    </header>
-
-    <div id="controls">
-
-        <button id="playBtn">▶ Play</button>
-
-        <button id="pauseBtn">⏸ Pause</button>
-
-        <span id="yearDisplay">Year: -3000</span>
-
-    </div>
-
-    <input
-        id="timeline"
-        type="range"
-        min="-3000"
-        max="2026"
-        value="-3000"
-    ><div id="sidePanel">
-    <button id="closePanel">✕</button>
-
-    <div id="panelContent">
-        <h2>Select an Incident</h2>
-        <p>Click a marker on the map to view details.</p>
-    </div>
-</div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <script src="script.js"></script>
-
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>
