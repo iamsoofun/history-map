@@ -355,5 +355,242 @@
   "sources": [
     "https://en.wikipedia.org/wiki/2023_Miami_Beach_shooting"
   ]
+},
+{
+  "year": 1900,
+  "date": "1900-07-23",
+  "title": "New Orleans Riots Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "Louisiana",
+  "city": "New Orleans",
+  "venue": "Multiple Locations",
+  "lat": 29.9511,
+  "lng": -90.0715,
+  "fatalities": 8,
+  "injuries": 20,
+  "description": "During the 1900 New Orleans riots, multiple people were shot over several days in one of the earliest documented multiple-victim shooting incidents of the 20th century.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/List_of_mass_shootings_in_the_United_States_(1900%E2%80%931999)"
+  ]
+},
+{
+  "year": 1902,
+  "date": "1902-02-14",
+  "title": "Earll Family Murders",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "Louisiana",
+  "city": "Near Welsh",
+  "venue": "Farm",
+  "lat": 30.2369,
+  "lng": -92.8143,
+  "fatalities": 6,
+  "injuries": 0,
+  "description": "A farm worker fatally shot six members of the Earll family.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/List_of_mass_shootings_in_the_United_States_(1900%E2%80%931999)"
+  ]
+},
+{
+  "year": 1902,
+  "date": "1902-04-06",
+  "title": "Tuscumbia Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "Alabama",
+  "city": "Tuscumbia",
+  "venue": "Downtown",
+  "lat": 34.7312,
+  "lng": -87.7025,
+  "fatalities": 8,
+  "injuries": 2,
+  "description": "A man resisting arrest opened fire on officers and civilians, killing eight people before being killed.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/List_of_mass_shootings_in_the_United_States_(1900%E2%80%931999)"
+  ]
+},
+{
+  "year": 1903,
+  "date": "1903-08-13",
+  "title": "Winfield Massacre",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "Kansas",
+  "city": "Winfield",
+  "venue": "Outdoor Concert",
+  "lat": 37.2392,
+  "lng": -96.9956,
+  "fatalities": 10,
+  "injuries": 25,
+  "description": "Gilbert Twigg opened fire on a concert crowd before taking his own life in one of the earliest indiscriminate public mass shootings in U.S. history.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Winfield_massacre"
+  ]
+},
+{
+  "year": 1906,
+  "date": "1906-11-13",
+  "title": "Asheville Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "North Carolina",
+  "city": "Asheville",
+  "venue": "Downtown Streets",
+  "lat": 35.5951,
+  "lng": -82.5515,
+  "fatalities": 6,
+  "injuries": 12,
+  "description": "Will Harris fired on people in downtown Asheville before being killed after a manhunt.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/1906_Asheville_shooting"
+  ]
+},
+{
+  "year": 1976,
+  "date": "1976-09-13",
+  "title": "California State University, Fullerton Library Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "California",
+  "city": "Fullerton",
+  "venue": "California State University Library",
+  "lat": 33.8823,
+  "lng": -117.8850,
+  "fatalities": 7,
+  "injuries": 2,
+  "description": "Edward Charles Allaway opened fire inside the university library.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/California_State_University,_Fullerton_massacre"
+  ]
+},
+{
+  "year": 1984,
+  "date": "1984-07-18",
+  "title": "San Ysidro McDonald's Massacre",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "California",
+  "city": "San Diego",
+  "venue": "McDonald's Restaurant",
+  "lat": 32.5555,
+  "lng": -117.0472,
+  "fatalities": 21,
+  "injuries": 19,
+  "description": "Gunman James Huberty carried out one of the deadliest mass shootings in U.S. history at the time.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/San_Ysidro_McDonald%27s_massacre"
+  ]
+},
+{
+  "year": 1986,
+  "date": "1986-08-20",
+  "title": "Edmond Post Office Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "Oklahoma",
+  "city": "Edmond",
+  "venue": "United States Post Office",
+  "lat": 35.6528,
+  "lng": -97.4781,
+  "fatalities": 15,
+  "injuries": 6,
+  "description": "Postal worker Patrick Sherrill killed coworkers before taking his own life.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Edmond_post_office_shooting"
+  ]
+},
+{
+  "year": 1989,
+  "date": "1989-01-17",
+  "title": "Stockton Schoolyard Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "California",
+  "city": "Stockton",
+  "venue": "Cleveland Elementary School",
+  "lat": 37.9577,
+  "lng": -121.2908,
+  "fatalities": 6,
+  "injuries": 32,
+  "description": "A gunman opened fire on children at Cleveland Elementary School.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Cleveland_Elementary_School_shooting_(Stockton)"
+  ]
+},
+{
+  "year": 1949,
+  "date": "1949-09-06",
+  "title": "Camden Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "New Jersey",
+  "city": "Camden",
+  "latitude": 39.9259,
+  "longitude": -75.1196,
+  "fatalities": 13,
+  "injuries": 3,
+  "description": "Howard Unruh killed 13 people during one of the earliest widely documented modern mass shootings.",
+  "source": "https://en.wikipedia.org/wiki/Howard_Unruh"
+},
+{
+  "year": 1966,
+  "date": "1966-08-01",
+  "title": "University of Texas Tower Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "Texas",
+  "city": "Austin",
+  "latitude": 30.2861,
+  "longitude": -97.7394,
+  "fatalities": 18,
+  "injuries": 31,
+  "description": "Charles Whitman opened fire from the University of Texas tower.",
+  "source": "https://en.wikipedia.org/wiki/University_of_Texas_tower_shooting"
+},
+{
+  "year": 1970,
+  "date": "1970-05-04",
+  "title": "Kent State Shootings",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "Ohio",
+  "city": "Kent",
+  "latitude": 41.1487,
+  "longitude": -81.3412,
+  "fatalities": 4,
+  "injuries": 9,
+  "description": "National Guard troops opened fire on student protesters.",
+  "source": "https://en.wikipedia.org/wiki/Kent_State_shootings"
+},
+{
+  "year": 1971,
+  "date": "1971-11-12",
+  "title": "San Rafael Civic Center Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "California",
+  "city": "San Rafael",
+  "latitude": 37.9735,
+  "longitude": -122.5311,
+  "fatalities": 4,
+  "injuries": 8,
+  "description": "Gunman opened fire inside the Marin County Civic Center.",
+  "source": "https://en.wikipedia.org/wiki/Marin_County_Civic_Center"
+},
+{
+  "year": 1972,
+  "date": "1972-12-31",
+  "title": "New Orleans Shooting",
+  "category": "Mass Shooting",
+  "country": "United States",
+  "state": "Louisiana",
+  "city": "New Orleans",
+  "latitude": 29.9511,
+  "longitude": -90.0715,
+  "fatalities": 10,
+  "injuries": 13,
+  "description": "Mass shooting during New Year's celebrations.",
+  "source": "https://en.wikipedia.org/wiki/New_Orleans"
 }
 ]
