@@ -1,94 +1,359 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>History Map</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-<style>
-html,body{
-height:100%;
-margin:0;
-font-family:Arial,sans-serif;
-background:#111827;
+  [
+  {
+    "id": 1,
+    "title": "Columbine High School shooting",
+    "date": "1999-04-20",
+    "year": 1999,
+    "country": "United States",
+    "state": "Colorado",
+    "city": "Littleton",
+    "venue": "School",
+    "lat": 39.6036,
+    "lng": -105.0750,
+    "fatalities": 13,
+    "injuries": 21,
+    "description": "Two students carried out an attack at Columbine High School.",
+    "sources": ["https://en.wikipedia.org/wiki/Columbine_High_School_massacre"]
+  },
+  {
+    "id": 2,
+    "title": "Virginia Tech shooting",
+    "date": "2007-04-16",
+    "year": 2007,
+    "country": "United States",
+    "state": "Virginia",
+    "city": "Blacksburg",
+    "venue": "University",
+    "lat": 37.2296,
+    "lng": -80.4244,
+    "fatalities": 32,
+    "injuries": 17,
+    "description": "Attack on the Virginia Tech campus.",
+    "sources": ["https://en.wikipedia.org/wiki/Virginia_Tech_shooting"]
+  },
+  {
+    "id": 3,
+    "title": "Sandy Hook Elementary School shooting",
+    "date": "2012-12-14",
+    "year": 2012,
+    "country": "United States",
+    "state": "Connecticut",
+    "city": "Newtown",
+    "venue": "School",
+    "lat": 41.4142,
+    "lng": -73.3033,
+    "fatalities": 27,
+    "injuries": 2,
+    "description": "Attack at Sandy Hook Elementary School.",
+    "sources": ["https://en.wikipedia.org/wiki/Sandy_Hook_Elementary_School_shooting"]
+  },
+  {
+    "id": 4,
+    "title": "Pulse nightclub shooting",
+    "date": "2016-06-12",
+    "year": 2016,
+    "country": "United States",
+    "state": "Florida",
+    "city": "Orlando",
+    "venue": "Nightclub",
+    "lat": 28.5195,
+    "lng": -81.3763,
+    "fatalities": 49,
+    "injuries": 53,
+    "description": "Attack at the Pulse nightclub.",
+    "sources": ["https://en.wikipedia.org/wiki/Orlando_nightclub_shooting"]
+  },
+  {
+    "id": 5,
+    "title": "Las Vegas Route 91 Harvest festival shooting",
+    "date": "2017-10-01",
+    "year": 2017,
+    "country": "United States",
+    "state": "Nevada",
+    "city": "Las Vegas",
+    "venue": "Concert",
+    "lat": 36.0929,
+    "lng": -115.1708,
+    "fatalities": 60,
+    "injuries": 413,
+    "description": "Mass shooting during the Route 91 Harvest music festival.",
+    "sources": ["https://en.wikipedia.org/wiki/2017_Las_Vegas_shooting"]
+  },
+{
+  "id": 9,
+  "title": "Sandy Hook Elementary School shooting",
+  "date": "2012-12-14",
+  "year": 2012,
+  "country": "United States",
+  "state": "Connecticut",
+  "city": "Newtown",
+  "venue": "School",
+  "lat": 41.4128,
+  "lng": -73.3115,
+  "fatalities": 27,
+  "injuries": 2,
+  "description": "Mass shooting at Sandy Hook Elementary School.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Sandy_Hook_Elementary_School_shooting"
+  ]
+},
+{
+  "id": 10,
+  "title": "Aurora theater shooting",
+  "date": "2012-07-20",
+  "year": 2012,
+  "country": "United States",
+  "state": "Colorado",
+  "city": "Aurora",
+  "venue": "Movie Theater",
+  "lat": 39.7080,
+  "lng": -104.8240,
+  "fatalities": 12,
+  "injuries": 70,
+  "description": "Mass shooting during a midnight movie premiere.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2012_Aurora_theater_shooting"
+  ]
+},
+{
+  "id": 11,
+  "title": "Charleston church shooting",
+  "date": "2015-06-17",
+  "year": 2015,
+  "country": "United States",
+  "state": "South Carolina",
+  "city": "Charleston",
+  "venue": "Church",
+  "lat": 32.7765,
+  "lng": -79.9311,
+  "fatalities": 9,
+  "injuries": 1,
+  "description": "Mass shooting at Emanuel African Methodist Episcopal Church.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Charleston_church_shooting"
+  ]
+},
+{
+  "id": 12,
+  "title": "San Bernardino attack",
+  "date": "2015-12-02",
+  "year": 2015,
+  "country": "United States",
+  "state": "California",
+  "city": "San Bernardino",
+  "venue": "Conference Center",
+  "lat": 34.0739,
+  "lng": -117.2817,
+  "fatalities": 14,
+  "injuries": 22,
+  "description": "Mass shooting at the Inland Regional Center.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2015_San_Bernardino_attack"
+  ]
+},
+{
+  "id": 13,
+  "title": "Sutherland Springs church shooting",
+  "date": "2017-11-05",
+  "year": 2017,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Sutherland Springs",
+  "venue": "Church",
+  "lat": 29.2749,
+  "lng": -98.0567,
+  "fatalities": 26,
+  "injuries": 22,
+  "description": "Mass shooting at the First Baptist Church.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Sutherland_Springs_church_shooting"
+  ]
+},
+{
+  "id": 11,
+  "title": "San Bernardino attack",
+  "date": "2015-12-02",
+  "year": 2015,
+  "country": "United States",
+  "state": "California",
+  "city": "San Bernardino",
+  "venue": "Inland Regional Center",
+  "lat": 34.0739,
+  "lng": -117.2816,
+  "fatalities": 14,
+  "injuries": 22,
+  "description": "Mass shooting at the Inland Regional Center.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2015_San_Bernardino_attack"
+  ]
+},
+{
+  "id": 12,
+  "title": "Buffalo supermarket shooting",
+  "date": "2022-05-14",
+  "year": 2022,
+  "country": "United States",
+  "state": "New York",
+  "city": "Buffalo",
+  "venue": "Supermarket",
+  "lat": 42.9264,
+  "lng": -78.8130,
+  "fatalities": 10,
+  "injuries": 3,
+  "description": "Mass shooting at a Tops Friendly Markets supermarket.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2022_Buffalo_shooting"
+  ]
+},
+{
+  "id": 13,
+  "title": "Monterey Park shooting",
+  "date": "2023-01-21",
+  "year": 2023,
+  "country": "United States",
+  "state": "California",
+  "city": "Monterey Park",
+  "venue": "Dance Studio",
+  "lat": 34.0625,
+  "lng": -118.1228,
+  "fatalities": 11,
+  "injuries": 9,
+  "description": "Mass shooting at a ballroom dance studio.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2023_Monterey_Park_shooting"
+  ]
+},
+{
+  "id": 14,
+  "title": "Lewiston shootings",
+  "date": "2023-10-25",
+  "year": 2023,
+  "country": "United States",
+  "state": "Maine",
+  "city": "Lewiston",
+  "venue": "Bowling Alley and Restaurant",
+  "lat": 44.0979,
+  "lng": -70.2148,
+  "fatalities": 18,
+  "injuries": 13,
+  "description": "Mass shootings at a bowling alley and restaurant in Lewiston.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2023_Lewiston_shootings"
+  ]
+},
+{
+  "id": 27,
+  "title": "Washington Navy Yard shooting",
+  "date": "2013-09-16",
+  "year": 2013,
+  "country": "United States",
+  "state": "District of Columbia",
+  "city": "Washington",
+  "venue": "Washington Navy Yard",
+  "category": "Mass Shooting",
+  "lat": 38.8730,
+  "lng": -76.9948,
+  "fatalities": 12,
+  "injuries": 8,
+  "description": "Mass shooting at the Washington Navy Yard.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Washington_Navy_Yard_shooting"
+  ]
+},
+{
+  "id": 28,
+  "title": "Roseburg Umpqua Community College shooting",
+  "date": "2015-10-01",
+  "year": 2015,
+  "country": "United States",
+  "state": "Oregon",
+  "city": "Roseburg",
+  "venue": "Umpqua Community College",
+  "category": "Mass Shooting",
+  "lat": 43.2856,
+  "lng": -123.3337,
+  "fatalities": 10,
+  "injuries": 8,
+  "description": "Mass shooting at Umpqua Community College.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Umpqua_Community_College_shooting"
+  ]
+},
+{
+  "id": 29,
+  "title": "Santa Fe High School shooting",
+  "date": "2018-05-18",
+  "year": 2018,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Santa Fe",
+  "venue": "High School",
+  "category": "Mass Shooting",
+  "lat": 29.3928,
+  "lng": -95.0949,
+  "fatalities": 10,
+  "injuries": 13,
+  "description": "Mass shooting at Santa Fe High School.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Santa_Fe_High_School_shooting"
+  ]
+},
+{
+  "id": 30,
+  "title": "Gilroy Garlic Festival shooting",
+  "date": "2019-07-28",
+  "year": 2019,
+  "country": "United States",
+  "state": "California",
+  "city": "Gilroy",
+  "venue": "Garlic Festival",
+  "category": "Mass Shooting",
+  "lat": 37.0058,
+  "lng": -121.5683,
+  "fatalities": 4,
+  "injuries": 17,
+  "description": "Mass shooting at the Gilroy Garlic Festival.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Gilroy_Garlic_Festival_shooting"
+  ]
+},
+{
+  "id": 31,
+  "title": "Indianapolis FedEx shooting",
+  "date": "2021-04-15",
+  "year": 2021,
+  "country": "United States",
+  "state": "Indiana",
+  "city": "Indianapolis",
+  "venue": "FedEx Ground Facility",
+  "category": "Mass Shooting",
+  "lat": 39.7176,
+  "lng": -86.2948,
+  "fatalities": 8,
+  "injuries": 7,
+  "description": "Mass shooting at a FedEx Ground operations facility.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Indianapolis_FedEx_shooting"
+  ]
+},
+{
+  "id": 32,
+  "title": "Miami Beach shooting",
+  "date": "2023-06-01",
+  "year": 2023,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Miami Beach",
+  "venue": "Beach",
+  "category": "Mass Shooting",
+  "lat": 25.7907,
+  "lng": -80.1300,
+  "fatalities": 1,
+  "injuries": 1,
+  "description": "Mass shooting at a beach in Miami Beach.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2023_Miami_Beach_shooting"
+  ]
 }
-
-#map{
-height:100%;
-width:100%;
-}
-
-header{
-position:absolute;
-top:15px;
-left:50%;
-transform:translateX(-50%);
-z-index:1000;
-background:white;
-padding:10px 20px;
-border-radius:10px;
-box-shadow:0 5px 15px rgba(0,0,0,.25);
-font-weight:bold;
-font-size:24px;
-}
-
-#search{
-position:absolute;
-top:70px;
-left:50%;
-transform:translateX(-50%);
-z-index:1000;
-width:300px;
-padding:10px;
-border-radius:8px;
-border:none;
-font-size:16px;
-}
-
-#timeline{
-position:absolute;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-z-index:1000;
-width:70%;
-}
-</style>
-
-</head>
-
-<body>
-
-<header>🌍 History Map</header>
-
-<input id="search" placeholder="Search history...">
-
-<div id="map"></div>
-
-<input id="timeline" type="range" min="-3000" max="2026" value="2026">
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-
-const map=L.map('map').setView([20,0],2);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-maxZoom:19
-}).addTo(map);
-
-L.marker([30.0444,31.2357]).addTo(map)
-.bindPopup("<b>Ancient Egypt</b><br>One of the world's oldest civilizations.");
-
-L.marker([41.9028,12.4964]).addTo(map)
-.bindPopup("<b>Rome</b><br>Center of the Roman Empire.");
-
-L.marker([39.9042,116.4074]).addTo(map)
-.bindPopup("<b>Ancient China</b>");
-
-</script>
-
-</body>
-</html>
+]

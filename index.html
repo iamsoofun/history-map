@@ -1,94 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>History Map</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <title>NHIRA</title>
 
-<style>
-html,body{
-height:100%;
-margin:0;
-font-family:Arial,sans-serif;
-background:#111827;
-}
+    <link rel="stylesheet" href="style.css">
 
-#map{
-height:100%;
-width:100%;
-}
-
-header{
-position:absolute;
-top:15px;
-left:50%;
-transform:translateX(-50%);
-z-index:1000;
-background:white;
-padding:10px 20px;
-border-radius:10px;
-box-shadow:0 5px 15px rgba(0,0,0,.25);
-font-weight:bold;
-font-size:24px;
-}
-
-#search{
-position:absolute;
-top:70px;
-left:50%;
-transform:translateX(-50%);
-z-index:1000;
-width:300px;
-padding:10px;
-border-radius:8px;
-border:none;
-font-size:16px;
-}
-
-#timeline{
-position:absolute;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-z-index:1000;
-width:70%;
-}
-</style>
-
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 
 <body>
 
-<header>🌍 History Map</header>
+    <div id="map"></div>
+<div id="sidePanel">
+    <button id="closePanel">✕</button>
 
-<input id="search" placeholder="Search history...">
+    <div id="panelContent">
+        <h2>Select an Incident</h2>
+        <p>Click a marker on the map to view details.</p>
+    </div>
+</div>
+    <header>
 
-<div id="map"></div>
+        <h1>🛡️ NHIRA</h1>
 
-<input id="timeline" type="range" min="-3000" max="2026" value="2026">
+        <p class="subtitle">
+            National Historical Incident Research & Analysis
+        </p>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <input
+            id="search"
+            type="text"
+            placeholder="Search incidents..."
+        >
 
-<script>
+    </header>
 
-const map=L.map('map').setView([20,0],2);
+    <div id="controls">
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-maxZoom:19
-}).addTo(map);
+        <button id="playBtn">▶ Play</button>
 
-L.marker([30.0444,31.2357]).addTo(map)
-.bindPopup("<b>Ancient Egypt</b><br>One of the world's oldest civilizations.");
+        <button id="pauseBtn">⏸ Pause</button>
 
-L.marker([41.9028,12.4964]).addTo(map)
-.bindPopup("<b>Rome</b><br>Center of the Roman Empire.");
+        <span id="yearDisplay">Year: -3000</span>
 
-L.marker([39.9042,116.4074]).addTo(map)
-.bindPopup("<b>Ancient China</b>");
+    </div>
 
-</script>
+    <input
+        id="timeline"
+        type="range"
+        min="-3000"
+        max="2026"
+        value="-3000"
+    ><div id="sidePanel">
+    <button id="closePanel">✕</button>
+
+    <div id="panelContent">
+        <h2>Select an Incident</h2>
+        <p>Click a marker on the map to view details.</p>
+    </div>
+</div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="script.js"></script>
 
 </body>
+
 </html>
