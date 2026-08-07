@@ -592,5 +592,293 @@
   "injuries": 13,
   "description": "Mass shooting during New Year's celebrations.",
   "source": "https://en.wikipedia.org/wiki/New_Orleans"
+},
+{
+  "year": 1989,
+  "date": "1989-12-06",
+  "title": "École Polytechnique Massacre",
+  "category": "Mass Shooting",
+  "country": "Canada",
+  "state": "Quebec",
+  "city": "Montreal",
+  "venue": "École Polytechnique de Montréal",
+  "lat": 45.5048,
+  "lng": -73.6130,
+  "fatalities": 15,
+  "injuries": 14,
+  "description": "A gunman attacked École Polytechnique, killing 14 women and himself.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/École_Polytechnique_massacre"
+  ]
+},
+{
+  "year": 1993,
+  "date": "1993-08-24",
+  "title": "Concordia University Mass Shooting",
+  "category": "Mass Shooting",
+  "country": "Canada",
+  "state": "Quebec",
+  "city": "Montreal",
+  "venue": "Concordia University",
+  "lat": 45.4972,
+  "lng": -73.5798,
+  "fatalities": 5,
+  "injuries": 1,
+  "description": "A professor opened fire at Concordia University, killing four colleagues before being arrested.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Concordia_University_massacre"
+  ]
+},
+{
+  "year": 2017,
+  "date": "2017-01-29",
+  "title": "Quebec City Mosque Shooting",
+  "category": "Mass Shooting",
+  "country": "Canada",
+  "state": "Quebec",
+  "city": "Quebec City",
+  "venue": "Islamic Cultural Centre of Quebec City",
+  "lat": 46.7781,
+  "lng": -71.3053,
+  "fatalities": 6,
+  "injuries": 19,
+  "description": "A gunman attacked evening worshippers at the Islamic Cultural Centre of Quebec City.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Quebec_City_mosque_shooting"
+  ]
+},
+{
+  "year": 2008,
+  "date": "2008-09-23",
+  "title": "Kauhajoki School Shooting",
+  "category": "Mass Shooting",
+  "country": "Finland",
+  "state": "South Ostrobothnia",
+  "city": "Kauhajoki",
+  "venue": "Seinäjoki University of Applied Sciences",
+  "lat": 62.4295,
+  "lng": 22.1808,
+  "fatalities": 11,
+  "injuries": 3,
+  "description": "A student opened fire at a vocational college before taking his own life.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Kauhajoki_school_shooting"
+  ]
+},
+{
+  "year": 2010,
+  "date": "2010-06-02",
+  "title": "Cumbria Shootings",
+  "category": "Mass Shooting",
+  "country": "United Kingdom",
+  "state": "England",
+  "city": "Cumbria",
+  "venue": "Multiple Locations",
+  "lat": 54.5772,
+  "lng": -2.7975,
+  "fatalities": 13,
+  "injuries": 11,
+  "description": "Taxi driver Derrick Bird carried out shootings across multiple towns in Cumbria.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Cumbria_shootings"
+  ]
+},
+{
+  "year": 2001,
+  "date": "2001-09-27",
+  "title": "Zug Parliament Shooting",
+  "category": "Mass Shooting",
+  "country": "Switzerland",
+  "state": "Zug",
+  "city": "Zug",
+  "venue": "Cantonal Parliament",
+  "lat": 47.1662,
+  "lng": 8.5155,
+  "fatalities": 15,
+  "injuries": 18,
+  "description": "A gunman attacked the Zug cantonal parliament during a legislative session.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Zug_massacre"
+  ]
+},
+{
+  "year": 1987,
+  "date": "1987-08-19",
+  "title": "Hungerford Massacre",
+  "category": "Mass Shooting",
+  "country": "United Kingdom",
+  "state": "England",
+  "city": "Hungerford",
+  "venue": "Multiple Locations",
+  "lat": 51.4156,
+  "lng": -1.5157,
+  "fatalities": 16,
+  "injuries": 15,
+  "description": "Michael Ryan carried out a mass shooting across Hungerford before taking his own life.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Hungerford_massacre"
+  ]
+},
+{
+  "year": 2002,
+  "date": "2002-04-26",
+  "title": "Erfurt School Massacre",
+  "category": "Mass Shooting",
+  "country": "Germany",
+  "state": "Thuringia",
+  "city": "Erfurt",
+  "venue": "Gutenberg Gymnasium",
+  "lat": 50.9787,
+  "lng": 11.0299,
+  "fatalities": 17,
+  "injuries": 7,
+  "description": "Former student opened fire inside Gutenberg Gymnasium.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Erfurt_school_massacre"
+  ]
+},
+{
+  "year": 2007,
+  "date": "2007-11-07",
+  "title": "Jokela School Shooting",
+  "category": "Mass Shooting",
+  "country": "Finland",
+  "state": "Uusimaa",
+  "city": "Tuusula",
+  "venue": "Jokela High School",
+  "lat": 60.5543,
+  "lng": 25.0912,
+  "fatalities": 9,
+  "injuries": 12,
+  "description": "School shooting at Jokela High School.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Jokela_school_shooting"
+  ]
+},
+{
+  "year": 2009,
+  "date": "2009-03-11",
+  "title": "Winnenden School Shooting",
+  "category": "Mass Shooting",
+  "country": "Germany",
+  "state": "Baden-Württemberg",
+  "city": "Winnenden",
+  "venue": "Albertville-Realschule",
+  "lat": 48.8765,
+  "lng": 9.3988,
+  "fatalities": 16,
+  "injuries": 11,
+  "description": "Mass shooting at Albertville-Realschule before the attacker fled.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Winnenden_school_shooting"
+  ]
+},
+{
+  "year": 2023,
+  "date": "2023-05-03",
+  "title": "Belgrade School Shooting",
+  "category": "Mass Shooting",
+  "country": "Serbia",
+  "state": "Belgrade",
+  "city": "Belgrade",
+  "venue": "Vladislav Ribnikar Elementary School",
+  "lat": 44.8072,
+  "lng": 20.4686,
+  "fatalities": 10,
+  "injuries": 6,
+  "description": "School shooting at Vladislav Ribnikar Elementary School in Belgrade.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Belgrade_school_shooting"
+  ]
+},
+{
+  "year": 1996,
+  "date": "1996-04-28",
+  "title": "Port Arthur Massacre",
+  "category": "Mass Shooting",
+  "country": "Australia",
+  "state": "Tasmania",
+  "city": "Port Arthur",
+  "venue": "Port Arthur Historic Site",
+  "lat": -43.1519,
+  "lng": 147.8528,
+  "fatalities": 35,
+  "injuries": 23,
+  "description": "One of Australia's deadliest mass shootings, leading to major firearm law reforms.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Port_Arthur_massacre_(Australia)"
+  ]
+},
+{
+  "year": 1996,
+  "date": "1996-03-13",
+  "title": "Dunblane School Massacre",
+  "category": "Mass Shooting",
+  "country": "United Kingdom",
+  "state": "Scotland",
+  "city": "Dunblane",
+  "venue": "Dunblane Primary School",
+  "lat": 56.1850,
+  "lng": -3.9690,
+  "fatalities": 17,
+  "injuries": 15,
+  "description": "School shooting in Dunblane, Scotland that resulted in major UK firearms legislation.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Dunblane_massacre"
+  ]
+},
+{
+  "year": 2011,
+  "date": "2011-07-22",
+  "title": "Utøya Mass Shooting",
+  "category": "Mass Shooting",
+  "country": "Norway",
+  "state": "Buskerud",
+  "city": "Utøya",
+  "venue": "Youth Summer Camp",
+  "lat": 60.0408,
+  "lng": 10.2556,
+  "fatalities": 69,
+  "injuries": 66,
+  "description": "Mass shooting at a youth camp on Utøya Island following the Oslo bombing. Combined attacks killed 77 people overall." ,
+  "sources": [
+    "https://en.wikipedia.org/wiki/2011_Norway_attacks"
+  ]
+},
+{
+  "year": 2019,
+  "date": "2019-03-15",
+  "title": "Christchurch Mosque Shootings",
+  "category": "Mass Shooting",
+  "country": "New Zealand",
+  "state": "Canterbury",
+  "city": "Christchurch",
+  "venue": "Al Noor Mosque and Linwood Islamic Centre",
+  "lat": -43.5310,
+  "lng": 172.6362,
+  "fatalities": 51,
+  "injuries": 40,
+  "description": "Coordinated attacks on two mosques in Christchurch." ,
+  "sources": [
+    "https://en.wikipedia.org/wiki/Christchurch_mosque_shootings"
+  ]
+},
+{
+  "year": 1982,
+  "date": "1982-04-26",
+  "title": "Woo Bum-kon Rampage",
+  "category": "Mass Shooting",
+  "country": "South Korea",
+  "state": "South Gyeongsang",
+  "city": "Uiryeong",
+  "venue": "Multiple Villages",
+  "lat": 35.3220,
+  "lng": 128.2610,
+  "fatalities": 56,
+  "injuries": 35,
+  "description": "A police officer carried out one of the deadliest mass shootings by a lone perpetrator in modern history." ,
+  "sources": [
+    "https://en.wikipedia.org/wiki/Woo_Bum-kon"
+  ]
 }
 ]
