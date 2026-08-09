@@ -695,13 +695,79 @@ body {
   color: var(--ink-soft);
 }
 
+.analysis-heading {
+  margin: 22px 0 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: .02em;
+}
+
+.chart-box {
+  margin-bottom: 18px;
+  padding: 10px 10px 6px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.chart-title {
+  margin: 0 0 8px;
+  font: 600 .68rem/1 var(--font-body);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 180px !important;
+}
+
+.ranked-list {
+  margin-bottom: 18px;
+  padding: 10px 12px 4px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.ranked-list ol {
+  margin: 0;
+  padding: 0 0 6px 20px;
+  font-size: .82rem;
+}
+
+.ranked-list li {
+  padding: 4px 0;
+  line-height: 1.4;
+}
+
+.ranked-list .rank-meta {
+  color: var(--ink-soft);
+  font: 400 .72rem/1.4 var(--font-mono);
+}
+
+.concentration-note {
+  margin: -6px 0 18px;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  font-size: .82rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
 @media (min-width: 760px) {
   #statsPanel {
     top: var(--hdr-h);
     left: 0;
     right: auto;
     bottom: 0;
-    width: 380px;
+    width: 420px;
     max-height: none;
     padding: 26px 26px 30px;
     border-radius: 0;
@@ -806,6 +872,7 @@ body {
 
 /* Leaflet zoom control clears the timeline bar */
 .leaflet-bottom.leaflet-right { margin-bottom: 6px; }
+
 
 
 

@@ -121,6 +121,17 @@ const rsClearBtn = document.getElementById("rsClearBtn");
 const rsSummary = document.getElementById("rsSummary");
 const rsBreakdown = document.getElementById("rsBreakdown");
 const rsResultsList = document.getElementById("rsResultsList");
+const rsTopFatalities = document.getElementById("rsTopFatalities");
+const rsTopCountries = document.getElementById("rsTopCountries");
+const rsConcentration = document.getElementById("rsConcentration");
+const ANALYSIS_CANVAS_IDS = [
+    "chartIncidentsByDecade", "chartIncidentsByCountry", "chartIncidentsByRegion",
+    "chartFatalitiesByDecade", "chartInjuriesByDecade",
+    "chartFrequencyTrend", "chartFatalityTrend", "chartCategoryTrend"
+];
+const analysisCanvases = {};
+ANALYSIS_CANVAS_IDS.forEach(id => { analysisCanvases[id] = document.getElementById(id); });
+const analysisCharts = {}; // holds live Chart.js instances so they can be destroyed/redrawn
 
 const MIN_YEAR = Number(slider.min);
 const MAX_YEAR = Number(slider.max);
@@ -545,6 +556,207 @@ function getResearchMatches() {
     });
 }
 
+// ---------------------------------------------------------------------
+// Analysis helpers
+// ---------------------------------------------------------------------
+
+function decadeOf(year) {
+    return Math.floor(year / 10) * 10;
+}
+
+function countBy(items, keyFn) {
+    const counts = {};
+    items.forEach(item => {
+        const key = keyFn(item);
+        if (key === undefined || key === null || key === "") return;
+        counts[key] = (counts[key] || 0) + 1;
+    });
+    return counts;
+}
+
+function sumBy(items, keyFn, valueFn) {
+    const sums = {};
+    items.forEach(item => {
+        const key = keyFn(item);
+        if (key === undefined || key === null || key === "") return;
+        sums[key] = (sums[key] || 0) + valueFn(item);
+    });
+    return sums;
+}
+
+function topEntries(obj, n) {
+    return Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n);
+}
+
+function sortedDecadeLabels(obj) {
+    return Object.keys(obj).map(Number).sort((a, b) => a - b).map(String);
+}
+
+// Renders (or re-renders) a Chart.js chart into the given canvas,
+// destroying any previous instance on that canvas first.
+function drawChart(canvasId, config) {
+    const canvas = analysisCanvases[canvasId];
+    if (!canvas || typeof Chart === "undefined") return;
+
+    if (analysisCharts[canvasId]) {
+        analysisCharts[canvasId].destroy();
+    }
+    analysisCharts[canvasId] = new Chart(canvas, config);
+}
+
+const CHART_BASE_OPTIONS = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+        x: { ticks: { font: { size: 10 } }, grid: { display: false } },
+        y: { ticks: { font: { size: 10 } }, beginAtZero: true }
+    }
+};
+
+function renderCharts(matches) {
+    if (typeof Chart === "undefined") return; // Chart.js failed to load — skip charts, rest of the panel still works
+
+    // --- Incidents by decade ---
+    const byDecade = countBy(matches, e => decadeOf(e.year));
+    const decadeLabels = sortedDecadeLabels(byDecade);
+    drawChart("chartIncidentsByDecade", {
+        type: "bar",
+        data: {
+            labels: decadeLabels,
+            datasets: [{ data: decadeLabels.map(d => byDecade[d]), backgroundColor: "#256B9A" }]
+        },
+        options: CHART_BASE_OPTIONS
+    });
+
+    // --- Incidents by country (top 10) ---
+    const byCountry = topEntries(countBy(matches, e => e.country), 10);
+    drawChart("chartIncidentsByCountry", {
+        type: "bar",
+        data: {
+            labels: byCountry.map(([c]) => c),
+            datasets: [{ data: byCountry.map(([, v]) => v), backgroundColor: "#B3322B" }]
+        },
+        options: { ...CHART_BASE_OPTIONS, indexAxis: "y" }
+    });
+
+    // --- Incidents by region ---
+    const byRegion = countBy(matches, e => getRegion(e.country));
+    const regionLabels = Object.keys(byRegion).sort();
+    drawChart("chartIncidentsByRegion", {
+        type: "bar",
+        data: {
+            labels: regionLabels,
+            datasets: [{ data: regionLabels.map(r => byRegion[r]), backgroundColor: "#7A3E9D" }]
+        },
+        options: CHART_BASE_OPTIONS
+    });
+
+    // --- Fatalities / injuries by decade ---
+    const fatByDecade = sumBy(matches, e => decadeOf(e.year), e => e.fatalityCount);
+    const injByDecade = sumBy(matches, e => decadeOf(e.year), e => toNumber(e.injuries));
+    const fatDecadeLabels = sortedDecadeLabels(fatByDecade);
+    const injDecadeLabels = sortedDecadeLabels(injByDecade);
+
+    drawChart("chartFatalitiesByDecade", {
+        type: "bar",
+        data: {
+            labels: fatDecadeLabels,
+            datasets: [{ data: fatDecadeLabels.map(d => fatByDecade[d]), backgroundColor: "#D97A17" }]
+        },
+        options: CHART_BASE_OPTIONS
+    });
+
+    drawChart("chartInjuriesByDecade", {
+        type: "bar",
+        data: {
+            labels: injDecadeLabels,
+            datasets: [{ data: injDecadeLabels.map(d => injByDecade[d]), backgroundColor: "#2E7D5B" }]
+        },
+        options: CHART_BASE_OPTIONS
+    });
+
+    // --- Trend: incident frequency + fatalities over time (line) ---
+    drawChart("chartFrequencyTrend", {
+        type: "line",
+        data: {
+            labels: decadeLabels,
+            datasets: [{
+                data: decadeLabels.map(d => byDecade[d]),
+                borderColor: "#256B9A",
+                backgroundColor: "rgba(37,107,154,.15)",
+                tension: .3,
+                fill: true
+            }]
+        },
+        options: CHART_BASE_OPTIONS
+    });
+
+    drawChart("chartFatalityTrend", {
+        type: "line",
+        data: {
+            labels: fatDecadeLabels,
+            datasets: [{
+                data: fatDecadeLabels.map(d => fatByDecade[d]),
+                borderColor: "#B3322B",
+                backgroundColor: "rgba(179,50,43,.15)",
+                tension: .3,
+                fill: true
+            }]
+        },
+        options: CHART_BASE_OPTIONS
+    });
+
+    // --- Category mix by decade (stacked bar) ---
+    const categoryKeys = Object.keys(INCIDENT_TYPES);
+    const categoryDatasets = categoryKeys.map(key => ({
+        label: INCIDENT_TYPES[key].label,
+        data: decadeLabels.map(d => matches.filter(e => decadeOf(e.year) === Number(d) && e.resolvedType === key).length),
+        backgroundColor: INCIDENT_TYPES[key].color
+    })).filter(ds => ds.data.some(v => v > 0));
+
+    drawChart("chartCategoryTrend", {
+        type: "bar",
+        data: { labels: decadeLabels, datasets: categoryDatasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 }, boxWidth: 10 } } },
+            scales: {
+                x: { stacked: true, ticks: { font: { size: 10 } }, grid: { display: false } },
+                y: { stacked: true, ticks: { font: { size: 10 } }, beginAtZero: true }
+            }
+        }
+    });
+
+    // --- Highest-fatality incidents ---
+    const topFatalities = [...matches].sort((a, b) => b.fatalityCount - a.fatalityCount).slice(0, 8);
+    rsTopFatalities.innerHTML = topFatalities.length
+        ? topFatalities.map(e => `
+            <li>
+                ${escapeHtml(e.title)}
+                <div class="rank-meta">${escapeHtml(e.year)} · ${escapeHtml(e.country)} · ${e.fatalityCount.toLocaleString()} fatalities</div>
+            </li>
+        `).join("")
+        : "<li>No incidents match these filters.</li>";
+
+    // --- Countries with the most incidents ---
+    const topCountries = topEntries(countBy(matches, e => e.country), 8);
+    rsTopCountries.innerHTML = topCountries.length
+        ? topCountries.map(([country, count]) => `
+            <li>${escapeHtml(country)} <div class="rank-meta">${count.toLocaleString()} incident${count === 1 ? "" : "s"}</div></li>
+        `).join("")
+        : "<li>No incidents match these filters.</li>";
+
+    // --- Geographic concentration ---
+    const allCountryEntries = topEntries(countBy(matches, e => e.country), 5);
+    const top5Total = allCountryEntries.reduce((sum, [, v]) => sum + v, 0);
+    const share = matches.length ? Math.round((top5Total / matches.length) * 100) : 0;
+    rsConcentration.textContent = matches.length
+        ? `The top ${allCountryEntries.length} countr${allCountryEntries.length === 1 ? "y accounts" : "ies account"} for ${share}% of all matched incidents (${allCountryEntries.map(([c]) => c).join(", ")}).`
+        : "No incidents match these filters.";
+}
+
 function renderResearch(matches) {
     const totalFatalities = matches.reduce((sum, e) => sum + e.fatalityCount, 0);
     const totalInjuries = matches.reduce((sum, e) => sum + toNumber(e.injuries), 0);
@@ -594,6 +806,8 @@ function renderResearch(matches) {
     if (sortedMatches.length > MAX_LISTED) {
         rsResultsList.innerHTML += `<div class="result-row">…and ${(sortedMatches.length - MAX_LISTED).toLocaleString()} more.</div>`;
     }
+
+    renderCharts(matches);
 }
 
 function runResearch() {
@@ -627,6 +841,15 @@ if (RESEARCH_ELEMENTS_PRESENT) {
 
     closeStats.addEventListener("click", closeStatsPanel);
     rsGenerateBtn.addEventListener("click", runResearch);
+
+    // Interactive filters: any change re-runs the analysis automatically.
+    const debouncedRunResearch = debounce(runResearch, 200);
+    [rsStartYear, rsEndYear, rsMinFatalities].forEach(input => {
+        input.addEventListener("input", debouncedRunResearch);
+    });
+    [rsCountry, rsCategory, rsRegion].forEach(select => {
+        select.addEventListener("change", runResearch);
+    });
 
     rsClearBtn.addEventListener("click", () => {
         rsStartYear.value = MIN_YEAR;

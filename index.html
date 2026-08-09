@@ -132,12 +132,37 @@
 
     <div id="rsSummary" class="stats-summary"></div>
     <ul id="rsBreakdown" class="stats-breakdown"></ul>
+
+    <h3 class="analysis-heading">Incident Analysis</h3>
+    <div class="chart-box"><p class="chart-title">Incidents by decade</p><canvas id="chartIncidentsByDecade"></canvas></div>
+    <div class="chart-box"><p class="chart-title">Incidents by country (top 10)</p><canvas id="chartIncidentsByCountry"></canvas></div>
+    <div class="chart-box"><p class="chart-title">Incidents by region</p><canvas id="chartIncidentsByRegion"></canvas></div>
+    <div class="chart-box"><p class="chart-title">Fatalities by decade</p><canvas id="chartFatalitiesByDecade"></canvas></div>
+    <div class="chart-box"><p class="chart-title">Injuries by decade</p><canvas id="chartInjuriesByDecade"></canvas></div>
+
+    <div class="ranked-list">
+      <p class="chart-title">Highest-fatality incidents</p>
+      <ol id="rsTopFatalities"></ol>
+    </div>
+
+    <div class="ranked-list">
+      <p class="chart-title">Countries with the most incidents</p>
+      <ol id="rsTopCountries"></ol>
+    </div>
+
+    <h3 class="analysis-heading">Trend Analysis</h3>
+    <div class="chart-box"><p class="chart-title">Incident frequency over time</p><canvas id="chartFrequencyTrend"></canvas></div>
+    <div class="chart-box"><p class="chart-title">Fatality trend over time</p><canvas id="chartFatalityTrend"></canvas></div>
+    <div class="chart-box"><p class="chart-title">Category mix by decade</p><canvas id="chartCategoryTrend"></canvas></div>
+    <div id="rsConcentration" class="concentration-note"></div>
+
     <div id="rsResultsList" class="research-results"></div>
   </aside>
 
   <div id="scrim" hidden></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="script.js"></script>
 </body>
 
