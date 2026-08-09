@@ -212,6 +212,13 @@ body {
 .transport:active { background: var(--signal); color: var(--ink); }
 .transport:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
 
+.transport.wide {
+  width: auto;
+  padding: 0 12px;
+  font: 600 .72rem/1 var(--font-body);
+  letter-spacing: .06em;
+}
+
 /* The year readout is the one loud thing on the page. */
 #yearDisplay {
   margin-left: 6px;
@@ -257,8 +264,8 @@ body {
   bottom: 0;
   z-index: 1200;
   max-height: 72vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
   padding: 8px 18px calc(26px + env(safe-area-inset-bottom));
   background: var(--card);
   border-radius: 18px 18px 0 0;
@@ -293,6 +300,13 @@ body {
 
 #closePanel:active { background: var(--paper); }
 
+#panelContent {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
+  min-height: 0; /* lets this child actually shrink and scroll inside the flex column */
+}
+
 #panelContent h2 {
   margin: 0 40px 4px 0;
   font-family: var(--font-display);
@@ -325,10 +339,6 @@ body {
 
   .subtitle { font-size: .68rem; }
   .search-wrap { max-width: 320px; }
-
-  #legend.collapsed #legendList { display: block; } /* always open */
-  #legendToggle { pointer-events: none; }
-  .legend-icon { display: none; }
 
   /* Panel becomes a right-hand drawer that slides over the map */
   #sidePanel {

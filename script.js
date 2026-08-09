@@ -48,6 +48,7 @@ const eraTag = document.getElementById("eraTag");
 const search = document.getElementById("search");
 const playBtn = document.getElementById("playBtn");
 const pauseBtn = document.getElementById("pauseBtn");
+const nowBtn = document.getElementById("nowBtn");
 const sidePanel = document.getElementById("sidePanel");
 const panelContent = document.getElementById("panelContent");
 const closePanel = document.getElementById("closePanel");
@@ -449,6 +450,12 @@ playBtn.addEventListener("click", startPlayback);
 pauseBtn.addEventListener("click", stopPlayback);
 slider.addEventListener("pointerdown", stopPlayback);
 pauseBtn.disabled = true;
+
+nowBtn.addEventListener("click", () => {
+    stopPlayback();
+    slider.value = Math.min(Math.max(THIS_YEAR, MIN_YEAR), MAX_YEAR);
+    applyFilters();
+});
 
 // ---------------------------------------------------------------------
 // Side panel
