@@ -56,6 +56,13 @@ const legend = document.getElementById("legend");
 const legendToggle = document.getElementById("legendToggle");
 const legendList = document.getElementById("legendList");
 
+// Date-range research panel
+const startYearInput = document.getElementById("startYear");
+const endYearInput = document.getElementById("endYear");
+const rangeSearchBtn = document.getElementById("rangeSearchBtn");
+const clearRangeBtn = document.getElementById("clearRangeBtn");
+const rangeResults = document.getElementById("rangeResults");
+
 const MIN_YEAR = Number(slider.min);
 const MAX_YEAR = Number(slider.max);
 const THIS_YEAR = new Date().getFullYear();
@@ -238,23 +245,61 @@ function clearMarkers() {
 }
 
 // ---------------------------------------------------------------------
-// Combined year + search filtering
+// Combined range + search filtering
+//
+// If startYear/endYear are left blank or invalid, this falls back to the
+// old cumulative behavior: everything from MIN_YEAR up through whatever
+// year the timeline slider is sitting on.
 // ---------------------------------------------------------------------
 
 function getMatchedEvents() {
-    const year = Number(slider.value);
+    const sliderYear = Number(slider.value);
     const text = search.value.trim().toLowerCase();
 
-    return events.filter(event => {
-        const withinYear = event.year <= year;
+    let startYear = Number(startYearInput?.value);
+    let endYear = Number(endYearInput?.value);
 
+    // If no valid range is entered, use the timeline
+    if (!Number.isFinite(startYear)) {
+        startYear = MIN_YEAR;
+    }
+
+    if (!Number.isFinite(endYear)) {
+        endYear = sliderYear;
+    }
+
+    // Prevent reversed ranges
+    if (startYear > endYear) {
+        [startYear, endYear] = [endYear, startYear];
+    }
+
+    return events.filter(event => {
+
+        // Event must fall inside selected historical range
+        const withinRange =
+            event.year >= startYear &&
+            event.year <= endYear;
+
+        // Text search across the full record
         const matchesText =
             !text ||
-            [event.title, event.city, event.state, event.country, event.venue]
+            [
+                event.title,
+                event.city,
+                event.state,
+                event.country,
+                event.venue,
+                event.description,
+                event.year,
+                event.resolvedType,
+                INCIDENT_TYPES[event.resolvedType]?.label
+            ]
                 .filter(Boolean)
-                .some(field => String(field).toLowerCase().includes(text));
+                .some(field =>
+                    String(field).toLowerCase().includes(text)
+                );
 
-        return withinYear && matchesText;
+        return withinRange && matchesText;
     });
 }
 
@@ -267,7 +312,6 @@ function updateYearReadout(year) {
 
 function applyFilters() {
     const year = Number(slider.value);
-    const text = search.value.trim().toLowerCase();
 
     updateYearReadout(year);
     clearMarkers();
@@ -275,6 +319,7 @@ function applyFilters() {
     const matchedEvents = getMatchedEvents();
     matchedEvents.forEach(addMarker);
 
+    const text = search.value.trim().toLowerCase();
     if (text && matchedEvents.length > 0) {
         const firstEvent = matchedEvents[0];
         map.setView([firstEvent.lat, firstEvent.lng], 8);
@@ -290,6 +335,77 @@ slider.addEventListener("input", () => {
 });
 
 search.addEventListener("input", debounce(applyFilters, 250));
+
+// ---------------------------------------------------------------------
+// Date-range research panel
+// ---------------------------------------------------------------------
+
+function runRangeResearch() {
+    let startYear = Number(startYearInput.value);
+    let endYear = Number(endYearInput.value);
+
+    if (!Number.isFinite(startYear) || !Number.isFinite(endYear)) {
+        rangeResults.textContent = "Enter a valid start and end year.";
+        return;
+    }
+
+    if (startYear > endYear) {
+        [startYear, endYear] = [endYear, startYear];
+
+        startYearInput.value = startYear;
+        endYearInput.value = endYear;
+    }
+
+    // Move the timeline to the end of the research period
+    slider.value = Math.min(
+        Math.max(endYear, MIN_YEAR),
+        MAX_YEAR
+    );
+
+    const matchedEvents = getMatchedEvents();
+
+    clearMarkers();
+    matchedEvents.forEach(addMarker);
+    updateYearReadout(slider.value);
+
+    rangeResults.innerHTML = `
+        <strong>${matchedEvents.length}</strong>
+        incident${matchedEvents.length === 1 ? "" : "s"}
+        found from
+        <strong>${startYear}</strong>
+        to
+        <strong>${endYear}</strong>.
+    `;
+
+    // If we found something, zoom to the first result
+    if (matchedEvents.length > 0) {
+        const firstEvent = matchedEvents[0];
+        map.setView([firstEvent.lat, firstEvent.lng], 4);
+    }
+}
+
+rangeSearchBtn.addEventListener("click", runRangeResearch);
+
+clearRangeBtn.addEventListener("click", () => {
+    startYearInput.value = MIN_YEAR;
+    endYearInput.value = MAX_YEAR;
+
+    rangeResults.textContent = "";
+
+    search.value = "";
+
+    slider.value = MAX_YEAR;
+
+    applyFilters();
+});
+
+[startYearInput, endYearInput].forEach(input => {
+    input.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+            runRangeResearch();
+        }
+    });
+});
 
 // ---------------------------------------------------------------------
 // Play / Pause timeline
@@ -342,6 +458,14 @@ function openSheet() {
     sidePanel.classList.add("open");
     sidePanel.setAttribute("aria-hidden", "false");
     if (window.innerWidth < 760) scrim.hidden = false;
+
+    // Force a solid, readable panel regardless of what the stylesheet says —
+    // stopgap until the CSS itself is fixed.
+    sidePanel.style.background = "#FFFFFF";
+    sidePanel.style.color = "#0E1116";
+    sidePanel.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.35)";
+    sidePanel.style.zIndex = "1000";
+
     setTimeout(() => map.invalidateSize(), 300);
 }
 
