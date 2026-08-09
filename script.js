@@ -862,9 +862,7 @@ if (RESEARCH_ELEMENTS_PRESENT) {
     });
 } else {
     console.warn("Research & Statistics controls not found in the DOM — skipping their setup so the rest of the app still loads.");
-}
-
-// ---------------------------------------------------------------------
+}// ---------------------------------------------------------------------
 // Play / Pause timeline
 // ---------------------------------------------------------------------
 
@@ -936,6 +934,127 @@ function closeSheet() {
     setTimeout(() => map.invalidateSize(), 300);
 }
 
+// ---------------------------------------------------------------------
+// Research Context
+//
+// Computes how a given incident relates to others already in the
+// dataset: geographic proximity, chronological proximity, and — for the
+// same country — what happened in the years afterward. This needs no
+// new data; it's derived from lat/lng and year on existing records.
+// "Who was involved" and "What changed afterward" (narrative) are
+// optional fields you can add per record when you have that research.
+// ---------------------------------------------------------------------
+
+const NEARBY_RADIUS_KM = 750;
+const SAME_TIME_WINDOW_YEARS = 5;
+const SUBSEQUENT_WINDOW_YEARS = 15;
+const CONTEXT_LIST_LIMIT = 5;
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function buildResearchContext(event) {
+    const others = events.filter(e => e.id !== event.id);
+
+    const nearby = others
+        .map(e => ({ event: e, distanceKm: haversineKm(event.lat, event.lng, e.lat, e.lng) }))
+        .filter(x => x.distanceKm <= NEARBY_RADIUS_KM)
+        .sort((a, b) => a.distanceKm - b.distanceKm)
+        .slice(0, CONTEXT_LIST_LIMIT);
+
+    const sameTime = others
+        .map(e => ({ event: e, yearDiff: Math.abs(e.year - event.year) }))
+        .filter(x => x.yearDiff <= SAME_TIME_WINDOW_YEARS)
+        .sort((a, b) => a.yearDiff - b.yearDiff)
+        .slice(0, CONTEXT_LIST_LIMIT);
+
+    const subsequent = others
+        .filter(e =>
+            e.country && event.country && e.country === event.country &&
+            e.year > event.year && e.year <= event.year + SUBSEQUENT_WINDOW_YEARS
+        )
+        .sort((a, b) => a.year - b.year)
+        .slice(0, CONTEXT_LIST_LIMIT);
+
+    return { nearby, sameTime, subsequent };
+}
+
+function contextListItem(e, metaText) {
+    return `
+        <li class="rc-item" data-goto-id="${e.id}" tabindex="0" role="button">
+            <span class="rc-item-title">${escapeHtml(e.title)}</span>
+            <span class="rc-item-meta">${metaText}</span>
+        </li>
+    `;
+}
+
+function renderResearchContext(event) {
+    const { nearby, sameTime, subsequent } = buildResearchContext(event);
+
+    const nearbyHtml = nearby.length
+        ? nearby.map(({ event: e, distanceKm }) =>
+            contextListItem(e, `${Math.round(distanceKm).toLocaleString()} km · ${escapeHtml(e.year)}`)
+          ).join("")
+        : `<li class="rc-empty">No recorded incidents within ${NEARBY_RADIUS_KM.toLocaleString()} km.</li>`;
+
+    const sameTimeHtml = sameTime.length
+        ? sameTime.map(({ event: e, yearDiff }) =>
+            contextListItem(e, `${escapeHtml(e.year)} · ${escapeHtml([e.city, e.country].filter(Boolean).join(", "))}`)
+          ).join("")
+        : `<li class="rc-empty">No recorded incidents within ${SAME_TIME_WINDOW_YEARS} years.</li>`;
+
+    const people = Array.isArray(event.peopleInvolved) ? event.peopleInvolved : [];
+    const orgs = Array.isArray(event.organizationsInvolved) ? event.organizationsInvolved : [];
+    const involvedHtml = (people.length || orgs.length)
+        ? `
+            ${people.length ? `<p class="rc-chip-row"><b>People</b><br>${people.map(escapeHtml).join(", ")}</p>` : ""}
+            ${orgs.length ? `<p class="rc-chip-row"><b>Organizations</b><br>${orgs.map(escapeHtml).join(", ")}</p>` : ""}
+        `
+        : `<p class="rc-empty-text">Not yet documented.</p>`;
+
+    const consequencesText = Array.isArray(event.consequences)
+        ? event.consequences.filter(Boolean).map(escapeHtml).join("<br>")
+        : (event.consequences ? escapeHtml(event.consequences) : "");
+
+    const subsequentHtml = subsequent.length
+        ? subsequent.map(e =>
+            contextListItem(e, `${escapeHtml(e.year)} · ${escapeHtml(e.country)}`)
+          ).join("")
+        : `<li class="rc-empty">No recorded incidents in ${escapeHtml(event.country || "this country")} in the following ${SUBSEQUENT_WINDOW_YEARS} years.</li>`;
+
+    return `
+        <h3 class="analysis-heading rc-heading">Research Context</h3>
+
+        <div class="rc-section">
+            <p class="chart-title">What was happening nearby?</p>
+            <ul class="rc-list">${nearbyHtml}</ul>
+        </div>
+
+        <div class="rc-section">
+            <p class="chart-title">What was happening at the same time?</p>
+            <ul class="rc-list">${sameTimeHtml}</ul>
+        </div>
+
+        <div class="rc-section">
+            <p class="chart-title">Who was involved?</p>
+            ${involvedHtml}
+        </div>
+
+        <div class="rc-section">
+            <p class="chart-title">What changed afterward?</p>
+            ${consequencesText ? `<p class="rc-consequences">${consequencesText}</p>` : `<p class="rc-empty-text">Consequences not yet documented.</p>`}
+            <ul class="rc-list">${subsequentHtml}</ul>
+        </div>
+    `;
+}
+
 function openPanel(event) {
     const type = INCIDENT_TYPES[event.resolvedType] || INCIDENT_TYPES.other;
     const projected = event.year > THIS_YEAR;
@@ -994,10 +1113,23 @@ function openPanel(event) {
 
         <p class="field"><b>Venue</b><br>${escapeHtml(event.venue) || "Not recorded"}</p>
         <p class="field"><b>Sources</b><br>${sourcesHtml}</p>
+
+        ${renderResearchContext(event)}
     `;
 
     openSheet();
 }
+
+// Clicking any Research Context item jumps to that incident's own panel —
+// one listener handles it for every render since panelContent is rebuilt
+// each time.
+panelContent.addEventListener("click", e => {
+    const item = e.target.closest("[data-goto-id]");
+    if (!item) return;
+    const targetId = Number(item.dataset.gotoId);
+    const target = events.find(ev => ev.id === targetId);
+    if (target) openPanel(target);
+});
 
 closePanel.addEventListener("click", closeSheet);
 scrim.addEventListener("click", closeSheet);

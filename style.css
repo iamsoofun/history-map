@@ -761,6 +761,77 @@ body {
   color: var(--ink-soft);
 }
 
+/* ---------- Research Context (inside the incident detail panel) ---------- */
+
+.rc-heading { margin-top: 22px; }
+
+.rc-section {
+  margin-bottom: 18px;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.rc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rc-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.rc-item:hover,
+.rc-item:focus-visible {
+  background: rgba(240, 162, 2, .14);
+  outline: none;
+}
+
+.rc-item-title {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.rc-item-meta {
+  font: 400 .7rem/1.4 var(--font-mono);
+  color: var(--ink-soft);
+}
+
+.rc-empty,
+.rc-empty-text {
+  font-size: .8rem;
+  color: var(--ink-soft);
+  list-style: none;
+  padding: 4px 6px;
+}
+
+.rc-chip-row {
+  margin: 0 0 8px;
+  font-size: .85rem;
+  line-height: 1.5;
+}
+
+.rc-chip-row b {
+  font: 600 .62rem/1.8 var(--font-body);
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.rc-consequences {
+  margin: 0 0 10px;
+  font-size: .85rem;
+  line-height: 1.55;
+}
+
 @media (min-width: 760px) {
   #statsPanel {
     top: var(--hdr-h);
