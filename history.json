@@ -2040,5 +2040,1010 @@
   "sources": [
     "https://en.wikipedia.org/wiki/Suzano_massacre"
   ]
+},
+{
+  "id": 101,
+  "title": "Luby's Cafeteria Shooting",
+  "date": "1991-10-16",
+  "year": 1991,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Killeen",
+  "venue": "Luby's Cafeteria",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 31.1171,
+  "lng": -97.7278,
+  "fatalities": 23,
+  "injuries": 27,
+  "description": "Mass shooting at a Luby's Cafeteria in Killeen, Texas.",
+  "sources": [
+    "Texas Department of Public Safety"
+  ]
+},
+{
+  "id": 102,
+  "title": "Monash University Shooting",
+  "date": "2002-10-21",
+  "year": 2002,
+  "country": "Australia",
+  "state": "Victoria",
+  "city": "Melbourne",
+  "venue": "Monash University",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": -37.9105,
+  "lng": 145.1347,
+  "fatalities": 2,
+  "injuries": 5,
+  "description": "Shooting at Monash University in Melbourne, Australia, resulting in two deaths and five injuries.",
+  "sources": [
+    "Monash University shooting historical record"
+  ]
+},
+{
+  "id": 103,
+  "title": "Fort Hood Shooting",
+  "date": "2009-11-05",
+  "year": 2009,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Killeen",
+  "venue": "Fort Hood Soldier Readiness Processing Center",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 31.1346,
+  "lng": -97.7756,
+  "fatalities": 13,
+  "injuries": 31,
+  "description": "Mass shooting at the Soldier Readiness Processing Center at Fort Hood.",
+  "sources": [
+    "U.S. Department of Defense"
+  ]
+},
+{
+  "id": 104,
+  "title": "Oslo Government Quarter Bombing",
+  "date": "2011-07-22",
+  "year": 2011,
+  "country": "Norway",
+  "state": "Oslo",
+  "city": "Oslo",
+  "venue": "Government Quarter",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 59.9139,
+  "lng": 10.7387,
+  "fatalities": 8,
+  "injuries": 209,
+  "description": "Car bombing in Oslo's Government Quarter. The bombing was followed later that day by the separate Utøya shooting.",
+  "sources": [
+    "Government of Norway",
+    "Norwegian 22 July Commission"
+  ]
+},
+{
+  "id": 105,
+  "title": "El Paso Walmart Shooting",
+  "date": "2019-08-03",
+  "year": 2019,
+  "country": "United States",
+  "state": "Texas",
+  "city": "El Paso",
+  "venue": "Cielo Vista Walmart",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 31.7619,
+  "lng": -106.3782,
+  "fatalities": 23,
+  "injuries": 22,
+  "description": "Mass shooting at a Walmart in El Paso, Texas, that killed 23 people and injured 22 others.",
+  "sources": [
+    "U.S. Department of Justice"
+  ]
+},
+{
+  "id": 106,
+  "title": "Marjory Stoneman Douglas High School Shooting",
+  "date": "2018-02-14",
+  "year": 2018,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Parkland",
+  "venue": "Marjory Stoneman Douglas High School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 26.3045,
+  "lng": -80.2690,
+  "fatalities": 17,
+  "injuries": 17,
+  "description": "A former student opened fire at Marjory Stoneman Douglas High School in Parkland, Florida, killing 17 people and injuring 17 others.",
+  "sources": [
+    "https://www.justice.gov/archives/opa/pr/justice-department-announces-civil-settlement-cases-arising-2018-school-shooting-parkland"
+  ]
+},
+{
+  "id": 107,
+  "title": "Tree of Life Synagogue Shooting",
+  "date": "2018-10-27",
+  "year": 2018,
+  "country": "United States",
+  "state": "Pennsylvania",
+  "city": "Pittsburgh",
+  "venue": "Tree of Life Synagogue",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 40.4432,
+  "lng": -79.9239,
+  "fatalities": 11,
+  "injuries": 6,
+  "description": "A gunman opened fire inside the Tree of Life synagogue complex in Pittsburgh, killing 11 people and wounding six others, including law enforcement officers.",
+  "sources": [
+    "https://www.fbi.gov/how-we-can-help-you/active-shooter-safety-resources/active-shooter-incidents-from-2000-to-2018"
+  ]
+},
+{
+  "id": 108,
+  "title": "Christchurch Mosque Attacks",
+  "date": "2019-03-15",
+  "year": 2019,
+  "country": "New Zealand",
+  "state": "Canterbury",
+  "city": "Christchurch",
+  "venue": "Masjid an-Nur and Linwood Islamic Centre",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": -43.5321,
+  "lng": 172.6362,
+  "fatalities": 51,
+  "injuries": 40,
+  "description": "A terrorist attacked worshippers at two mosques in Christchurch, killing 51 people and causing gunshot injuries to 40 others.",
+  "sources": [
+    "https://christchurchattack.royalcommission.nz/the-report/part-1-purpose-and-process/the-terrorist-attack"
+  ]
+},
+{
+  "id": 109,
+  "title": "Dayton Shooting",
+  "date": "2019-08-04",
+  "year": 2019,
+  "country": "United States",
+  "state": "Ohio",
+  "city": "Dayton",
+  "venue": "Oregon District",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 39.7589,
+  "lng": -84.1916,
+  "fatalities": 9,
+  "injuries": 27,
+  "description": "A gunman opened fire in Dayton's Oregon District, killing nine people and injuring 27 others.",
+  "sources": [
+    "https://www.fbi.gov/contact-us/field-offices/cincinnati/news/press-releases/investigative-report-on-the-august-4-2019-attack-in-dayton-ohio"
+  ]
+},
+{
+  "id": 110,
+  "title": "Robb Elementary School Shooting",
+  "date": "2022-05-24",
+  "year": 2022,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Uvalde",
+  "venue": "Robb Elementary School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 29.2097,
+  "lng": -99.7862,
+  "fatalities": 21,
+  "injuries": 17,
+  "description": "A mass shooting at Robb Elementary School in Uvalde, Texas, killed 19 students and two teachers and physically injured at least 17 others.",
+  "sources": [
+    "https://cops.usdoj.gov/uvalde"
+  ]
+},
+{
+  "id": 111,
+  "title": "Aurora Theater Shooting",
+  "date": "2012-07-20",
+  "year": 2012,
+  "country": "United States",
+  "state": "Colorado",
+  "city": "Aurora",
+  "venue": "Century 16 Movie Theater",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 39.6967,
+  "lng": -104.8236,
+  "fatalities": 12,
+  "injuries": 58,
+  "description": "Mass shooting at the Century 16 movie theater in Aurora, Colorado. Twelve people were killed and 58 were wounded by gunfire.",
+  "sources": [
+    "https://www.congress.gov/congressional-record/volume-158/issue-113/house-section/article/H5297-1"
+  ]
+},
+{
+  "id": 112,
+  "title": "Sutherland Springs Church Shooting",
+  "date": "2017-11-05",
+  "year": 2017,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Sutherland Springs",
+  "venue": "First Baptist Church",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 29.2722,
+  "lng": -98.0572,
+  "fatalities": 26,
+  "injuries": 20,
+  "description": "Mass shooting at First Baptist Church in Sutherland Springs, Texas. Authorities reported 26 fatalities, a figure that includes an unborn child; 25 people were physically killed and 20 others were injured.",
+  "sources": [
+    "https://www.ap.org/the-definitive-source/behind-the-news/counting-the-victims-of-the-texas-church-shooting/"
+  ]
+},
+{
+  "id": 113,
+  "title": "Virginia Beach Municipal Center Shooting",
+  "date": "2019-05-31",
+  "year": 2019,
+  "country": "United States",
+  "state": "Virginia",
+  "city": "Virginia Beach",
+  "venue": "Virginia Beach Municipal Center",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 36.8508,
+  "lng": -75.9774,
+  "fatalities": 12,
+  "injuries": 5,
+  "description": "A city employee opened fire inside Building 2 of the Virginia Beach Municipal Center, killing 12 people and wounding five others.",
+  "sources": [
+    "https://communications.virginiabeach.gov/may-31-investigation"
+  ]
+},
+{
+  "id": 114,
+  "title": "Halle Synagogue Shooting",
+  "date": "2019-10-09",
+  "year": 2019,
+  "country": "Germany",
+  "state": "Saxony-Anhalt",
+  "city": "Halle",
+  "venue": "Halle Synagogue and nearby locations",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 51.4960,
+  "lng": 11.9688,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "Antisemitic terrorist attack in Halle, Germany, during Yom Kippur. The attacker attempted to enter a synagogue and subsequently killed two people and injured two others.",
+  "sources": [
+    "https://press.un.org/en/2019/sgsm19801.doc.htm"
+  ]
+},
+{
+  "id": 115,
+  "title": "Hanau Shootings",
+  "date": "2020-02-19",
+  "year": 2020,
+  "country": "Germany",
+  "state": "Hesse",
+  "city": "Hanau",
+  "venue": "Multiple locations",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 50.1264,
+  "lng": 8.9283,
+  "fatalities": 9,
+  "injuries": 6,
+  "description": "Racist terrorist attack targeting people at several locations in Hanau, Germany. Nine people were killed and six others were injured.",
+  "sources": [
+    "https://www.generalbundesanwalt.de/SharedDocs/Pressemitteilungen/EN/2022/Pressemitteilung-vom-26-01-2022.html"
+  ]
+},
+{
+  "id": 116,
+  "title": "Westroads Mall Shooting",
+  "date": "2007-12-05",
+  "year": 2007,
+  "country": "United States",
+  "state": "Nebraska",
+  "city": "Omaha",
+  "venue": "Westroads Mall - Von Maur",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 41.2654,
+  "lng": -96.0790,
+  "fatalities": 8,
+  "injuries": 5,
+  "description": "A gunman opened fire inside the Von Maur department store at Westroads Mall in Omaha, killing eight victims and injuring five others before taking his own life.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Westroads_Mall_shooting"
+  ]
+},
+{
+  "id": 117,
+  "title": "Oak Creek Sikh Temple Shooting",
+  "date": "2012-08-05",
+  "year": 2012,
+  "country": "United States",
+  "state": "Wisconsin",
+  "city": "Oak Creek",
+  "venue": "Sikh Temple of Wisconsin",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 42.8859,
+  "lng": -87.8631,
+  "fatalities": 6,
+  "injuries": 4,
+  "description": "A gunman attacked worshippers at the Sikh Temple of Wisconsin in Oak Creek, killing six victims and wounding four others.",
+  "sources": [
+    "https://archives.fbi.gov/archives/milwaukee/press-releases/2012/oak-creek-sikh-temple-shooting-investigation-conclusion"
+  ]
+},
+{
+  "id": 118,
+  "title": "Isla Vista Killings",
+  "date": "2014-05-23",
+  "year": 2014,
+  "country": "United States",
+  "state": "California",
+  "city": "Isla Vista",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 34.4133,
+  "lng": -119.8610,
+  "fatalities": 6,
+  "injuries": 14,
+  "description": "A series of attacks in Isla Vista, California, involving stabbing, shooting and vehicle attacks. Six victims were killed and 14 people were injured; the attacker also died.",
+  "sources": [
+    "https://apps.sdsheriff.net/PublicDocs/SB978/Human%20Resource%20Services%20Bureau/Professional%20Staff%20Development/NEO/NEO%20Nov%202021.pdf"
+  ]
+},
+{
+  "id": 119,
+  "title": "Atlanta Spa Shootings",
+  "date": "2021-03-16",
+  "year": 2021,
+  "country": "United States",
+  "state": "Georgia",
+  "city": "Atlanta",
+  "venue": "Multiple Spa and Massage Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 33.7490,
+  "lng": -84.3880,
+  "fatalities": 8,
+  "injuries": 1,
+  "description": "A series of shootings at three spas and massage businesses in the Atlanta metropolitan area killed eight people and wounded one other person.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2021_Atlanta_spa_shootings"
+  ]
+},
+{
+  "id": 120,
+  "title": "Highland Park Parade Shooting",
+  "date": "2022-07-04",
+  "year": 2022,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Highland Park",
+  "venue": "Fourth of July Parade",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 42.1817,
+  "lng": -87.8003,
+  "fatalities": 7,
+  "injuries": 48,
+  "description": "A gunman opened fire from a rooftop on people attending a Fourth of July parade in Highland Park, Illinois, killing seven people and injuring 48 others.",
+  "sources": [
+    "https://www.congress.gov/congressional-record/volume-171/issue-117/senate-section/article/S4260-2"
+  ]
+},
+{
+  "id": 121,
+  "title": "Red Lake High School Shooting",
+  "date": "2005-03-21",
+  "year": 2005,
+  "country": "United States",
+  "state": "Minnesota",
+  "city": "Red Lake",
+  "venue": "Red Lake Senior High School and Residence",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 48.0606,
+  "lng": -95.0169,
+  "fatalities": 9,
+  "injuries": 6,
+  "description": "A shooting at Red Lake Senior High School and a nearby residence killed nine victims, including a security guard, teacher, students and family members, and wounded six students. The perpetrator later died by suicide.",
+  "sources": [
+    "https://www.fbi.gov/how-we-can-help-you/active-shooter-safety-resources/active-shooter-incidents-from-2000-to-2018",
+    "https://vault.fbi.gov/red-lake-high-school-shooting/Red%20Lake%20High%20School%20Shooting%20Part%2011%20%28Final%29/view"
+  ]
+},
+{
+  "id": 122,
+  "title": "Binghamton American Civic Association Shooting",
+  "date": "2009-04-03",
+  "year": 2009,
+  "country": "United States",
+  "state": "New York",
+  "city": "Binghamton",
+  "venue": "American Civic Association",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 42.0987,
+  "lng": -75.9180,
+  "fatalities": 13,
+  "injuries": 4,
+  "description": "A gunman opened fire at the American Civic Association in Binghamton, New York, killing 13 people and wounding four others before dying by suicide.",
+  "sources": [
+    "https://www.fbi.gov/how-we-can-help-you/active-shooter-safety-resources/active-shooter-incidents-from-2000-to-2018",
+    "https://archives.fbi.gov/archives/albany/press-releases/2009/alfo040609.htm"
+  ]
+},
+{
+  "id": 123,
+  "title": "Fort Lauderdale-Hollywood International Airport Shooting",
+  "date": "2017-01-06",
+  "year": 2017,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Fort Lauderdale",
+  "venue": "Fort Lauderdale-Hollywood International Airport Terminal 2",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 26.0726,
+  "lng": -80.1527,
+  "fatalities": 5,
+  "injuries": 6,
+  "description": "A gunman opened fire in the baggage claim area of Terminal 2 at Fort Lauderdale-Hollywood International Airport, killing five people and wounding six others.",
+  "sources": [
+    "https://www.justice.gov/usao-sdfl/pr/esteban-santiago-ruiz-indicted-federal-charges-connection-shooting-fort-lauderdale"
+  ]
+},
+{
+  "id": 124,
+  "title": "Santa Fe High School Shooting",
+  "date": "2018-05-18",
+  "year": 2018,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Santa Fe",
+  "venue": "Santa Fe High School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 29.3888,
+  "lng": -95.1061,
+  "fatalities": 10,
+  "injuries": 13,
+  "description": "A student opened fire at Santa Fe High School in Texas, killing eight students and two teachers and injuring 13 others.",
+  "sources": [
+    "https://gov.texas.gov/uploads/files/press/School_Safety_Action_Plan_05302018.pdf",
+    "https://www.pbs.org/newshour/nation/the-10-victims-of-the-santa-fe-high-school-shooting"
+  ]
+},
+{
+  "id": 125,
+  "title": "2016 Munich Shooting",
+  "date": "2016-07-22",
+  "year": 2016,
+  "country": "Germany",
+  "state": "Bavaria",
+  "city": "Munich",
+  "venue": "Olympia Shopping Center and surrounding locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 48.1833,
+  "lng": 11.5336,
+  "fatalities": 9,
+  "injuries": 36,
+  "description": "A gunman opened fire near the Olympia shopping center and at nearby locations in Munich, killing nine victims and injuring 36 people before dying by suicide.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2016_Munich_shooting"
+  ]
+},
+{
+  "id": 126,
+  "title": "Chardon High School Shooting",
+  "date": "2012-02-27",
+  "year": 2012,
+  "country": "United States",
+  "state": "Ohio",
+  "city": "Chardon",
+  "venue": "Chardon High School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 41.5784,
+  "lng": -81.2080,
+  "fatalities": 3,
+  "injuries": 3,
+  "description": "A student opened fire in the cafeteria at Chardon High School in Chardon, Ohio. Three people were killed and three were wounded.",
+  "sources": [
+    "https://www.fbi.gov/how-we-can-help-you/active-shooter-safety-resources/active-shooter-incidents-from-2000-to-2018"
+  ]
+},
+{
+  "id": 127,
+  "title": "Oikos University Shooting",
+  "date": "2012-04-02",
+  "year": 2012,
+  "country": "United States",
+  "state": "California",
+  "city": "Oakland",
+  "venue": "Oikos University",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 37.7955,
+  "lng": -122.2089,
+  "fatalities": 7,
+  "injuries": 3,
+  "description": "A gunman opened fire inside Oikos University in Oakland, California. Seven people were killed and three were wounded.",
+  "sources": [
+    "https://www.fbi.gov/how-we-can-help-you/active-shooter-safety-resources/active-shooter-incidents-from-2000-to-2018"
+  ]
+},
+{
+  "id": 128,
+  "title": "Santa Monica College Shooting",
+  "date": "2013-06-07",
+  "year": 2013,
+  "country": "United States",
+  "state": "California",
+  "city": "Santa Monica",
+  "venue": "Santa Monica College and Residence",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 34.0259,
+  "lng": -118.4695,
+  "fatalities": 5,
+  "injuries": 4,
+  "description": "A gunman killed his father and brother at a Santa Monica residence before traveling to Santa Monica College, where he continued shooting. Five victims were killed and four were wounded.",
+  "sources": [
+    "https://www.fbi.gov/how-we-can-help-you/active-shooter-safety-resources/active-shooter-incidents-from-2000-to-2018"
+  ]
+},
+{
+  "id": 129,
+  "title": "Fort Hood Shooting",
+  "date": "2014-04-02",
+  "year": 2014,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Killeen",
+  "venue": "Fort Hood Army Base",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 31.1346,
+  "lng": -97.7756,
+  "fatalities": 3,
+  "injuries": 12,
+  "description": "A soldier opened fire at multiple locations on the Fort Hood Army Base in Texas. Three soldiers were killed and 12 were wounded. The shooter died by suicide after being confronted by military law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/how-we-can-help-you/active-shooter-safety-resources/active-shooter-incidents-from-2000-to-2018"
+  ]
+},
+{
+  "id": 130,
+  "title": "Marysville-Pilchuck High School Shooting",
+  "date": "2014-10-24",
+  "year": 2014,
+  "country": "United States",
+  "state": "Washington",
+  "city": "Marysville",
+  "venue": "Marysville-Pilchuck High School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 48.0521,
+  "lng": -122.1765,
+  "fatalities": 4,
+  "injuries": 3,
+  "description": "A student opened fire in the cafeteria of Marysville-Pilchuck High School in Marysville, Washington. Four students were killed and three were wounded.",
+  "sources": [
+    "https://www.fbi.gov/how-we-can-help-you/active-shooter-safety-resources/active-shooter-incidents-from-2000-to-2018"
+  ]
+},
+{
+  "id": 131,
+  "title": "Marshall County High School Shooting",
+  "date": "2018-01-23",
+  "year": 2018,
+  "country": "United States",
+  "state": "Kentucky",
+  "city": "Benton",
+  "venue": "Marshall County High School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 36.8570,
+  "lng": -88.3500,
+  "fatalities": 2,
+  "injuries": 21,
+  "description": "A student opened fire at Marshall County High School in Benton, Kentucky. Two students were killed and 21 students were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2018-041019.pdf"
+  ]
+},
+{
+  "id": 132,
+  "title": "City Grill Cafe Shooting",
+  "date": "2018-03-07",
+  "year": 2018,
+  "country": "United States",
+  "state": "Alabama",
+  "city": "Hurtsboro",
+  "venue": "City Grill Cafe",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 32.2418,
+  "lng": -85.4069,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "A gunman opened fire inside the City Grill Cafe in Hurtsboro, Alabama, killing two people and wounding two others.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2018-041019.pdf"
+  ]
+},
+{
+  "id": 133,
+  "title": "YouTube Headquarters Shooting",
+  "date": "2018-04-03",
+  "year": 2018,
+  "country": "United States",
+  "state": "California",
+  "city": "San Bruno",
+  "venue": "YouTube Headquarters",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 37.6273,
+  "lng": -122.4260,
+  "fatalities": 0,
+  "injuries": 4,
+  "description": "A shooter opened fire outside YouTube headquarters in San Bruno, California. Four people were wounded and the shooter died by suicide at the scene.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2018-041019.pdf"
+  ]
+},
+{
+  "id": 134,
+  "title": "Waffle House Shooting",
+  "date": "2018-04-22",
+  "year": 2018,
+  "country": "United States",
+  "state": "Tennessee",
+  "city": "Nashville",
+  "venue": "Waffle House",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 36.0800,
+  "lng": -86.6860,
+  "fatalities": 4,
+  "injuries": 4,
+  "description": "A gunman opened fire at a Waffle House restaurant in Nashville, Tennessee. Four people were killed and four others were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2018-041019.pdf"
+  ]
+},
+{
+  "id": 135,
+  "title": "Capital Gazette Shooting",
+  "date": "2018-06-29",
+  "year": 2018,
+  "country": "United States",
+  "state": "Maryland",
+  "city": "Annapolis",
+  "venue": "Capital Gazette News Offices",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 38.9784,
+  "lng": -76.4922,
+  "fatalities": 5,
+  "injuries": 2,
+  "description": "A gunman entered the Capital Gazette newspaper offices in Annapolis, Maryland, and opened fire, killing five people and wounding two others.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2018-041019.pdf"
+  ]
+},
+{
+  "id": 136,
+  "title": "Ben E. Keith Gulf Coast Shooting",
+  "date": "2018-08-20",
+  "year": 2018,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Missouri City",
+  "venue": "Ben E. Keith Gulf Coast Food and Beverage Distributor",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 29.6186,
+  "lng": -95.5377,
+  "fatalities": 1,
+  "injuries": 1,
+  "description": "An off-duty employee opened fire at coworkers at the Ben E. Keith Gulf Coast food and beverage distributor in Missouri City, Texas. One person was killed and one was wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2018-041019.pdf"
+  ]
+},
+{
+  "id": 137,
+  "title": "GLHF Game Bar Shooting",
+  "date": "2018-08-26",
+  "year": 2018,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Jacksonville",
+  "venue": "GLHF Game Bar at Chicago Pizza and Sports Grill",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 30.3322,
+  "lng": -81.6557,
+  "fatalities": 2,
+  "injuries": 11,
+  "description": "A gunman opened fire during a video game tournament at the GLHF Game Bar in Jacksonville, Florida. Two people were killed and 11 were wounded.",
+  "sources": [
+    "https://www.fbi.gov/how-we-can-help-you/active-shooter-safety-resources/active-shooter-incidents-from-2000-to-2018"
+  ]
+},
+{
+  "id": 138,
+  "title": "Fifth Third Center Shooting",
+  "date": "2018-09-06",
+  "year": 2018,
+  "country": "United States",
+  "state": "Ohio",
+  "city": "Cincinnati",
+  "venue": "Fifth Third Center",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 39.1031,
+  "lng": -84.5120,
+  "fatalities": 3,
+  "injuries": 2,
+  "description": "A gunman opened fire in the lobby of the Fifth Third Center in Cincinnati, Ohio. Three people were killed and two were wounded before the shooter was killed by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-2000-2018.pdf"
+  ]
+},
+{
+  "id": 139,
+  "title": "T&T Trucking and Residence Shootings",
+  "date": "2018-09-12",
+  "year": 2018,
+  "country": "United States",
+  "state": "California",
+  "city": "Bakersfield",
+  "venue": "T&T Trucking and Nearby Residence",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 35.3733,
+  "lng": -119.0187,
+  "fatalities": 5,
+  "injuries": 0,
+  "description": "A gunman attacked people at T&T Trucking and a nearby residence in Bakersfield, California. Five people were killed and no additional people were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-2000-2018.pdf"
+  ]
+},
+{
+  "id": 140,
+  "title": "WTS Paradigm Shooting",
+  "date": "2018-09-19",
+  "year": 2018,
+  "country": "United States",
+  "state": "Wisconsin",
+  "city": "Middleton",
+  "venue": "WTS Paradigm",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 43.0972,
+  "lng": -89.5043,
+  "fatalities": 0,
+  "injuries": 4,
+  "description": "A gunman opened fire at coworkers inside WTS Paradigm, a software company in Middleton, Wisconsin. Four people were wounded and no one was killed.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-2000-2018.pdf"
+  ]
+},
+{
+  "id": 141,
+  "title": "SunTrust Bank Shooting",
+  "date": "2019-01-23",
+  "year": 2019,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Sebring",
+  "venue": "SunTrust Bank",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 27.4956,
+  "lng": -81.4409,
+  "fatalities": 5,
+  "injuries": 0,
+  "description": "A gunman opened fire inside a SunTrust Bank in Sebring, Florida, killing five people. No other victims were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 142,
+  "title": "Henry Pratt Company Warehouse Shooting",
+  "date": "2019-02-15",
+  "year": 2019,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Aurora",
+  "venue": "Henry Pratt Company Warehouse",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 41.7606,
+  "lng": -88.3201,
+  "fatalities": 5,
+  "injuries": 6,
+  "description": "A former employee opened fire during a termination meeting at the Henry Pratt Company warehouse in Aurora, Illinois. Five employees were killed and six people were wounded, including five law enforcement officers.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 143,
+  "title": "Naval Air Station Pensacola Shooting",
+  "date": "2019-12-06",
+  "year": 2019,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Pensacola",
+  "venue": "Naval Air Station Pensacola",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 30.4415,
+  "lng": -87.2208,
+  "fatalities": 3,
+  "injuries": 8,
+  "description": "A gunman opened fire inside a training classroom at Naval Air Station Pensacola, killing three U.S. service members and wounding eight others. The FBI and Department of Justice later classified the attack as an act of terrorism.",
+  "sources": [
+    "https://www.fbi.gov/news/stories/naval-air-station-pensacola-shooting-called-act-of-terrorism-011320",
+    "https://www.justice.gov/archives/opa/pr/attorney-general-william-p-barr-and-fbi-director-christopher-wray-announce-significant"
+  ]
+},
+{
+  "id": 144,
+  "title": "Chabad of Poway Synagogue Shooting",
+  "date": "2019-04-27",
+  "year": 2019,
+  "country": "United States",
+  "state": "California",
+  "city": "Poway",
+  "venue": "Chabad of Poway Synagogue",
+  "category": "House of Worship Shooting",
+  "type": "shooting",
+  "lat": 32.9628,
+  "lng": -117.0359,
+  "fatalities": 1,
+  "injuries": 3,
+  "description": "A gunman opened fire inside the Chabad of Poway Synagogue in Poway, California. One person was killed and three others were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 145,
+  "title": "University of North Carolina at Charlotte Shooting",
+  "date": "2019-04-30",
+  "year": 2019,
+  "country": "United States",
+  "state": "North Carolina",
+  "city": "Charlotte",
+  "venue": "Woodford A. Kennedy Building",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 35.3070,
+  "lng": -80.7350,
+  "fatalities": 2,
+  "injuries": 4,
+  "description": "A former student opened fire inside a classroom building at the University of North Carolina at Charlotte. Two students were killed and four were wounded. A student helped restrain the shooter until campus police arrived.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 146,
+  "title": "9ine Ultra Lounge Shooting",
+  "date": "2020-01-19",
+  "year": 2020,
+  "country": "United States",
+  "state": "Missouri",
+  "city": "Kansas City",
+  "venue": "9ine Ultra Lounge",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 39.0997,
+  "lng": -94.5786,
+  "fatalities": 1,
+  "injuries": 16,
+  "description": "A gunman opened fire outside the 9ine Ultra Lounge in Kansas City, Missouri, after an altercation with patrons. One person was killed and 16 people were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2020-070121.pdf"
+  ]
+},
+{
+  "id": 147,
+  "title": "NYPD 41st Precinct Office Shooting",
+  "date": "2020-02-08",
+  "year": 2020,
+  "country": "United States",
+  "state": "New York",
+  "city": "Bronx",
+  "venue": "NYPD 41st Precinct Office",
+  "category": "Law Enforcement Shooting",
+  "type": "shooting",
+  "lat": 40.8150,
+  "lng": -73.8950,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A gunman first fired at a marked NYPD vehicle and later opened fire inside the NYPD 41st Precinct office in the Bronx. Two law enforcement officers were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2020-070121.pdf"
+  ]
+},
+{
+  "id": 148,
+  "title": "Portstewart Senior Apartments Shooting",
+  "date": "2020-02-20",
+  "year": 2020,
+  "country": "United States",
+  "state": "Idaho",
+  "city": "Caldwell",
+  "venue": "Portstewart Senior Apartments",
+  "category": "Residential Shooting",
+  "type": "shooting",
+  "lat": 43.6629,
+  "lng": -116.6874,
+  "fatalities": 1,
+  "injuries": 3,
+  "description": "A gunman opened fire inside the Portstewart Senior Apartments in Caldwell, Idaho. One person was killed and three people were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2020-070121.pdf"
+  ]
+},
+{
+  "id": 149,
+  "title": "Molson Coors Building Shooting",
+  "date": "2020-02-26",
+  "year": 2020,
+  "country": "United States",
+  "state": "Wisconsin",
+  "city": "Milwaukee",
+  "venue": "Molson Coors Building",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 43.0389,
+  "lng": -87.9065,
+  "fatalities": 5,
+  "injuries": 0,
+  "description": "A gunman opened fire inside the Molson Coors building in Milwaukee, Wisconsin, killing five employees before dying by suicide at the scene.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2020-070121.pdf"
+  ]
+},
+{
+  "id": 150,
+  "title": "Kum & Go Gas Station Shooting",
+  "date": "2020-03-15",
+  "year": 2020,
+  "country": "United States",
+  "state": "Missouri",
+  "city": "Springfield",
+  "venue": "Kum & Go Gas Station",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 37.2090,
+  "lng": -93.2923,
+  "fatalities": 4,
+  "injuries": 2,
+  "description": "A gunman opened fire at a Kum & Go gas station in Springfield, Missouri. Four people were killed, including a law enforcement officer and an employee, and two people were wounded, including another officer.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2020-070121.pdf"
+  ]
 }
 ]
