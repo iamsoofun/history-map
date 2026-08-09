@@ -3045,5 +3045,1894 @@
   "sources": [
     "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2020-070121.pdf"
   ]
+},
+{
+  "id": 151,
+  "title": "FedEx Ground Plainfield Operations Center Shooting",
+  "date": "2021-04-15",
+  "year": 2021,
+  "country": "United States",
+  "state": "Indiana",
+  "city": "Indianapolis",
+  "venue": "FedEx Ground Plainfield Operations Center",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 39.6871,
+  "lng": -86.3753,
+  "fatalities": 8,
+  "injuries": 7,
+  "description": "A gunman opened fire at the FedEx Ground facility in Indianapolis, Indiana, killing eight people and wounding seven others before dying by suicide.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2021-052322.pdf"
+  ]
+},
+{
+  "id": 152,
+  "title": "King Soopers Grocery Store Shooting",
+  "date": "2021-03-22",
+  "year": 2021,
+  "country": "United States",
+  "state": "Colorado",
+  "city": "Boulder",
+  "venue": "King Soopers Grocery Store",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 40.0334,
+  "lng": -105.2450,
+  "fatalities": 10,
+  "injuries": 0,
+  "description": "A gunman opened fire inside and outside a King Soopers grocery store in Boulder, Colorado, killing 10 people, including a responding police officer.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2021-052322.pdf"
+  ]
+},
+{
+  "id": 153,
+  "title": "Santa Clara Valley Transportation Authority Rail Yard Shooting",
+  "date": "2021-05-26",
+  "year": 2021,
+  "country": "United States",
+  "state": "California",
+  "city": "San Jose",
+  "venue": "Santa Clara Valley Transportation Authority Rail Yard",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 37.3370,
+  "lng": -121.8860,
+  "fatalities": 9,
+  "injuries": 0,
+  "description": "A VTA employee opened fire at the Santa Clara Valley Transportation Authority rail yard in San Jose, California, killing nine employees before dying by suicide when confronted by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2021-052322.pdf"
+  ]
+},
+{
+  "id": 154,
+  "title": "Oxford High School Shooting",
+  "date": "2021-11-30",
+  "year": 2021,
+  "country": "United States",
+  "state": "Michigan",
+  "city": "Oxford",
+  "venue": "Oxford High School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 42.8230,
+  "lng": -83.2647,
+  "fatalities": 4,
+  "injuries": 7,
+  "description": "A student opened fire at Oxford High School in Oxford, Michigan, killing four students and wounding seven other people.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2021-052322.pdf"
+  ]
+},
+{
+  "id": 155,
+  "title": "Kroger Grocery Store Shooting",
+  "date": "2021-09-23",
+  "year": 2021,
+  "country": "United States",
+  "state": "Tennessee",
+  "city": "Collierville",
+  "venue": "Kroger Grocery Store",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 35.0420,
+  "lng": -89.6645,
+  "fatalities": 1,
+  "injuries": 14,
+  "description": "A gunman opened fire inside a Kroger grocery store in Collierville, Tennessee, killing one person and wounding 14 others before dying by suicide.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2021-052322.pdf"
+  ]
+},
+{
+  "id": 156,
+  "title": "Neuse River Greenway Shooting",
+  "date": "2022-10-13",
+  "year": 2022,
+  "country": "United States",
+  "state": "North Carolina",
+  "city": "Raleigh",
+  "venue": "Neuse River Greenway and Nearby Residential Areas",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 35.8328,
+  "lng": -78.5820,
+  "fatalities": 5,
+  "injuries": 2,
+  "description": "A teenage gunman carried out a series of shootings in Raleigh, North Carolina, beginning near the Neuse River Greenway and continuing through nearby residential areas. Five people were killed, including an off-duty police officer, and two others were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2022-042623.pdf"
+  ]
+},
+{
+  "id": 157,
+  "title": "Greenwood Park Mall Shooting",
+  "date": "2022-07-17",
+  "year": 2022,
+  "country": "United States",
+  "state": "Indiana",
+  "city": "Greenwood",
+  "venue": "Greenwood Park Mall",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 39.6137,
+  "lng": -86.1575,
+  "fatalities": 3,
+  "injuries": 2,
+  "description": "A gunman opened fire in the food court of Greenwood Park Mall in Greenwood, Indiana. Three people were killed and two others were wounded before an armed civilian intervened and killed the shooter.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2022-042623.pdf"
+  ]
+},
+{
+  "id": 158,
+  "title": "Saint Francis Hospital Shooting",
+  "date": "2022-06-01",
+  "year": 2022,
+  "country": "United States",
+  "state": "Oklahoma",
+  "city": "Tulsa",
+  "venue": "Saint Francis Hospital - Natalie Building",
+  "category": "Healthcare Facility Shooting",
+  "type": "shooting",
+  "lat": 36.1087,
+  "lng": -95.9386,
+  "fatalities": 4,
+  "injuries": 0,
+  "description": "A gunman entered the Natalie Building at Saint Francis Hospital in Tulsa, Oklahoma, and opened fire, killing four people before dying by suicide.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2022-042623.pdf"
+  ]
+},
+{
+  "id": 159,
+  "title": "36th Street Subway Station Shooting",
+  "date": "2022-04-12",
+  "year": 2022,
+  "country": "United States",
+  "state": "New York",
+  "city": "Brooklyn",
+  "venue": "36th Street Subway Station",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 40.6551,
+  "lng": -74.0036,
+  "fatalities": 0,
+  "injuries": 23,
+  "description": "A gunman released smoke and opened fire inside a subway train and station in Brooklyn, New York. Twenty-three people were wounded; the FBI noted that 10 suffered gunshot wounds and 13 suffered incidental injuries.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2022-042623.pdf"
+  ]
+},
+{
+  "id": 160,
+  "title": "Chesapeake Walmart Shooting",
+  "date": "2022-11-22",
+  "year": 2022,
+  "country": "United States",
+  "state": "Virginia",
+  "city": "Chesapeake",
+  "venue": "Walmart Supercenter",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 36.7682,
+  "lng": -76.2875,
+  "fatalities": 6,
+  "injuries": 6,
+  "description": "A Walmart manager opened fire inside a store in Chesapeake, Virginia, killing six people and injuring six others before dying by suicide.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2022-042623.pdf"
+  ]
+},
+{
+  "id": 161,
+  "title": "Allen Premium Outlets Shooting",
+  "date": "2023-05-06",
+  "year": 2023,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Allen",
+  "venue": "Allen Premium Outlets",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 33.1269,
+  "lng": -96.6150,
+  "fatalities": 8,
+  "injuries": 7,
+  "description": "A gunman opened fire at the Allen Premium Outlets in Allen, Texas, killing eight people and wounding seven others before being killed by a responding police officer.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 162,
+  "title": "Lewiston Shootings",
+  "date": "2023-10-25",
+  "year": 2023,
+  "country": "United States",
+  "state": "Maine",
+  "city": "Lewiston",
+  "venue": "Just-In-Time Recreation and Schemengees Bar & Grille",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 44.1004,
+  "lng": -70.2148,
+  "fatalities": 18,
+  "injuries": 13,
+  "description": "A gunman carried out shootings at Just-In-Time Recreation and Schemengees Bar & Grille in Lewiston, Maine. Eighteen people were killed and 13 were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 163,
+  "title": "Cook's Corner Shooting",
+  "date": "2023-08-23",
+  "year": 2023,
+  "country": "United States",
+  "state": "California",
+  "city": "Trabuco Canyon",
+  "venue": "Cook's Corner",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 33.6947,
+  "lng": -117.5887,
+  "fatalities": 3,
+  "injuries": 6,
+  "description": "A gunman opened fire inside and outside Cook's Corner in Trabuco Canyon, California, killing three people and wounding six others before being killed by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 164,
+  "title": "Jacksonville Dollar General Shooting",
+  "date": "2023-08-26",
+  "year": 2023,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Jacksonville",
+  "venue": "Dollar General",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 30.4566,
+  "lng": -81.6680,
+  "fatalities": 3,
+  "injuries": 0,
+  "description": "A gunman opened fire at a Dollar General store in Jacksonville, Florida, killing three people before dying by suicide at the scene.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 165,
+  "title": "Hampton Multiple-Location Shootings",
+  "date": "2023-07-15",
+  "year": 2023,
+  "country": "United States",
+  "state": "Georgia",
+  "city": "Hampton",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 33.3871,
+  "lng": -84.2829,
+  "fatalities": 4,
+  "injuries": 3,
+  "description": "A gunman carried out shootings at multiple locations in Hampton, Georgia. Four people were killed and three law enforcement officers were wounded. The shooter was killed by law enforcement the following day.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 166,
+  "title": "Farmington Multiple-Location Shootings",
+  "date": "2023-05-15",
+  "year": 2023,
+  "country": "United States",
+  "state": "New Mexico",
+  "city": "Farmington",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 36.7281,
+  "lng": -108.2187,
+  "fatalities": 3,
+  "injuries": 6,
+  "description": "A gunman carried out shootings at multiple locations in Farmington, New Mexico. Three people were killed and six people were wounded, including two law enforcement officers. The shooter was killed by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 167,
+  "title": "Phoenix and Mesa Multiple-Location Shootings",
+  "date": "2023-05-26",
+  "year": 2023,
+  "country": "United States",
+  "state": "Arizona",
+  "city": "Phoenix and Mesa",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 33.4484,
+  "lng": -112.0740,
+  "fatalities": 4,
+  "injuries": 1,
+  "description": "A gunman carried out shootings at various locations in Phoenix and Mesa, Arizona, over May 26–27, 2023. Four people were killed and one person was wounded. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 168,
+  "title": "Reedley Multiple-Location Shooting",
+  "date": "2023-06-06",
+  "year": 2023,
+  "country": "United States",
+  "state": "California",
+  "city": "Reedley",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 36.5963,
+  "lng": -119.4504,
+  "fatalities": 1,
+  "injuries": 2,
+  "description": "A gunman carried out shootings at multiple locations in Reedley, California. One person was killed and two people were wounded. The shooter was later killed by law enforcement following an exchange of gunfire.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 169,
+  "title": "Mifflintown Multiple-Location Shooting",
+  "date": "2023-06-17",
+  "year": 2023,
+  "country": "United States",
+  "state": "Pennsylvania",
+  "city": "Mifflintown",
+  "venue": "Multiple Locations",
+  "category": "Law Enforcement Shooting",
+  "type": "shooting",
+  "lat": 40.5965,
+  "lng": -77.3975,
+  "fatalities": 1,
+  "injuries": 1,
+  "description": "A gunman carried out shootings at multiple locations in Mifflintown, Pennsylvania. One law enforcement officer was killed and another was wounded. The shooter was killed by law enforcement following an exchange of gunfire.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 170,
+  "title": "Gorge Amphitheater Campground Shooting",
+  "date": "2023-06-17",
+  "year": 2023,
+  "country": "United States",
+  "state": "Washington",
+  "city": "Quincy",
+  "venue": "Gorge Amphitheater Campground",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 47.0799,
+  "lng": -119.9850,
+  "fatalities": 2,
+  "injuries": 3,
+  "description": "A gunman opened fire at the Gorge Amphitheater campground in Quincy, Washington. Two people were killed and three were wounded, including a security officer. The shooter was apprehended at the scene.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 171,
+  "title": "Monterey Park Star Ballroom Shooting",
+  "date": "2023-01-21",
+  "year": 2023,
+  "country": "United States",
+  "state": "California",
+  "city": "Monterey Park",
+  "venue": "Star Ballroom Dance Studio",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 34.0625,
+  "lng": -118.1228,
+  "fatalities": 11,
+  "injuries": 9,
+  "description": "A gunman opened fire at the Star Ballroom Dance Studio during Lunar New Year celebrations in Monterey Park, California. Eleven people were killed and nine others were injured.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf",
+    "https://www.apnews.com/article/adf80afdeb201b866ec4c39a201f820b"
+  ]
+},
+{
+  "id": 172,
+  "title": "Half Moon Bay Shootings",
+  "date": "2023-01-23",
+  "year": 2023,
+  "country": "United States",
+  "state": "California",
+  "city": "Half Moon Bay",
+  "venue": "Multiple Agricultural Workplaces",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 37.4636,
+  "lng": -122.4286,
+  "fatalities": 7,
+  "injuries": 1,
+  "description": "A gunman carried out shootings at two agricultural workplaces in Half Moon Bay, California. Seven people were killed and one person was critically wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf",
+    "https://www.cbsnews.com/news/half-moon-bay-california-shooting-suspect-in-custody-police-say/"
+  ]
+},
+{
+  "id": 173,
+  "title": "Michigan State University Shooting",
+  "date": "2023-02-13",
+  "year": 2023,
+  "country": "United States",
+  "state": "Michigan",
+  "city": "East Lansing",
+  "venue": "Michigan State University",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 42.7018,
+  "lng": -84.4822,
+  "fatalities": 3,
+  "injuries": 5,
+  "description": "A gunman opened fire at Michigan State University in East Lansing, Michigan. Three students were killed and five others were wounded. The shooter later died by suicide.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 174,
+  "title": "Covenant School Shooting",
+  "date": "2023-03-27",
+  "year": 2023,
+  "country": "United States",
+  "state": "Tennessee",
+  "city": "Nashville",
+  "venue": "The Covenant School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 36.1015,
+  "lng": -86.8152,
+  "fatalities": 6,
+  "injuries": 1,
+  "description": "A former student opened fire at The Covenant School in Nashville, Tennessee, killing three children and three adults and wounding one other person before being killed by responding police officers.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 175,
+  "title": "Old National Bank Shooting",
+  "date": "2023-04-10",
+  "year": 2023,
+  "country": "United States",
+  "state": "Kentucky",
+  "city": "Louisville",
+  "venue": "Old National Bank",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 38.2527,
+  "lng": -85.7549,
+  "fatalities": 5,
+  "injuries": 8,
+  "description": "A bank employee opened fire at the Old National Bank in downtown Louisville, Kentucky, killing five coworkers and wounding eight others, including responding police officers. The shooter was killed by police.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf",
+    "https://www.washingtonpost.com/nation/2023/04/10/louisville-bank-shooting-kentucky/"
+  ]
+},
+{
+  "id": 176,
+  "title": "Mad Butcher Grocery Store Shooting",
+  "date": "2024-06-21",
+  "year": 2024,
+  "country": "United States",
+  "state": "Arkansas",
+  "city": "Fordyce",
+  "venue": "Mad Butcher Grocery Store",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 33.8137,
+  "lng": -91.3987,
+  "fatalities": 4,
+  "injuries": 10,
+  "description": "A gunman opened fire at the Mad Butcher grocery store in Fordyce, Arkansas. Four people were killed and 10 others were wounded before the shooter was taken into custody.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 177,
+  "title": "Apalachee High School Shooting",
+  "date": "2024-09-04",
+  "year": 2024,
+  "country": "United States",
+  "state": "Georgia",
+  "city": "Winder",
+  "venue": "Apalachee High School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 34.0196,
+  "lng": -83.7073,
+  "fatalities": 4,
+  "injuries": 9,
+  "description": "A student opened fire at Apalachee High School in Winder, Georgia. Two students and two teachers were killed, and nine additional people were wounded.",
+  "sources": [
+    "https://www.fbi.gov/contact-us/field-offices/atlanta/news/fbi-atlanta-statement-on-incident-at-apalachee-high-school",
+    "https://gbi.georgia.gov/press-releases/2024-09-06/gbi-investigates-school-shooting-barrow-county"
+  ]
+},
+{
+  "id": 178,
+  "title": "Abundant Life Christian School Shooting",
+  "date": "2024-12-16",
+  "year": 2024,
+  "country": "United States",
+  "state": "Wisconsin",
+  "city": "Madison",
+  "venue": "Abundant Life Christian School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 43.0950,
+  "lng": -89.3160,
+  "fatalities": 2,
+  "injuries": 6,
+  "description": "A student opened fire at Abundant Life Christian School in Madison, Wisconsin. A teacher and a student were killed and six other victims were wounded. The shooter also died.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 179,
+  "title": "Brooklands Plaza Splash Pad Shooting",
+  "date": "2024-06-15",
+  "year": 2024,
+  "country": "United States",
+  "state": "Michigan",
+  "city": "Rochester Hills",
+  "venue": "Brooklands Plaza Splash Pad",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 42.6645,
+  "lng": -83.1338,
+  "fatalities": 0,
+  "injuries": 9,
+  "description": "A gunman opened fire on people at the Brooklands Plaza Splash Pad in Rochester Hills, Michigan. Nine people were wounded, including children. The shooter later died by suicide.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 180,
+  "title": "Interstate 75 Highway Shooting",
+  "date": "2024-09-06",
+  "year": 2024,
+  "country": "United States",
+  "state": "Kentucky",
+  "city": "London",
+  "venue": "Interstate 75, Exit 49",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 37.1289,
+  "lng": -84.0833,
+  "fatalities": 0,
+  "injuries": 8,
+  "description": "A gunman fired at vehicles traveling on Interstate 75 near London, Kentucky. Eight people were wounded. The suspect fled into the surrounding area and was later found dead.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 181,
+  "title": "Lewiston Shootings",
+  "date": "2023-10-25",
+  "year": 2023,
+  "country": "United States",
+  "state": "Maine",
+  "city": "Lewiston",
+  "venue": "Just-In-Time Recreation and Schemengees Bar & Grille",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 44.1004,
+  "lng": -70.2148,
+  "fatalities": 18,
+  "injuries": 13,
+  "description": "A gunman carried out shootings at Just-In-Time Recreation and Schemengees Bar & Grille in Lewiston, Maine. Eighteen people were killed and 13 others were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 182,
+  "title": "Maine State Police Shootings",
+  "date": "2023-04-18",
+  "year": 2023,
+  "country": "United States",
+  "state": "Maine",
+  "city": "Bowdoin",
+  "venue": "Interstate 295 and Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 43.9120,
+  "lng": -69.9687,
+  "fatalities": 4,
+  "injuries": 3,
+  "description": "A series of shootings began on Interstate 295 in Maine and continued at multiple locations. Four people were killed and three others were wounded.",
+  "sources": [
+    "https://www.maine.gov/dps/msp/"
+  ]
+},
+{
+  "id": 183,
+  "title": "Orange County Shooting",
+  "date": "2021-12-30",
+  "year": 2021,
+  "country": "United States",
+  "state": "California",
+  "city": "Orange",
+  "venue": "Lincoln Avenue Office Building",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 33.7879,
+  "lng": -117.8531,
+  "fatalities": 4,
+  "injuries": 0,
+  "description": "A gunman opened fire inside an office building in Orange, California, killing four people, including a nine-year-old boy, before being wounded and arrested by police.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2021-052322.pdf"
+  ]
+},
+{
+  "id": 184,
+  "title": "Monterey Park Shooting",
+  "date": "2023-01-21",
+  "year": 2023,
+  "country": "United States",
+  "state": "California",
+  "city": "Monterey Park",
+  "venue": "Star Ballroom Dance Studio",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 34.0625,
+  "lng": -118.1228,
+  "fatalities": 11,
+  "injuries": 9,
+  "description": "A gunman opened fire at the Star Ballroom Dance Studio in Monterey Park, California, during Lunar New Year celebrations. Eleven people were killed and nine were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 185,
+  "title": "Half Moon Bay Shootings",
+  "date": "2023-01-23",
+  "year": 2023,
+  "country": "United States",
+  "state": "California",
+  "city": "Half Moon Bay",
+  "venue": "Multiple Agricultural Workplaces",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 37.4636,
+  "lng": -122.4286,
+  "fatalities": 7,
+  "injuries": 1,
+  "description": "A gunman carried out shootings at two agricultural workplaces in Half Moon Bay, California. Seven people were killed and one person was wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 181,
+  "title": "Perry High School Shooting",
+  "date": "2024-01-04",
+  "year": 2024,
+  "country": "United States",
+  "state": "Iowa",
+  "city": "Perry",
+  "venue": "Perry High School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 41.8386,
+  "lng": -94.1072,
+  "fatalities": 2,
+  "injuries": 6,
+  "description": "A 17-year-old shooter opened fire inside Perry High School in Perry, Iowa. One faculty member and one student were killed, and six people were wounded before the shooter died by suicide.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report"
+  ]
+},
+{
+  "id": 182,
+  "title": "Lakewood Church Shooting",
+  "date": "2024-02-11",
+  "year": 2024,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Houston",
+  "venue": "Lakewood Church",
+  "category": "House of Worship Shooting",
+  "type": "shooting",
+  "lat": 29.6841,
+  "lng": -95.4118,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooter opened fire inside Lakewood Church in Houston, Texas. Two people were wounded before the shooter was killed by two off-duty law enforcement officers serving as security.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report"
+  ]
+},
+{
+  "id": 183,
+  "title": "Interstate 10 Bonifay Shooting",
+  "date": "2024-04-08",
+  "year": 2024,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Bonifay",
+  "venue": "Interstate 10",
+  "category": "Highway Shooting",
+  "type": "shooting",
+  "lat": 30.7919,
+  "lng": -85.6797,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooter fired at people in moving vehicles on Interstate 10 between mile markers 107 and 112 near Bonifay, Florida. Two people were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report"
+  ]
+},
+{
+  "id": 184,
+  "title": "Delaware County Linen Shooting",
+  "date": "2024-05-22",
+  "year": 2024,
+  "country": "United States",
+  "state": "Pennsylvania",
+  "city": "Chester",
+  "venue": "Delaware County Linen Inc.",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 39.8496,
+  "lng": -75.3557,
+  "fatalities": 2,
+  "injuries": 3,
+  "description": "A gunman opened fire at Delaware County Linen Inc. in Chester, Pennsylvania. Two employees were killed and three employees were wounded. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report"
+  ]
+},
+{
+  "id": 185,
+  "title": "Refresco Beverages and Oncor Electric Shooting",
+  "date": "2024-05-30",
+  "year": 2024,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Fort Worth",
+  "venue": "Refresco Beverages and Oncor Electric",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 32.7555,
+  "lng": -97.3308,
+  "fatalities": 1,
+  "injuries": 0,
+  "description": "A shooter opened fire outside Refresco Beverages and inside Oncor Electric in Fort Worth, Texas. One employee was killed. The shooter was confronted by a security guard and was apprehended by law enforcement the following day.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report"
+  ]
+},
+
+{
+  "id": 190,
+  "title": "Cherry Creek Racquet Club and Pheasant Run Shootings",
+  "date": "2024-06-27",
+  "year": 2024,
+  "country": "United States",
+  "state": "Colorado",
+  "city": "Aurora",
+  "venue": "Cherry Creek Racquet Club and Pheasant Run Communities",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 39.6580,
+  "lng": -104.7070,
+  "fatalities": 0,
+  "injuries": 3,
+  "description": "A shooter opened fire at people in the Cherry Creek Racquet Club and Pheasant Run communities in Aurora, Colorado. Three people were wounded. The shooter was apprehended by law enforcement at another location.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 191,
+  "title": "Canyon Lodge Yellowstone National Park Shooting",
+  "date": "2024-07-04",
+  "year": 2024,
+  "country": "United States",
+  "state": "Wyoming",
+  "city": "Mammoth Hot Springs",
+  "venue": "Canyon Lodge and Resort, Yellowstone National Park",
+  "category": "Government Shooting",
+  "type": "shooting",
+  "lat": 44.9760,
+  "lng": -110.7040,
+  "fatalities": 0,
+  "injuries": 1,
+  "description": "A shooter opened fire outside Canyon Lodge and Resort in Yellowstone National Park. One law enforcement ranger was wounded. Rangers killed the shooter during an exchange of gunfire.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 192,
+  "title": "Charlotte Multiple-Location Shootings",
+  "date": "2024-07-09",
+  "year": 2024,
+  "country": "United States",
+  "state": "North Carolina",
+  "city": "Charlotte",
+  "venue": "Multiple Locations",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 35.2271,
+  "lng": -80.8431,
+  "fatalities": 1,
+  "injuries": 2,
+  "description": "Two shooters carried out shootings at various locations in Charlotte, North Carolina. One person was killed and two people were wounded. The shooters were apprehended by law enforcement at another location two days later.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 193,
+  "title": "Green Mountain Utility Worker Shooting",
+  "date": "2024-07-24",
+  "year": 2024,
+  "country": "United States",
+  "state": "North Carolina",
+  "city": "Green Mountain",
+  "venue": "100 Block of Murphytown Road",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 35.9440,
+  "lng": -82.2910,
+  "fatalities": 0,
+  "injuries": 3,
+  "description": "A shooter opened fire on utility workers in the 100 block of Murphytown Road in Green Mountain, North Carolina. Three people were wounded. The shooter was apprehended by law enforcement at the scene following an exchange of gunfire.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 186,
+  "title": "Amarillo Highway Shootings",
+  "date": "2024-06-17",
+  "year": 2024,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Amarillo",
+  "venue": "Multiple Roadways",
+  "category": "Highway Shooting",
+  "type": "shooting",
+  "lat": 35.2220,
+  "lng": -101.8313,
+  "fatalities": 0,
+  "injuries": 4,
+  "description": "A shooter fired at people in moving vehicles in Amarillo, Texas. Four people were wounded, including three who suffered incidental injuries from broken glass. The shooter was apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 187,
+  "title": "Dallas Oak Cliff Community Center Shooting",
+  "date": "2024-08-29",
+  "year": 2024,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Dallas",
+  "venue": "Oak Cliff Community Center",
+  "category": "Law Enforcement Shooting",
+  "type": "shooting",
+  "lat": 32.6900,
+  "lng": -96.8200,
+  "fatalities": 1,
+  "injuries": 3,
+  "description": "A gunman opened fire near the Oak Cliff Community Center in Dallas, Texas. One police officer was killed and three people were wounded, including two law enforcement officers and one civilian. The shooter was killed by police following a vehicle pursuit.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 188,
+  "title": "Florida State University Shooting",
+  "date": "2025-04-17",
+  "year": 2025,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Tallahassee",
+  "venue": "Florida State University Student Union",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 30.4419,
+  "lng": -84.2985,
+  "fatalities": 2,
+  "injuries": 6,
+  "description": "A shooter opened fire near and inside the Student Union at Florida State University in Tallahassee, Florida. Two people were killed and six others were wounded by the attack; the shooter was also wounded by responding officers but is excluded from NHIRA's casualty totals.",
+  "sources": [
+    "https://www.fbi.gov/",
+    "https://www.apnews.com/article/c8df5e8c907303a24378acf055563227"
+  ]
+},
+{
+  "id": 189,
+  "title": "Monroe County Multiple-Location Shooting",
+  "date": "2024-05-25",
+  "year": 2024,
+  "country": "United States",
+  "state": "Michigan",
+  "city": "Rochester Hills",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 42.6584,
+  "lng": -83.1499,
+  "fatalities": 0,
+  "injuries": 3,
+  "description": "A shooting incident involving multiple locations in Michigan resulted in three people being wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 190,
+  "title": "Pittsburgh Multiple-Location Shooting",
+  "date": "2024-08-30",
+  "year": 2024,
+  "country": "United States",
+  "state": "Pennsylvania",
+  "city": "Pittsburgh",
+  "venue": "Multiple Locations",
+  "category": "Law Enforcement Shooting",
+  "type": "shooting",
+  "lat": 40.4406,
+  "lng": -79.9959,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooting involving law enforcement in Pittsburgh resulted in two people being wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/reports-and-publications/2024-active-shooter-report/view"
+  ]
+},
+{
+  "id": 194,
+  "title": "French Settlement Multiple-Location Shooting",
+  "date": "2023-03-22",
+  "year": 2023,
+  "country": "United States",
+  "state": "Louisiana",
+  "city": "French Settlement",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 30.2958,
+  "lng": -90.7970,
+  "fatalities": 0,
+  "injuries": 1,
+  "description": "A gunman carried out shootings at various locations in French Settlement, Louisiana. One neighbor was wounded. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 195,
+  "title": "Martin Luther King Boulevard and Coleman Street Shooting",
+  "date": "2023-03-27",
+  "year": 2023,
+  "country": "United States",
+  "state": "North Carolina",
+  "city": "Raleigh",
+  "venue": "Martin Luther King Boulevard and Coleman Street",
+  "category": "Highway Shooting",
+  "type": "shooting",
+  "lat": 35.7480,
+  "lng": -78.6360,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A gunman fired at moving vehicles along Martin Luther King Boulevard in Raleigh, North Carolina. No casualties were reported. The shooter was later killed by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 196,
+  "title": "Cru Lounge Shooting",
+  "date": "2023-03-28",
+  "year": 2023,
+  "country": "United States",
+  "state": "Tennessee",
+  "city": "Memphis",
+  "venue": "Cru Lounge",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 35.1495,
+  "lng": -90.0490,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A gunman opened fire outside Cru Lounge in Memphis, Tennessee. Two people, including a security guard, were wounded. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 197,
+  "title": "BoSa Donuts Shooting",
+  "date": "2023-04-02",
+  "year": 2023,
+  "country": "United States",
+  "state": "Arizona",
+  "city": "Mesa",
+  "venue": "BoSa Donuts",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 33.4265,
+  "lng": -111.8746,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A gunman opened fire inside a BoSa Donuts location in Mesa, Arizona. Two people, including an employee, were wounded. The shooter was apprehended several days later.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 198,
+  "title": "North Prospect Street Shooting",
+  "date": "2023-11-25",
+  "year": 2023,
+  "country": "United States",
+  "state": "Vermont",
+  "city": "Burlington",
+  "venue": "North Prospect Street",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 44.4890,
+  "lng": -73.2090,
+  "fatalities": 0,
+  "injuries": 3,
+  "description": "Three college students were shot on North Prospect Street in Burlington, Vermont. All three victims survived. The shooter was subsequently arrested.",
+  "sources": [
+    "https://www.burlingtonvt.gov/DocumentCenter/View/4566",
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 199,
+  "title": "Ross Township and Pittsburgh Multiple-Location Shootings",
+  "date": "2023-01-05",
+  "year": 2023,
+  "country": "United States",
+  "state": "Pennsylvania",
+  "city": "Ross Township and Pittsburgh",
+  "venue": "Multiple Locations",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 40.5187,
+  "lng": -80.0240,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooter opened fire at multiple locations in Ross Township and Pittsburgh, Pennsylvania. Two people were wounded, including one person who suffered incidental injuries from shattered glass. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 200,
+  "title": "Renton and SeaTac Multiple-Location Shootings",
+  "date": "2023-01-12",
+  "year": 2023,
+  "country": "United States",
+  "state": "Washington",
+  "city": "Renton and SeaTac",
+  "venue": "Multiple Locations",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 47.4799,
+  "lng": -122.2077,
+  "fatalities": 1,
+  "injuries": 2,
+  "description": "A shooter opened fire at multiple locations in Renton and SeaTac, Washington. One person was killed and two people were wounded. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 201,
+  "title": "Circle K Convenience Store Shooting",
+  "date": "2023-01-24",
+  "year": 2023,
+  "country": "United States",
+  "state": "Washington",
+  "city": "Yakima",
+  "venue": "Circle K Convenience Store",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 46.6021,
+  "lng": -120.5059,
+  "fatalities": 3,
+  "injuries": 0,
+  "description": "A shooter opened fire inside a Circle K convenience store in Yakima, Washington. Three people were killed. The shooter later died by suicide before law enforcement arrived.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 202,
+  "title": "San Diego Multiple-Location Shootings",
+  "date": "2023-01-27",
+  "year": 2023,
+  "country": "United States",
+  "state": "California",
+  "city": "San Diego",
+  "venue": "Multiple Locations",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 32.7157,
+  "lng": -117.1611,
+  "fatalities": 1,
+  "injuries": 4,
+  "description": "A shooter opened fire at multiple locations in San Diego, California. One person was killed and four people were wounded. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 203,
+  "title": "Lubbock and Slaton Multiple-Location Shootings",
+  "date": "2023-03-13",
+  "year": 2023,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Lubbock and Slaton",
+  "venue": "Multiple Locations",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 33.5779,
+  "lng": -101.8552,
+  "fatalities": 1,
+  "injuries": 3,
+  "description": "A shooter opened fire at multiple locations in Lubbock and Slaton, Texas. One person was killed and three people were wounded. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/2023-active-shooter-report-062124.pdf"
+  ]
+},
+{
+  "id": 204,
+  "title": "Oklahoma City Multiple-Location Shooting",
+  "date": "2022-01-25",
+  "year": 2022,
+  "country": "United States",
+  "state": "Oklahoma",
+  "city": "Oklahoma City",
+  "venue": "Multiple Locations",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 35.4676,
+  "lng": -97.5164,
+  "fatalities": 0,
+  "injuries": 1,
+  "description": "A shooter fired at people at multiple locations in Oklahoma City, Oklahoma. One person was wounded. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report"
+  ]
+},
+{
+  "id": 205,
+  "title": "Oroville Dam and Feather River Boulevard Shooting",
+  "date": "2022-02-02",
+  "year": 2022,
+  "country": "United States",
+  "state": "California",
+  "city": "Oroville",
+  "venue": "Oroville Dam and Feather River Boulevard",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 39.5138,
+  "lng": -121.5564,
+  "fatalities": 1,
+  "injuries": 4,
+  "description": "A shooter opened fire at locations near Oroville Dam and Feather River Boulevard in Oroville, California. One person was killed and four people were wounded. The shooter was later apprehended by law enforcement.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report"
+  ]
+},
+{
+  "id": 206,
+  "title": "Players Sports Bar and Grill Shooting",
+  "date": "2022-02-06",
+  "year": 2022,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Fort Lauderdale",
+  "venue": "Players Sports Bar and Grill",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 26.1224,
+  "lng": -80.1373,
+  "fatalities": 0,
+  "injuries": 4,
+  "description": "A shooter opened fire at Players Sports Bar and Grill in Fort Lauderdale, Florida. Four people were wounded. The shooter remained at large at the time of the FBI report.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report"
+  ]
+},
+{
+  "id": 207,
+  "title": "Phoenix Residential Shooting",
+  "date": "2022-02-11",
+  "year": 2022,
+  "country": "United States",
+  "state": "Arizona",
+  "city": "Phoenix",
+  "venue": "Residential Location",
+  "category": "Residential Shooting",
+  "type": "shooting",
+  "lat": 33.4484,
+  "lng": -112.0740,
+  "fatalities": 1,
+  "injuries": 9,
+  "description": "A shooter opened fire at a residential location in Phoenix, Arizona. One person was killed and nine law enforcement officers were wounded during the subsequent exchange of gunfire. The shooter died by suicide.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report"
+  ]
+},
+{
+  "id": 208,
+  "title": "Shannon Hills Residential Shooting",
+  "date": "2022-02-28",
+  "year": 2022,
+  "country": "United States",
+  "state": "Arkansas",
+  "city": "Shannon Hills",
+  "venue": "Residential Neighborhood",
+  "category": "Residential Shooting",
+  "type": "shooting",
+  "lat": 34.6204,
+  "lng": -92.3949,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A shooter fired at people in a residential neighborhood in Shannon Hills, Arkansas. No casualties were reported. The shooter was apprehended by law enforcement at the scene.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report"
+  ]
+},
+{
+  "id": 209,
+  "title": "Interstate 71 Shooting",
+  "date": "2022-03-11",
+  "year": 2022,
+  "country": "United States",
+  "state": "Ohio",
+  "city": "Columbus",
+  "venue": "Interstate 71",
+  "category": "Highway Shooting",
+  "type": "shooting",
+  "lat": 39.9612,
+  "lng": -82.9988,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A shooter fired at people and vehicles on Interstate 71 in Columbus, Ohio. No casualties were reported. The shooter was apprehended by law enforcement following an exchange of gunfire.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report"
+  ]
+},
+{
+  "id": 210,
+  "title": "Broward County Transit Bus Shooting",
+  "date": "2022-03-17",
+  "year": 2022,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Fort Lauderdale",
+  "venue": "Broward County Transit Bus",
+  "category": "Transportation Shooting",
+  "type": "shooting",
+  "lat": 26.1224,
+  "lng": -80.1373,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "A shooter opened fire aboard a Broward County Transit bus in Fort Lauderdale, Florida. Two people were killed and two others were wounded. The FBI casualty count excludes additional injuries caused by the resulting vehicle crash.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report",
+    "Fort Lauderdale Police Department"
+  ]
+},
+{
+  "id": 211,
+  "title": "Showtime Bar and Lounge Shooting",
+  "date": "2022-03-19",
+  "year": 2022,
+  "country": "United States",
+  "state": "New York",
+  "city": "Queens",
+  "venue": "Showtime Bar and Lounge",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 40.7282,
+  "lng": -73.7949,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooter opened fire at the Showtime Bar and Lounge in Queens, New York. Two off-duty corrections officers were wounded. The shooter remained at large at the time of the FBI report.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report"
+  ]
+},
+{
+  "id": 212,
+  "title": "Frankische Plant Shooting",
+  "date": "2022-04-05",
+  "year": 2022,
+  "country": "United States",
+  "state": "South Carolina",
+  "city": "Anderson",
+  "venue": "Frankische Plant",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 34.5034,
+  "lng": -82.6501,
+  "fatalities": 1,
+  "injuries": 1,
+  "description": "A former employee opened fire at the Frankische manufacturing plant in Anderson, South Carolina. One employee was killed and another employee was wounded before the shooter died by suicide.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report"
+  ]
+},
+{
+  "id": 213,
+  "title": "Philadelphia Multiple-Location Shooting",
+  "date": "2022-06-21",
+  "year": 2022,
+  "country": "United States",
+  "state": "Pennsylvania",
+  "city": "Philadelphia",
+  "venue": "Multiple Locations",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 39.9526,
+  "lng": -75.1652,
+  "fatalities": 1,
+  "injuries": 0,
+  "description": "A shooter opened fire at multiple locations in Philadelphia, Pennsylvania. One person was killed. The shooter was later apprehended by law enforcement at another location.",
+  "sources": [
+    "Federal Bureau of Investigation, 2022 Active Shooter Incidents Report"
+  ]
+},
+{
+  "id": 214,
+  "title": "Various Locations, Chicago and Evanston Shooting",
+  "date": "2021-01-09",
+  "year": 2021,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Chicago and Evanston",
+  "venue": "Multiple Locations",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 42.0451,
+  "lng": -87.6877,
+  "fatalities": 5,
+  "injuries": 2,
+  "description": "A shooter carried out a series of shootings from Chicago to Evanston, Illinois. Five people were killed, including a security guard, and two people were wounded.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 215,
+  "title": "Columbus Multiple-Location Shooting",
+  "date": "2021-01-25",
+  "year": 2021,
+  "country": "United States",
+  "state": "Ohio",
+  "city": "Columbus",
+  "venue": "Multiple Locations",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 39.9612,
+  "lng": -82.9988,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A shooter fired at several people at various locations throughout the Columbus, Ohio area. No casualties were reported. The shooter died in a vehicle crash during a police pursuit.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 216,
+  "title": "Houston Multiple-Location Shooting",
+  "date": "2021-01-25",
+  "year": 2021,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Houston",
+  "venue": "Neighborhood and Convenience Store",
+  "category": "Residential Shooting",
+  "type": "shooting",
+  "lat": 29.7604,
+  "lng": -95.3698,
+  "fatalities": 1,
+  "injuries": 0,
+  "description": "A shooter opened fire in a Houston neighborhood and later fired at bystanders near a convenience store. One person was killed. The shooter was apprehended by law enforcement.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 217,
+  "title": "Allina Health Clinic Shooting",
+  "date": "2021-02-09",
+  "year": 2021,
+  "country": "United States",
+  "state": "Minnesota",
+  "city": "Buffalo",
+  "venue": "Allina Health Clinic",
+  "category": "Healthcare Facility Shooting",
+  "type": "shooting",
+  "lat": 45.1719,
+  "lng": -93.8747,
+  "fatalities": 1,
+  "injuries": 4,
+  "description": "A shooter opened fire inside the Allina Health Clinic in Buffalo, Minnesota. One person was killed and four people were wounded. Four improvised explosive devices were also discovered at the scene.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 218,
+  "title": "Jefferson Gun Outlet Shooting",
+  "date": "2021-02-20",
+  "year": 2021,
+  "country": "United States",
+  "state": "Louisiana",
+  "city": "Metairie",
+  "venue": "Jefferson Gun Outlet",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 29.9841,
+  "lng": -90.1529,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "A shooter opened fire inside the Jefferson Gun Outlet in Metairie, Louisiana. Two people were killed and two employees were wounded. Employees exchanged gunfire with the shooter, who was killed at the scene.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 219,
+  "title": "Austin Multiple-Location Shooting",
+  "date": "2021-03-20",
+  "year": 2021,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Chicago",
+  "venue": "Multiple Locations",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 41.8870,
+  "lng": -87.7650,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooter opened fire at various locations in the Austin area of Chicago, Illinois. Two people were wounded, including a law enforcement officer. The shooter was apprehended at the scene.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 220,
+  "title": "Baltimore County Multiple-Location Shooting",
+  "date": "2021-03-28",
+  "year": 2021,
+  "country": "United States",
+  "state": "Maryland",
+  "city": "Baltimore County",
+  "venue": "Residence and Royal Farms Store",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 39.4262,
+  "lng": -76.6030,
+  "fatalities": 4,
+  "injuries": 1,
+  "description": "A shooter began firing inside a residence in Baldwin, Maryland, then traveled to a Royal Farms store in Essex and continued shooting. Four people were killed and one employee was wounded. The shooter later died by suicide.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 221,
+  "title": "Unspecified Commercial Office Complex Shooting",
+  "date": "2021-03-31",
+  "year": 2021,
+  "country": "United States",
+  "state": "California",
+  "city": "Orange",
+  "venue": "Commercial Office Complex",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 33.7175,
+  "lng": -117.8311,
+  "fatalities": 4,
+  "injuries": 1,
+  "description": "A shooter opened fire inside a commercial office complex in Orange, California. Four people were killed and one person was wounded. The shooter was apprehended by law enforcement at the scene.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 222,
+  "title": "Riverside Tech Park and Fort Detrick Shooting",
+  "date": "2021-04-06",
+  "year": 2021,
+  "country": "United States",
+  "state": "Maryland",
+  "city": "Frederick",
+  "venue": "Riverside Tech Park and Fort Detrick",
+  "category": "Government Shooting",
+  "type": "shooting",
+  "lat": 39.4143,
+  "lng": -77.4105,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooter opened fire outside a business in Riverside Tech Park and then fled to nearby Fort Detrick in Frederick, Maryland. Two people were wounded. The shooter was killed by Fort Detrick security guards.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 223,
+  "title": "Kent Moore Cabinets Corporate Shooting",
+  "date": "2021-04-08",
+  "year": 2021,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Bryan",
+  "venue": "Kent Moore Cabinets Corporate",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 30.6744,
+  "lng": -96.3698,
+  "fatalities": 1,
+  "injuries": 6,
+  "description": "A shooter opened fire inside Kent Moore Cabinets Corporate in Bryan, Texas. One employee was killed and six people were wounded, including five employees and one law enforcement officer. The shooter was later apprehended.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 224,
+  "title": "Tulsa Shopping Center Shooting",
+  "date": "2020-03-27",
+  "year": 2020,
+  "country": "United States",
+  "state": "Oklahoma",
+  "city": "Tulsa",
+  "venue": "Unspecified Shopping Center",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 36.1540,
+  "lng": -95.9928,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A shooter fired at people standing outside a shopping center in Tulsa, Oklahoma. No casualties were reported. An armed security guard stopped the shooter at the scene.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 225,
+  "title": "McDonald's Restaurant Shooting",
+  "date": "2020-05-06",
+  "year": 2020,
+  "country": "United States",
+  "state": "Oklahoma",
+  "city": "Oklahoma City",
+  "venue": "McDonald's Restaurant",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 35.4676,
+  "lng": -97.5164,
+  "fatalities": 0,
+  "injuries": 4,
+  "description": "A shooter opened fire inside a McDonald's restaurant in Oklahoma City, Oklahoma. Four employees were wounded. The shooter was later arrested by law enforcement.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 226,
+  "title": "Super 8 Hotel Shooting",
+  "date": "2020-05-17",
+  "year": 2020,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Rockford",
+  "venue": "Super 8 Hotel",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 42.2711,
+  "lng": -89.0940,
+  "fatalities": 1,
+  "injuries": 2,
+  "description": "A shooter opened fire inside the Super 8 hotel in Rockford, Illinois. One person was killed and two people were wounded. The shooter died by suicide after exchanging gunfire with law enforcement.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 227,
+  "title": "Westgate Entertainment District Shooting",
+  "date": "2020-05-20",
+  "year": 2020,
+  "country": "United States",
+  "state": "Arizona",
+  "city": "Glendale",
+  "venue": "Westgate Entertainment District",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 33.5312,
+  "lng": -112.2626,
+  "fatalities": 0,
+  "injuries": 3,
+  "description": "A shooter opened fire inside the Westgate Entertainment District in Glendale, Arizona. Three people were wounded. The shooter was apprehended by law enforcement at the scene.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 228,
+  "title": "Naval Air Station Corpus Christi Shooting",
+  "date": "2020-05-21",
+  "year": 2020,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Corpus Christi",
+  "venue": "Naval Air Station Corpus Christi",
+  "category": "Government Shooting",
+  "type": "shooting",
+  "lat": 27.6925,
+  "lng": -97.2904,
+  "fatalities": 0,
+  "injuries": 1,
+  "description": "A shooter opened fire at security force guards at Naval Air Station Corpus Christi in Texas. One security force guard was wounded. The shooter was killed by security personnel.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 229,
+  "title": "Centennial Bridge Shooting",
+  "date": "2020-05-27",
+  "year": 2020,
+  "country": "United States",
+  "state": "Kansas",
+  "city": "Leavenworth",
+  "venue": "Centennial Bridge",
+  "category": "Highway Shooting",
+  "type": "shooting",
+  "lat": 39.3111,
+  "lng": -94.9225,
+  "fatalities": 0,
+  "injuries": 1,
+  "description": "A shooter randomly fired at vehicles on Centennial Bridge in Leavenworth, Kansas. One person was wounded. An active-duty soldier waiting in traffic intervened by striking the shooter with his vehicle, ending the attack.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 230,
+  "title": "Indoor Comfort and Heating Shooting",
+  "date": "2020-06-01",
+  "year": 2020,
+  "country": "United States",
+  "state": "Tennessee",
+  "city": "Paris Landing",
+  "venue": "Indoor Comfort and Heating",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 36.3234,
+  "lng": -88.2967,
+  "fatalities": 2,
+  "injuries": 0,
+  "description": "A shooter opened fire inside the Indoor Comfort and Heating business in Paris Landing, Tennessee. Two people were killed. The shooter died by suicide at the scene.",
+  "sources": [
+    "Federal Bureau of Investigation, Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 234,
+  "title": "PJ Harrigan's Bar & Grill and Residence Shooting",
+  "date": "2019-01-24",
+  "year": 2019,
+  "country": "United States",
+  "state": "Pennsylvania",
+  "city": "State College",
+  "venue": "PJ Harrigan's Bar & Grill and Nearby Residence",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 40.7934,
+  "lng": -77.8600,
+  "fatalities": 3,
+  "injuries": 1,
+  "description": "A shooter opened fire at PJ Harrigan's Bar & Grill in State College, Pennsylvania, then fled to a nearby residence where another person was killed. Three people were killed and one person was wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 235,
+  "title": "The Asian Bistro Shooting",
+  "date": "2019-02-12",
+  "year": 2019,
+  "country": "United States",
+  "state": "California",
+  "city": "San Diego",
+  "venue": "The Asian Bistro",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 32.7157,
+  "lng": -117.1611,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A shooter fired into The Asian Bistro in San Diego, California. No one was killed or wounded. The shooter fled and was later apprehended by law enforcement.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 236,
+  "title": "T-Mart Convenience Store Shooting",
+  "date": "2019-02-21",
+  "year": 2019,
+  "country": "United States",
+  "state": "Kentucky",
+  "city": "Elizabethtown",
+  "venue": "T-Mart Convenience Store and Nearby Residence",
+  "category": "Commerce Shooting",
+  "type": "shooting",
+  "lat": 37.6939,
+  "lng": -85.8591,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "A shooter killed his girlfriend near her home before opening fire at a T-Mart convenience store in Elizabethtown, Kentucky. Two people were killed and two were wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 237,
+  "title": "West Palm Beach VA Medical Center Shooting",
+  "date": "2019-02-27",
+  "year": 2019,
+  "country": "United States",
+  "state": "Florida",
+  "city": "West Palm Beach",
+  "venue": "West Palm Beach Department of Veterans Affairs Medical Center",
+  "category": "Healthcare Facility Shooting",
+  "type": "shooting",
+  "lat": 26.7153,
+  "lng": -80.0534,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A patient opened fire on medical staff in the emergency room at the West Palm Beach VA Medical Center. A doctor and an emergency-room employee were wounded. Other civilians restrained the shooter until law enforcement arrived.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 238,
+  "title": "Lake City Neighborhood Shooting",
+  "date": "2019-03-27",
+  "year": 2019,
+  "country": "United States",
+  "state": "Washington",
+  "city": "Seattle",
+  "venue": "Lake City Neighborhood and Multiple Roadways",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 47.7190,
+  "lng": -122.2950,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "A shooter attacked people and vehicles in Seattle's Lake City neighborhood and during a subsequent police pursuit. Two people were killed and two were wounded. One of the deaths resulted from injuries incidental to the shooting.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 239,
+  "title": "STEM School Highlands Ranch Shooting",
+  "date": "2019-05-07",
+  "year": 2019,
+  "country": "United States",
+  "state": "Colorado",
+  "city": "Highlands Ranch",
+  "venue": "STEM School Highlands Ranch",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 39.5521,
+  "lng": -105.0020,
+  "fatalities": 1,
+  "injuries": 8,
+  "description": "Two students opened fire at STEM School Highlands Ranch in Colorado. One student was killed and eight students were wounded. Two students helped subdue one shooter, while a private security officer disarmed the other.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 240,
+  "title": "B. Dependable Plumbing Shooting",
+  "date": "2019-05-29",
+  "year": 2019,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Cleveland",
+  "venue": "B. Dependable Plumbing",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 30.3413,
+  "lng": -95.0855,
+  "fatalities": 3,
+  "injuries": 1,
+  "description": "A shooter opened fire at B. Dependable Plumbing in Cleveland, Texas, then exchanged gunfire with law enforcement during a pursuit. Three people were killed, including a law enforcement officer who died later from complications of his wounds, and one company owner was wounded.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
+},
+{
+  "id": 241,
+  "title": "Interstate 35 Shooting",
+  "date": "2019-06-10",
+  "year": 2019,
+  "country": "United States",
+  "state": "Oklahoma",
+  "city": "Oklahoma City",
+  "venue": "Interstate 35",
+  "category": "Highway Shooting",
+  "type": "shooting",
+  "lat": 35.4676,
+  "lng": -97.5164,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A shooter fired at vehicles while walking alongside Interstate 35 in Oklahoma City, Oklahoma. No victims were killed or wounded. The shooter was killed by law enforcement at the scene.",
+  "sources": [
+    "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
+  ]
 }
-]
+
+  ]
