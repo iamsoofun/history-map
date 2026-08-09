@@ -29,6 +29,10 @@
     <div class="search-wrap">
       <input id="search" type="search" placeholder="Search incidents" autocomplete="off">
     </div>
+
+    <button id="statsToggle" class="stats-toggle" aria-label="Open research and statistics" aria-expanded="false" aria-controls="statsPanel">
+      📊 <span class="stats-toggle-word">Stats</span>
+    </button>
   </header>
 
   <main id="stage">
@@ -41,12 +45,34 @@
       </button>
       <ul id="legendList"></ul>
     </div>
+
+    <div id="dateRangeResearch" class="date-range-research">
+      <div class="range-title">Historical Research Range</div>
+
+      <div class="range-inputs">
+        <label>
+          From
+          <input id="startYear" type="number" min="1900" max="2100" value="1900">
+        </label>
+
+        <label>
+          To
+          <input id="endYear" type="number" min="1900" max="2100" value="2100">
+        </label>
+
+        <button id="rangeSearchBtn" type="button">Search Range</button>
+        <button id="clearRangeBtn" type="button">Clear</button>
+      </div>
+
+      <div id="rangeResults" class="range-results"></div>
+    </div>
   </main>
 
   <div id="timebar">
     <div class="timebar-row">
       <button id="playBtn" class="transport" aria-label="Play timeline">▶</button>
       <button id="pauseBtn" class="transport" aria-label="Pause timeline">❚❚</button>
+      <button id="nowBtn" class="transport wide" aria-label="Jump to current year">NOW</button>
       <output id="yearDisplay" for="timeline">1900</output>
       <span id="eraTag" class="era">recorded</span>
     </div>
@@ -63,6 +89,50 @@
       <h2>Select an incident</h2>
       <p>Tap a marker to read the record.</p>
     </div>
+  </aside>
+
+  <aside id="statsPanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closeStats" aria-label="Close research and statistics">✕</button>
+
+    <h2>Research &amp; Statistics</h2>
+    <p class="meta">Numbers are computed live from your current data — they update automatically as incidents are added.</p>
+
+    <div class="research-filters">
+      <label>
+        From
+        <input id="rsStartYear" type="number" min="1900" max="2100" value="1900">
+      </label>
+      <label>
+        To
+        <input id="rsEndYear" type="number" min="1900" max="2100" value="2100">
+      </label>
+      <label>
+        Country
+        <select id="rsCountry"><option value="">All countries</option></select>
+      </label>
+      <label>
+        Category
+        <select id="rsCategory"><option value="">All categories</option></select>
+      </label>
+      <label>
+        Region
+        <select id="rsRegion"><option value="">All regions</option></select>
+      </label>
+      <label>
+        Min fatalities
+        <input id="rsMinFatalities" type="number" min="0" step="1" value="0">
+      </label>
+    </div>
+
+    <div class="research-actions">
+      <button id="rsGenerateBtn" type="button">Generate</button>
+      <button id="rsClearBtn" type="button">Clear</button>
+    </div>
+
+    <div id="rsSummary" class="stats-summary"></div>
+    <ul id="rsBreakdown" class="stats-breakdown"></ul>
+    <div id="rsResultsList" class="research-results"></div>
   </aside>
 
   <div id="scrim" hidden></div>
