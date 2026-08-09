@@ -119,6 +119,8 @@ const rsMinFatalities = document.getElementById("rsMinFatalities");
 const rsGenerateBtn = document.getElementById("rsGenerateBtn");
 const rsClearBtn = document.getElementById("rsClearBtn");
 const rsSummary = document.getElementById("rsSummary");
+const methodologyToggle = document.getElementById("methodologyToggle");
+const methodologyBody = document.getElementById("methodologyBody");
 const rsBreakdown = document.getElementById("rsBreakdown");
 const rsResultsList = document.getElementById("rsResultsList");
 const rsTopFatalities = document.getElementById("rsTopFatalities");
@@ -144,6 +146,7 @@ const PLAY_STEP_YEARS = 1;
 // ---------------------------------------------------------------------
 
 let events = [];
+let datasetLastModified = null;
 let playTimer = null;
 
 // ---------------------------------------------------------------------
@@ -236,6 +239,7 @@ fetch("history.json")
         if (!response.ok) {
             throw new Error(`Failed to load history.json: ${response.status}`);
         }
+        datasetLastModified = response.headers.get("Last-Modified"); // may be null if the host doesn't send it
         return response.json();
     })
     .then(data => {
@@ -315,6 +319,7 @@ function addMarker(event) {
 
 function clearMarkers() {
     markerLayer.clearLayers();
+}
 }
 
 // ---------------------------------------------------------------------
@@ -512,6 +517,7 @@ if (rangeSearchBtn && clearRangeBtn && startYearInput && endYearInput && rangeRe
 // list) from whatever's currently in `events`, so it automatically
 // reflects new data added to history.json.
 // ---------------------------------------------------------------------
+
 const RESEARCH_ELEMENTS_PRESENT = statsToggle && statsPanel && closeStats &&
     rsStartYear && rsEndYear && rsCountry && rsCategory && rsRegion &&
     rsMinFatalities && rsGenerateBtn && rsClearBtn && rsSummary && rsBreakdown && rsResultsList;
@@ -591,7 +597,6 @@ function topEntries(obj, n) {
 function sortedDecadeLabels(obj) {
     return Object.keys(obj).map(Number).sort((a, b) => a - b).map(String);
 }
-
 // Renders (or re-renders) a Chart.js chart into the given canvas,
 // destroying any previous instance on that canvas first.
 function drawChart(canvasId, config) {
@@ -757,6 +762,55 @@ function renderCharts(matches) {
         : "No incidents match these filters.";
 }
 
+function renderMethodology(matches) {
+    if (!methodologyBody) return;
+
+    const startYear = rsStartYear.value || MIN_YEAR;
+    const endYear = rsEndYear.value || MAX_YEAR;
+    const categoryLabel = rsCategory.value
+        ? (INCIDENT_TYPES[rsCategory.value]?.label || rsCategory.value)
+        : "All categories";
+    const countryLabel = rsCountry.value || "All countries";
+    const regionLabel = rsRegion.value || "All regions";
+    const minFatalities = Number(rsMinFatalities.value) || 0;
+
+    let lastUpdatedText = "Unavailable (host did not report a modification date for history.json)";
+    if (datasetLastModified) {
+        const parsed = new Date(datasetLastModified);
+        lastUpdatedText = Number.isNaN(parsed.getTime())
+            ? escapeHtml(datasetLastModified)
+            : parsed.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+    }
+
+    methodologyBody.innerHTML = `
+        <dl>
+            <dt>Records included</dt>
+            <dd>${matches.length.toLocaleString()} of ${events.length.toLocaleString()} total incidents currently in the dataset, matching the filters below.</dd>
+
+            <dt>Date range</dt>
+            <dd>${escapeHtml(startYear)}–${escapeHtml(endYear)}</dd>
+
+            <dt>Category</dt>
+            <dd>${escapeHtml(categoryLabel)}</dd>
+
+            <dt>Country / Region</dt>
+            <dd>${escapeHtml(countryLabel)} · ${escapeHtml(regionLabel)}</dd>
+
+            <dt>Minimum fatalities filter</dt>
+            <dd>${minFatalities > 0 ? minFatalities.toLocaleString() + "+" : "None applied"}</dd>
+
+            <dt>How fatalities/injuries are counted</dt>
+            <dd>Totals sum each incident's primary recorded figure — the number shown as "Official historical figure" where a record documents one. Alternate estimates noted on individual records (shown as "Other estimates" in that incident's detail panel) are informational only and are not included in these totals.</dd>
+
+            <dt>How disputed figures are handled</dt>
+            <dd>Incidents flagged with a "Conflicting" source-confidence badge are still counted using their primary recorded figure. Check that incident's Sources for the full range of reported estimates.</dd>
+
+            <dt>Dataset last updated</dt>
+            <dd>${lastUpdatedText}</dd>
+        </dl>
+    `;
+}
+
 function renderResearch(matches) {
     const totalFatalities = matches.reduce((sum, e) => sum + e.fatalityCount, 0);
     const totalInjuries = matches.reduce((sum, e) => sum + toNumber(e.injuries), 0);
@@ -768,6 +822,8 @@ function renderResearch(matches) {
         <div class="stat-card"><b>${totalInjuries.toLocaleString()}</b><span>Injuries</span></div>
         <div class="stat-card"><b>${countryCount.toLocaleString()}</b><span>Countries</span></div>
     `;
+
+    renderMethodology(matches);
 
     const counts = {};
     matches.forEach(e => {
@@ -840,6 +896,14 @@ if (RESEARCH_ELEMENTS_PRESENT) {
     });
 
     closeStats.addEventListener("click", closeStatsPanel);
+
+    if (methodologyToggle && methodologyBody) {
+        methodologyToggle.addEventListener("click", () => {
+            const open = methodologyBody.hidden;
+            methodologyBody.hidden = !open;
+            methodologyToggle.setAttribute("aria-expanded", String(open));
+        });
+    }
     rsGenerateBtn.addEventListener("click", runResearch);
 
     // Interactive filters: any change re-runs the analysis automatically.
@@ -862,7 +926,8 @@ if (RESEARCH_ELEMENTS_PRESENT) {
     });
 } else {
     console.warn("Research & Statistics controls not found in the DOM — skipping their setup so the rest of the app still loads.");
-}// ---------------------------------------------------------------------
+}
+// ---------------------------------------------------------------------
 // Play / Pause timeline
 // ---------------------------------------------------------------------
 
@@ -1048,7 +1113,7 @@ function renderResearchContext(event) {
         </div>
 
         <div class="rc-section">
-            <p class="chart-title">What changed afterward?</p>
+            <p class="chart-title">What happened afterward?</p>
             ${consequencesText ? `<p class="rc-consequences">${consequencesText}</p>` : `<p class="rc-empty-text">Consequences not yet documented.</p>`}
             <ul class="rc-list">${subsequentHtml}</ul>
         </div>
