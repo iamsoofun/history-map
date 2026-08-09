@@ -320,7 +320,7 @@ function addMarker(event) {
 function clearMarkers() {
     markerLayer.clearLayers();
 }
-}
+
 
 // ---------------------------------------------------------------------
 // Combined range + search filtering
