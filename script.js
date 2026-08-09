@@ -152,8 +152,10 @@ function buildLegend() {
 }
 
 legendToggle.addEventListener("click", () => {
-    const open = !legend.classList.toggle("collapsed");
+    const nowCollapsed = legend.classList.toggle("collapsed");
+    const open = !nowCollapsed;
     legendToggle.setAttribute("aria-expanded", String(open));
+    legendList.style.display = open ? "block" : "none";
 });
 
 // ---------------------------------------------------------------------
