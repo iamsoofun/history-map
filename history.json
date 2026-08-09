@@ -880,5 +880,1165 @@
   "sources": [
     "https://en.wikipedia.org/wiki/Woo_Bum-kon"
   ]
+},
+{
+  "id": 41,
+  "title": "2015 Sousse Attack",
+  "date": "2015-06-26",
+  "year": 2015,
+  "country": "Tunisia",
+  "state": "Sousse Governorate",
+  "city": "Port El Kantaoui",
+  "venue": "Tourist Resort",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 35.9217,
+  "lng": 10.5950,
+  "fatalities": 38,
+  "injuries": 39,
+  "description": "A gunman attacked tourists at the Port El Kantaoui resort near Sousse. Thirty-eight victims were killed and 39 people were injured.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2015_Sousse_attacks"
+  ]
+},
+{
+  "id": 42,
+  "title": "Paris Attacks",
+  "date": "2015-11-13",
+  "year": 2015,
+  "country": "France",
+  "state": "Île-de-France",
+  "city": "Paris",
+  "venue": "Multiple Locations",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 48.8534,
+  "lng": 2.3488,
+  "fatalities": 130,
+  "injuries": 413,
+  "description": "A coordinated series of terrorist attacks targeted the Bataclan concert hall, cafés and restaurants in Paris, and the area around the Stade de France.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/November_2015_Paris_attacks"
+  ]
+},
+{
+  "id": 43,
+  "title": "Nice Truck Attack",
+  "date": "2016-07-14",
+  "year": 2016,
+  "country": "France",
+  "state": "Provence-Alpes-Côte d'Azur",
+  "city": "Nice",
+  "venue": "Promenade des Anglais",
+  "category": "Terrorist Attack",
+  "type": "other",
+  "lat": 43.6959,
+  "lng": 7.2550,
+  "fatalities": 86,
+  "injuries": 458,
+  "description": "A truck was deliberately driven into crowds celebrating Bastille Day along the Promenade des Anglais.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2016_Nice_truck_attack"
+  ]
+},
+{
+  "id": 44,
+  "title": "Brussels Bombings",
+  "date": "2016-03-22",
+  "year": 2016,
+  "country": "Belgium",
+  "state": "Brussels-Capital Region",
+  "city": "Brussels",
+  "venue": "Airport and Metro Station",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 50.8503,
+  "lng": 4.3517,
+  "fatalities": 32,
+  "injuries": 300,
+  "description": "Coordinated suicide bombings targeted Brussels Airport and the Maelbeek metro station.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2016_Brussels_bombings"
+  ]
+},
+{
+  "id": 45,
+  "title": "Hanau Shootings",
+  "date": "2020-02-19",
+  "year": 2020,
+  "country": "Germany",
+  "state": "Hesse",
+  "city": "Hanau",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 50.1264,
+  "lng": 8.9283,
+  "fatalities": 9,
+  "injuries": 5,
+  "description": "A gunman attacked two shisha bars in Hanau, killing nine victims. The perpetrator later killed his mother and himself.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Hanau_shootings"
+  ]
+},
+{
+  "id": 46,
+  "title": "Bogaarden Shooting",
+  "date": "1987-05-12",
+  "year": 1987,
+  "country": "Belgium",
+  "state": "Flemish Brabant",
+  "city": "Bogaarden",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 50.7387,
+  "lng": 4.1667,
+  "fatalities": 7,
+  "injuries": 3,
+  "description": "A gunman carried out shootings in Bogaarden and nearby Denderwindeke, killing seven people and injuring three before taking his own life.",
+  "sources": [
+    "https://www.upi.com/Archives/1987/05/12/Gunman-kills-seven-then-self/7406547790400/"
+  ]
+},
+{
+  "id": 47,
+  "title": "Luxiol Massacre",
+  "date": "1989-07-12",
+  "year": 1989,
+  "country": "France",
+  "state": "Bourgogne-Franche-Comté",
+  "city": "Luxiol",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 47.3460,
+  "lng": 6.3180,
+  "fatalities": 14,
+  "injuries": 8,
+  "description": "A farmer carried out a shooting spree in and around Luxiol in eastern France, killing 14 people and injuring others before being captured by police.",
+  "sources": [
+    "https://www.lemonde.fr/archives/article/1989/07/14/dans-le-doubs-un-forcene-tue-quatorze-personnes-terreur-au-village_4146974_1819218.html"
+  ]
+},
+{
+  "id": 48,
+  "title": "Aramoana Massacre",
+  "date": "1990-11-13",
+  "year": 1990,
+  "country": "New Zealand",
+  "state": "Otago",
+  "city": "Aramoana",
+  "venue": "Residential Area",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": -45.7780,
+  "lng": 170.6660,
+  "fatalities": 13,
+  "injuries": 3,
+  "description": "A resident went on a shooting rampage in the seaside settlement of Aramoana, killing 13 people before being fatally shot by police the following day.",
+  "sources": [
+    "https://www.police.govt.nz/about-us/history-and-museum/museum/exhibitions/place-many-brave-deeds/1990-operation-aramoana-mass"
+  ]
+},
+{
+  "id": 49,
+  "title": "Cuers Massacre",
+  "date": "1995-09-23",
+  "year": 1995,
+  "country": "France",
+  "state": "Provence-Alpes-Côte d'Azur",
+  "city": "Cuers",
+  "venue": "Residential Area",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 43.2370,
+  "lng": 6.0710,
+  "fatalities": 16,
+  "injuries": 0,
+  "description": "A teenager carried out a shooting rampage in Cuers, killing members of his family and other people before taking his own life.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Cuers_massacre"
+  ]
+},
+{
+  "id": 50,
+  "title": "Reina Nightclub Shooting",
+  "date": "2017-01-01",
+  "year": 2017,
+  "country": "Turkey",
+  "state": "Istanbul Province",
+  "city": "Istanbul",
+  "venue": "Reina Nightclub",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 41.0477,
+  "lng": 29.0345,
+  "fatalities": 39,
+  "injuries": 70,
+  "description": "A gunman attacked people celebrating New Year's Day at the Reina nightclub in Istanbul, killing 39 people and injuring about 70.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Reina_nightclub_shooting"
+  ]
+},
+{
+  "id": 51,
+  "title": "Rio de Janeiro School Shooting",
+  "date": "2011-04-07",
+  "year": 2011,
+  "country": "Brazil",
+  "state": "Rio de Janeiro",
+  "city": "Rio de Janeiro",
+  "venue": "Tasso da Silveira Municipal School",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": -22.8829,
+  "lng": -43.4265,
+  "fatalities": 12,
+  "injuries": 22,
+  "description": "A former student opened fire at Tasso da Silveira Municipal School in the Realengo neighborhood of Rio de Janeiro, killing 12 students and injuring 22 others.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Rio_de_Janeiro_school_shooting"
+  ]
+},
+{
+  "id": 52,
+  "title": "Toulouse and Montauban Shootings",
+  "date": "2012-03-11",
+  "year": 2012,
+  "country": "France",
+  "state": "Occitanie",
+  "city": "Toulouse and Montauban",
+  "venue": "Multiple Locations",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 43.6218,
+  "lng": 1.4620,
+  "fatalities": 7,
+  "injuries": 5,
+  "description": "A series of shootings in Toulouse and Montauban targeted French soldiers and members of a Jewish school community. Seven victims were killed and five were wounded.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Toulouse_and_Montauban_shootings"
+  ]
+},
+{
+  "id": 53,
+  "title": "Kerch Polytechnic College Massacre",
+  "date": "2018-10-17",
+  "year": 2018,
+  "country": "Ukraine",
+  "state": "Crimea",
+  "city": "Kerch",
+  "venue": "Kerch Polytechnic College",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 45.3564,
+  "lng": 36.5356,
+  "fatalities": 20,
+  "injuries": 73,
+  "description": "A student carried out a shooting and bombing attack at Kerch Polytechnic College, killing 20 victims and injuring 73 others before taking his own life.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Kerch_Polytechnic_College_massacre"
+  ]
+},
+{
+  "id": 54,
+  "title": "Mladenovac and Dubona Shootings",
+  "date": "2023-05-04",
+  "year": 2023,
+  "country": "Serbia",
+  "state": "Central Serbia",
+  "city": "Mladenovac and Dubona",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 44.4417,
+  "lng": 20.6997,
+  "fatalities": 9,
+  "injuries": 12,
+  "description": "A gunman opened fire in the villages of Dubona and Malo Orašje near Mladenovac, killing nine people and injuring 12.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Mladenovac_and_Smederevo_shootings"
+  ]
+},
+{
+  "id": 55,
+  "title": "Crocus City Hall Attack",
+  "date": "2024-03-22",
+  "year": 2024,
+  "country": "Russia",
+  "state": "Moscow Oblast",
+  "city": "Krasnogorsk",
+  "venue": "Crocus City Hall",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 55.8258,
+  "lng": 37.3902,
+  "fatalities": 144,
+  "injuries": 285,
+  "description": "Gunmen attacked concertgoers at Crocus City Hall near Moscow, opening fire and setting the building on fire. The attack was claimed by Islamic State.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Crocus_City_Hall_attack"
+  ]
+},
+{
+  "id": 56,
+  "title": "Prague University Shooting",
+  "date": "2023-12-21",
+  "year": 2023,
+  "country": "Czech Republic",
+  "state": "Prague",
+  "city": "Prague",
+  "venue": "Charles University Faculty of Arts",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 50.0897,
+  "lng": 14.4164,
+  "fatalities": 14,
+  "injuries": 25,
+  "description": "A gunman opened fire at the Faculty of Arts of Charles University in Prague, killing 14 victims and injuring 25 others.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2023_Prague_shooting"
+  ]
+},
+{
+  "id": 57,
+  "title": "Örebro School Shooting",
+  "date": "2025-02-04",
+  "year": 2025,
+  "country": "Sweden",
+  "state": "Örebro County",
+  "city": "Örebro",
+  "venue": "Campus Risbergska Adult Education Center",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 59.2741,
+  "lng": 15.2066,
+  "fatalities": 10,
+  "injuries": 6,
+  "description": "A gunman attacked an adult education center in Örebro, killing 10 people and injuring six before taking his own life.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/%C3%96rebro_school_shooting"
+  ]
+},
+{
+  "id": 58,
+  "title": "Graz School Shooting",
+  "date": "2025-06-10",
+  "year": 2025,
+  "country": "Austria",
+  "state": "Styria",
+  "city": "Graz",
+  "venue": "BORG Dreierschützengasse",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 47.0737,
+  "lng": 15.4395,
+  "fatalities": 10,
+  "injuries": 12,
+  "description": "A former student opened fire at a secondary school in Graz, killing 10 victims and injuring 12 others before taking his own life.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2025_Graz_shooting"
+  ]
+},
+{
+  "id": 59,
+  "title": "Nakhon Ratchasima Shootings",
+  "date": "2020-02-08",
+  "year": 2020,
+  "country": "Thailand",
+  "state": "Nakhon Ratchasima",
+  "city": "Nakhon Ratchasima",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 14.9799,
+  "lng": 102.0977,
+  "fatalities": 29,
+  "injuries": 57,
+  "description": "A soldier carried out a shooting rampage across several locations in and around Nakhon Ratchasima, including Terminal 21 shopping mall.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Nakhon_Ratchasima_shootings"
+  ]
+},
+{
+  "id": 60,
+  "title": "Nong Bua Lamphu Childcare Center Attack",
+  "date": "2022-10-06",
+  "year": 2022,
+  "country": "Thailand",
+  "state": "Nong Bua Lamphu",
+  "city": "Na Klang",
+  "venue": "Childcare Center and Multiple Locations",
+  "category": "Mass Casualty Attack",
+  "type": "shooting",
+  "lat": 17.3065,
+  "lng": 102.1889,
+  "fatalities": 36,
+  "injuries": 10,
+  "description": "A former police officer carried out a gun-and-knife attack beginning at a childcare center in Nong Bua Lamphu province and continuing at other locations.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Nong_Bua_Lamphu_massacre"
+  ]
+},
+{
+  "id": 61,
+  "title": "Tsuyama Massacre",
+  "date": "1938-05-21",
+  "year": 1938,
+  "country": "Japan",
+  "state": "Okayama Prefecture",
+  "city": "Tsuyama",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 35.0694,
+  "lng": 134.0049,
+  "fatalities": 30,
+  "injuries": 3,
+  "description": "A mass killing in rural Tsuyama in which 30 victims were killed and three others injured before the perpetrator died by suicide.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Tsuyama_massacre"
+  ]
+},
+{
+  "id": 62,
+  "title": "Ma'alot Massacre",
+  "date": "1974-05-15",
+  "year": 1974,
+  "country": "Israel",
+  "state": "Northern District",
+  "city": "Ma'alot",
+  "venue": "Netiv Meir Elementary School",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 33.0168,
+  "lng": 35.2861,
+  "fatalities": 31,
+  "injuries": 70,
+  "description": "A terrorist hostage-taking at a school in Ma'alot ended with the deaths of 25 hostages and six other civilians. Most of the hostages killed were children.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Ma%27alot_massacre"
+  ]
+},
+{
+  "id": 63,
+  "title": "Beslan School Siege",
+  "date": "2004-09-01",
+  "year": 2004,
+  "country": "Russia",
+  "state": "North Ossetia–Alania",
+  "city": "Beslan",
+  "venue": "School No. 1",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 43.1872,
+  "lng": 44.5337,
+  "fatalities": 334,
+  "injuries": 800,
+  "description": "Armed militants seized School No. 1 in Beslan and held more than 1,000 people hostage for three days. The crisis ended with 334 victims killed, including 186 children.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Beslan_school_siege"
+  ]
+},
+{
+  "id": 64,
+  "title": "2008 Mumbai Attacks",
+  "date": "2008-11-26",
+  "year": 2008,
+  "country": "India",
+  "state": "Maharashtra",
+  "city": "Mumbai",
+  "venue": "Multiple Locations",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 18.9388,
+  "lng": 72.8354,
+  "fatalities": 166,
+  "injuries": 300,
+  "description": "A coordinated series of terrorist attacks targeted multiple locations across Mumbai, including hotels, a railway station, a café, a hospital and a Jewish community center.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2008_Mumbai_attacks"
+  ]
+},
+{
+  "id": 65,
+  "title": "Our Lady of Salvation Church Siege",
+  "date": "2010-10-31",
+  "year": 2010,
+  "country": "Iraq",
+  "state": "Baghdad Governorate",
+  "city": "Baghdad",
+  "venue": "Our Lady of Salvation Church",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 33.3248,
+  "lng": 44.4207,
+  "fatalities": 58,
+  "injuries": 78,
+  "description": "Gunmen and suicide attackers seized a Catholic church during Mass in Baghdad. The hostage siege ended with 58 people killed and 78 wounded.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2010_Baghdad_church_siege"
+  ]
+},
+{
+  "id": 66,
+  "title": "Oklahoma City Bombing",
+  "date": "1995-04-19",
+  "year": 1995,
+  "country": "United States",
+  "state": "Oklahoma",
+  "city": "Oklahoma City",
+  "venue": "Alfred P. Murrah Federal Building",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 35.4722,
+  "lng": -97.5170,
+  "fatalities": 168,
+  "injuries": 680,
+  "description": "A truck bomb destroyed much of the Alfred P. Murrah Federal Building in Oklahoma City, killing 168 people and injuring hundreds.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Oklahoma_City_bombing"
+  ]
+},
+{
+  "id": 67,
+  "title": "Tokyo Subway Sarin Attack",
+  "date": "1995-03-20",
+  "year": 1995,
+  "country": "Japan",
+  "state": "Tokyo",
+  "city": "Tokyo",
+  "venue": "Tokyo Subway System",
+  "category": "Terrorist Attack",
+  "type": "other",
+  "lat": 35.6812,
+  "lng": 139.7671,
+  "fatalities": 13,
+  "injuries": 6300,
+  "description": "Members of Aum Shinrikyo released sarin nerve agent on several Tokyo subway lines during the morning rush hour.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Tokyo_subway_sarin_attack"
+  ]
+},
+{
+  "id": 68,
+  "title": "Lockerbie Bombing",
+  "date": "1988-12-21",
+  "year": 1988,
+  "country": "United Kingdom",
+  "state": "Scotland",
+  "city": "Lockerbie",
+  "venue": "Pan Am Flight 103",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 55.1212,
+  "lng": -3.3561,
+  "fatalities": 270,
+  "injuries": 0,
+  "description": "A bomb destroyed Pan Am Flight 103 over Lockerbie, Scotland. All 259 people aboard the aircraft and 11 people on the ground were killed.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Pan_Am_Flight_103"
+  ]
+},
+{
+  "id": 69,
+  "title": "Air India Flight 182 Bombing",
+  "date": "1985-06-23",
+  "year": 1985,
+  "country": "Canada",
+  "state": "Atlantic Ocean",
+  "city": "Off the coast of Ireland",
+  "venue": "Air India Flight 182",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 51.0620,
+  "lng": -12.9810,
+  "fatalities": 329,
+  "injuries": 0,
+  "description": "A bomb destroyed Air India Flight 182 over the Atlantic Ocean. All 329 people aboard were killed.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Air_India_Flight_182"
+  ]
+},
+{
+  "id": 70,
+  "title": "Enschede Fireworks Disaster",
+  "date": "2000-05-13",
+  "year": 2000,
+  "country": "Netherlands",
+  "state": "Overijssel",
+  "city": "Enschede",
+  "venue": "Fireworks Storage Facility",
+  "category": "Industrial Disaster",
+  "type": "explosion",
+  "lat": 52.2215,
+  "lng": 6.8937,
+  "fatalities": 23,
+  "injuries": 947,
+  "description": "A massive series of explosions destroyed part of the Roombeek neighborhood after a fireworks storage facility caught fire.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Enschede_fireworks_disaster"
+  ]
+},
+{
+  "id": 71,
+  "title": "Lod Airport Massacre",
+  "date": "1972-05-30",
+  "year": 1972,
+  "country": "Israel",
+  "state": "Central District",
+  "city": "Lod",
+  "venue": "Lod Airport",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 31.9950,
+  "lng": 34.8942,
+  "fatalities": 26,
+  "injuries": 80,
+  "description": "Three members of the Japanese Red Army attacked passengers at Lod Airport using firearms and grenades. Twenty-six victims were killed and 80 were injured.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Lod_Airport_massacre"
+  ]
+},
+{
+  "id": 72,
+  "title": "Dublin and Monaghan Bombings",
+  "date": "1974-05-17",
+  "year": 1974,
+  "country": "Ireland",
+  "state": "Leinster and Ulster",
+  "city": "Dublin and Monaghan",
+  "venue": "Multiple Locations",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 53.3489,
+  "lng": -6.2590,
+  "fatalities": 34,
+  "injuries": 300,
+  "description": "A series of coordinated car bombings in Dublin and Monaghan killed 34 people and injured approximately 300.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Dublin_and_Monaghan_bombings"
+  ]
+},
+{
+  "id": 73,
+  "title": "Birmingham Pub Bombings",
+  "date": "1974-11-21",
+  "year": 1974,
+  "country": "United Kingdom",
+  "state": "England",
+  "city": "Birmingham",
+  "venue": "Two Public Houses",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 52.4800,
+  "lng": -1.9025,
+  "fatalities": 21,
+  "injuries": 182,
+  "description": "Two bombs exploded in crowded public houses in central Birmingham, killing 21 people and injuring more than 180.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Birmingham_pub_bombings"
+  ]
+},
+{
+  "id": 74,
+  "title": "Bologna Massacre",
+  "date": "1980-08-02",
+  "year": 1980,
+  "country": "Italy",
+  "state": "Emilia-Romagna",
+  "city": "Bologna",
+  "venue": "Bologna Centrale Railway Station",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 44.50597,
+  "lng": 11.34292,
+  "fatalities": 85,
+  "injuries": 200,
+  "description": "A bomb exploded at Bologna Centrale railway station, killing 85 people and injuring approximately 200.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Bologna_massacre"
+  ]
+},
+{
+  "id": 75,
+  "title": "Hipercor Bombing",
+  "date": "1987-06-19",
+  "year": 1987,
+  "country": "Spain",
+  "state": "Catalonia",
+  "city": "Barcelona",
+  "venue": "Hipercor Shopping Centre",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 41.4300,
+  "lng": 2.1806,
+  "fatalities": 21,
+  "injuries": 45,
+  "description": "A car bomb exploded at the Hipercor shopping centre in Barcelona, killing 21 people and injuring 45.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Hipercor_bombing"
+  ]
+},
+{
+  "id": 76,
+  "title": "Sharpeville Massacre",
+  "date": "1960-03-21",
+  "year": 1960,
+  "country": "South Africa",
+  "state": "Gauteng",
+  "city": "Sharpeville",
+  "venue": "Sharpeville Police Station",
+  "category": "Civil Unrest",
+  "type": "shooting",
+  "lat": -26.6878,
+  "lng": 27.8725,
+  "fatalities": 69,
+  "injuries": 180,
+  "description": "South African police opened fire on protesters demonstrating against apartheid-era pass laws. The commonly cited official toll was 69 killed and 180 wounded, although later research has suggested higher figures.",
+  "sources": [
+    "https://www.justice.gov.za/jt/2018-2022/202003-02-Sharpeville.html"
+  ]
+},
+{
+  "id": 77,
+  "title": "Munich Massacre",
+  "date": "1972-09-05",
+  "year": 1972,
+  "country": "Germany",
+  "state": "Bavaria",
+  "city": "Munich",
+  "venue": "Olympic Village and Fürstenfeldbruck Airport",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 48.1755,
+  "lng": 11.5497,
+  "fatalities": 11,
+  "injuries": 0,
+  "description": "Members of the Black September organization took members of the Israeli Olympic delegation hostage during the Munich Games. Eleven members of the Israeli delegation were killed.",
+  "sources": [
+    "https://www.nps.gov/articles/000/munich-massacre.htm"
+  ]
+},
+{
+  "id": 78,
+  "title": "Cave of the Patriarchs Massacre",
+  "date": "1994-02-25",
+  "year": 1994,
+  "country": "West Bank",
+  "state": "Hebron",
+  "city": "Hebron",
+  "venue": "Ibrahimi Mosque",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 31.5247,
+  "lng": 35.1107,
+  "fatalities": 29,
+  "injuries": 125,
+  "description": "A gunman opened fire on Muslim worshippers during prayers at the Ibrahimi Mosque in Hebron, killing 29 people and wounding 125.",
+  "sources": [
+    "https://www.un.org/unispal/document/auto-insert-198395/"
+  ]
+},
+{
+  "id": 79,
+  "title": "Kampala Bombings",
+  "date": "2010-07-11",
+  "year": 2010,
+  "country": "Uganda",
+  "state": "Central Region",
+  "city": "Kampala",
+  "venue": "Kyadondo Rugby Club and Ethiopian Village Restaurant",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 0.3476,
+  "lng": 32.5825,
+  "fatalities": 74,
+  "injuries": 85,
+  "description": "Suicide bombings targeted crowds watching the FIFA World Cup final at two locations in Kampala.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2010_Kampala_bombings"
+  ]
+},
+{
+  "id": 80,
+  "title": "7/7 London Bombings",
+  "date": "2005-07-07",
+  "year": 2005,
+  "country": "United Kingdom",
+  "state": "England",
+  "city": "London",
+  "venue": "London Underground and Bus",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 51.5085,
+  "lng": -0.1257,
+  "fatalities": 52,
+  "injuries": 770,
+  "description": "Four coordinated suicide bombings struck London's public transportation system during the morning rush hour. Fifty-two victims were killed and more than 700 people were injured.",
+  "sources": [
+    "https://www.btp.police.uk/police-forces/british-transport-police/areas/campaigns/our-history/london-bombings-of-2005/"
+  ]
+},
+{
+  "id": 81,
+  "title": "Jallianwala Bagh Massacre",
+  "date": "1919-04-13",
+  "year": 1919,
+  "country": "India",
+  "state": "Punjab",
+  "city": "Amritsar",
+  "venue": "Jallianwala Bagh",
+  "category": "Civil Unrest",
+  "type": "shooting",
+  "lat": 31.6200,
+  "lng": 74.8765,
+  "fatalities": 379,
+  "injuries": 1100,
+  "description": "British Indian troops under Brigadier-General Reginald Dyer opened fire on a large gathering at Jallianwala Bagh. The official British Indian government inquiry recorded 379 deaths, while other historical estimates are substantially higher.",
+  "sources": [
+    "https://www.jallianwalabagh.in/"
+  ]
+},
+{
+  "id": 82,
+  "title": "16th Street Baptist Church Bombing",
+  "date": "1963-09-15",
+  "year": 1963,
+  "country": "United States",
+  "state": "Alabama",
+  "city": "Birmingham",
+  "venue": "16th Street Baptist Church",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 33.5136,
+  "lng": -86.8150,
+  "fatalities": 4,
+  "injuries": 20,
+  "description": "A dynamite bomb exploded at the 16th Street Baptist Church in Birmingham during the civil rights era, killing four African-American girls and injuring more than 20 people.",
+  "sources": [
+    "https://www.fbi.gov/history/cases-and-criminals/baptist-street-church-bombing"
+  ]
+},
+{
+  "id": 83,
+  "title": "Jackson State College Shooting",
+  "date": "1970-05-15",
+  "year": 1970,
+  "country": "United States",
+  "state": "Mississippi",
+  "city": "Jackson",
+  "venue": "Jackson State College",
+  "category": "Civil Unrest",
+  "type": "shooting",
+  "lat": 32.3158,
+  "lng": -90.2097,
+  "fatalities": 2,
+  "injuries": 12,
+  "description": "Police opened fire during unrest at Jackson State College in Mississippi, killing two students and injuring 12 others.",
+  "sources": [
+    "https://apnews.com/article/7ec9981b37f38f8e88d4d9e17612a1a0"
+  ]
+},
+{
+  "id": 84,
+  "title": "Orangeburg Massacre",
+  "date": "1968-02-08",
+  "year": 1968,
+  "country": "United States",
+  "state": "South Carolina",
+  "city": "Orangeburg",
+  "venue": "South Carolina State College",
+  "category": "Civil Unrest",
+  "type": "shooting",
+  "lat": 33.4968,
+  "lng": -80.8556,
+  "fatalities": 3,
+  "injuries": 27,
+  "description": "South Carolina Highway Patrol officers opened fire on student demonstrators at South Carolina State College during protests connected to racial segregation. Three students were killed and 27 people were wounded.",
+  "sources": [
+    "https://www.scencyclopedia.org/sce/entries/orangeburg-massacre/"
+  ]
+},
+{
+  "id": 85,
+  "title": "Kungälv School Shooting",
+  "date": "1961-03-04",
+  "year": 1961,
+  "country": "Sweden",
+  "state": "Västra Götaland",
+  "city": "Kungälv",
+  "venue": "Kungälv School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 57.8700,
+  "lng": 11.9675,
+  "fatalities": 1,
+  "injuries": 6,
+  "description": "A gunman opened fire during a school dance in Kungälv, killing one student and injuring six others. It is regarded as Sweden's first reported school shooting and one of Europe's early school shootings.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Kung%C3%A4lv_school_shooting"
+  ]
+},
+{
+  "id": 86,
+  "title": "Los Angeles Times Bombing",
+  "date": "1910-10-01",
+  "year": 1910,
+  "country": "United States",
+  "state": "California",
+  "city": "Los Angeles",
+  "venue": "Los Angeles Times Building",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 34.0536,
+  "lng": -118.2430,
+  "fatalities": 21,
+  "injuries": 100,
+  "description": "A dynamite bomb destroyed much of the Los Angeles Times building and started a major fire. Twenty-one people were killed and approximately 100 were injured.",
+  "sources": [
+    "https://www.latimes.com/california/story/2024-06-26/crimes-of-the-times-the-1910-bombing-of-the-times"
+  ]
+},
+{
+  "id": 87,
+  "title": "Wall Street Bombing",
+  "date": "1920-09-16",
+  "year": 1920,
+  "country": "United States",
+  "state": "New York",
+  "city": "New York City",
+  "venue": "Wall Street and Broad Street",
+  "category": "Terrorist Attack",
+  "type": "explosion",
+  "lat": 40.7074,
+  "lng": -74.0100,
+  "fatalities": 38,
+  "injuries": 143,
+  "description": "A bomb concealed in a horse-drawn wagon exploded during the lunch hour in New York City's Financial District. Thirty-eight people were killed and at least 143 were seriously injured.",
+  "sources": [
+    "https://www.fbi.gov/history/cases-and-criminals/wall-street-bombing-1920"
+  ]
+},
+{
+  "id": 88,
+  "title": "No Gun Ri Massacre",
+  "date": "1950-07-26",
+  "year": 1950,
+  "country": "South Korea",
+  "state": "North Chungcheong",
+  "city": "Nogeun-ri",
+  "venue": "Railroad Underpass",
+  "category": "Civilian Massacre",
+  "type": "shooting",
+  "lat": 36.2153,
+  "lng": 127.8803,
+  "fatalities": 163,
+  "injuries": 55,
+  "description": "South Korean civilian refugees were killed during several days of fighting near Nogeun-ri during the Korean War. South Korean records identified at least 163 people as dead or missing, while estimates of the total deaths have varied considerably.",
+  "sources": [
+    "https://www.wikidata.org/wiki/Q495446"
+  ]
+},
+{
+  "id": 89,
+  "title": "Malampaka Massacre",
+  "date": "1957-02-11",
+  "year": 1957,
+  "country": "Tanzania",
+  "state": "Lake Province",
+  "city": "Malampaka",
+  "venue": "Multiple Locations",
+  "category": "Mass Killing",
+  "type": "shooting",
+  "lat": -3.1833,
+  "lng": 33.0667,
+  "fatalities": 36,
+  "injuries": 30,
+  "description": "Police constable William Unek carried out a prolonged killing spree in and around Malampaka using a rifle, an axe and other methods. Thirty-six people were ultimately killed.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/William_Unek"
+  ]
+},
+{
+  "id": 90,
+  "title": "Marikana Massacre",
+  "date": "2012-08-16",
+  "year": 2012,
+  "country": "South Africa",
+  "state": "North West",
+  "city": "Marikana",
+  "venue": "Lonmin Platinum Mine",
+  "category": "Civil Unrest",
+  "type": "shooting",
+  "lat": -25.6857,
+  "lng": 27.7936,
+  "fatalities": 34,
+  "injuries": 78,
+  "description": "South African police opened fire on striking mineworkers at Marikana. Thirty-four mineworkers were killed and 78 were seriously injured.",
+  "sources": [
+    "https://sahistory.org.za/st/article/marikana-massacre-16-august-2012"
+  ]
+},
+{
+  "id": 91,
+  "title": "1975 Aki Shooting",
+  "date": "1975-11-06",
+  "year": 1975,
+  "country": "Japan",
+  "state": "Kōchi Prefecture",
+  "city": "Aki",
+  "venue": "Residential Area",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 33.4996,
+  "lng": 133.9070,
+  "fatalities": 6,
+  "injuries": 2,
+  "description": "A man armed with a shotgun attacked neighbors in Aki, killing six people and critically injuring two others.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/List_of_mass_shootings_in_Japan"
+  ]
+},
+{
+  "id": 92,
+  "title": "Mitsubishi Bank Hostage Incident",
+  "date": "1979-01-26",
+  "year": 1979,
+  "country": "Japan",
+  "state": "Osaka Prefecture",
+  "city": "Osaka",
+  "venue": "Mitsubishi Bank Kitabatake Branch",
+  "category": "Hostage Crisis",
+  "type": "shooting",
+  "lat": 34.6096,
+  "lng": 135.5070,
+  "fatalities": 4,
+  "injuries": 6,
+  "description": "Akiyoshi Umekawa took hostages during a bank robbery and shot four people, including two bank employees and two police officers, before being killed by police.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Akiyoshi_Umekawa"
+  ]
+},
+{
+  "id": 93,
+  "title": "Matsumoto Sarin Gas Attack",
+  "date": "1994-06-27",
+  "year": 1994,
+  "country": "Japan",
+  "state": "Nagano Prefecture",
+  "city": "Matsumoto",
+  "venue": "Residential Area",
+  "category": "Terrorist Attack",
+  "type": "other",
+  "lat": 36.2380,
+  "lng": 137.9720,
+  "fatalities": 8,
+  "injuries": 140,
+  "description": "Members of Aum Shinrikyo released sarin gas in a residential area of Matsumoto in an attempt to kill judges involved in a legal dispute with the group.",
+  "sources": [
+    "https://www.moj.go.jp/psia/25years_after_the_tokyo_subway_sarin_gas_attacks"
+  ]
+},
+{
+  "id": 96,
+  "title": "Kobe Shooting",
+  "date": "1928-05-24",
+  "year": 1928,
+  "country": "Japan",
+  "state": "Hyōgo Prefecture",
+  "city": "Kobe",
+  "venue": "Multiple Locations",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 34.6901,
+  "lng": 135.1955,
+  "fatalities": 7,
+  "injuries": 0,
+  "description": "A Chinese man carried out a revenge shooting in Kobe following the 1928 Jinan incident. Historical sources differ on the exact number killed, with estimates ranging from seven to eleven victims.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/List_of_mass_shootings_in_Japan"
+  ]
+},
+{
+  "id": 97,
+  "title": "Shinwa Village Familicide",
+  "date": "1953-12-12",
+  "year": 1953,
+  "country": "Japan",
+  "state": "Aomori Prefecture",
+  "city": "Nakatsugaru District",
+  "venue": "Residential Home",
+  "category": "Mass Shooting",
+  "type": "shooting",
+  "lat": 40.6031,
+  "lng": 140.4640,
+  "fatalities": 8,
+  "injuries": 1,
+  "description": "A man armed with a shotgun killed members of his family and set the house on fire. Eight people died and one person was wounded.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/List_of_mass_shootings_in_Japan"
+  ]
+},
+{
+  "id": 98,
+  "title": "Luxor Massacre",
+  "date": "1997-11-17",
+  "year": 1997,
+  "country": "Egypt",
+  "state": "Luxor Governorate",
+  "city": "Luxor",
+  "venue": "Deir el-Bahri",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": 25.7380,
+  "lng": 32.6080,
+  "fatalities": 62,
+  "injuries": 26,
+  "description": "Gunmen attacked tourists at the archaeological site of Deir el-Bahri near Luxor. Sixty-two people were killed, most of them foreign tourists.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Luxor_massacre"
+  ]
+},
+{
+  "id": 99,
+  "title": "Garissa University College Attack",
+  "date": "2015-04-02",
+  "year": 2015,
+  "country": "Kenya",
+  "state": "Garissa County",
+  "city": "Garissa",
+  "venue": "Garissa University College",
+  "category": "Terrorist Attack",
+  "type": "shooting",
+  "lat": -0.4514,
+  "lng": 39.6614,
+  "fatalities": 148,
+  "injuries": 79,
+  "description": "Al-Shabaab gunmen attacked Garissa University College and took students hostage. The attack killed 148 people, including 142 students, and injured at least 79 others.",
+  "sources": [
+    "https://www.un.org/securitycouncil/content/reports-secretary-general"
+  ]
+},
+{
+  "id": 100,
+  "title": "Suzano School Shooting",
+  "date": "2019-03-13",
+  "year": 2019,
+  "country": "Brazil",
+  "state": "São Paulo",
+  "city": "Suzano",
+  "venue": "Professor Raul Brasil State School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": -23.5425,
+  "lng": -46.3108,
+  "fatalities": 7,
+  "injuries": 11,
+  "description": "Two former students attacked Professor Raul Brasil State School in Suzano. Seven victims at the school were killed and 11 people were injured; the two attackers also died.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Suzano_massacre"
+  ]
 }
 ]
