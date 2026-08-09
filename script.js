@@ -342,6 +342,11 @@ function applyFilters() {
 
         map.setView([bestMatch.lat, bestMatch.lng], 8);
         openPanel(bestMatch);
+    } else if (text && matchedEvents.length === 0) {
+        // Nothing matched — don't leave a stale record from a previous
+        // search sitting in the panel.
+        panelContent.innerHTML = `<h2>No incidents found</h2><p>No recorded incidents match "${escapeHtml(search.value.trim())}".</p>`;
+        openSheet();
     }
 }
 
