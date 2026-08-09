@@ -433,5 +433,98 @@ body {
 
 #panelContent a { color: #1F6FB2; }
 
+/* ---------- Date-range research panel ---------- */
+
+.date-range-research {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 900;
+  width: 240px;
+  max-width: calc(100vw - 90px);
+  padding: 12px;
+  background: rgba(255, 255, 255, .95);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(14, 17, 22, .18);
+  font-size: .8rem;
+}
+
+.range-title {
+  margin-bottom: 8px;
+  font: 600 .70rem/1 var(--font-body);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.range-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.range-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 70px;
+  font: 500 .65rem/1 var(--font-body);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.range-inputs input {
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  font: 500 .85rem/1 var(--font-mono);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+}
+
+.range-inputs button {
+  flex: 1 1 auto;
+  height: 32px;
+  padding: 0 10px;
+  font: 600 .68rem/1 var(--font-body);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.range-inputs button:active { background: var(--signal); color: var(--ink); }
+
+#clearRangeBtn {
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+}
+
+.range-results {
+  margin-top: 8px;
+  font-size: .78rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 759px) {
+  .date-range-research {
+    top: auto;
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+  }
+}
+
 /* Leaflet zoom control clears the timeline bar */
 .leaflet-bottom.leaflet-right { margin-bottom: 6px; }
+

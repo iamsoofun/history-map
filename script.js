@@ -387,28 +387,32 @@ function runRangeResearch() {
     }
 }
 
-rangeSearchBtn.addEventListener("click", runRangeResearch);
+if (rangeSearchBtn && clearRangeBtn && startYearInput && endYearInput && rangeResults) {
+    rangeSearchBtn.addEventListener("click", runRangeResearch);
 
-clearRangeBtn.addEventListener("click", () => {
-    startYearInput.value = MIN_YEAR;
-    endYearInput.value = MAX_YEAR;
+    clearRangeBtn.addEventListener("click", () => {
+        startYearInput.value = MIN_YEAR;
+        endYearInput.value = MAX_YEAR;
 
-    rangeResults.textContent = "";
+        rangeResults.textContent = "";
 
-    search.value = "";
+        search.value = "";
 
-    slider.value = MAX_YEAR;
+        slider.value = MAX_YEAR;
 
-    applyFilters();
-});
-
-[startYearInput, endYearInput].forEach(input => {
-    input.addEventListener("keydown", event => {
-        if (event.key === "Enter") {
-            runRangeResearch();
-        }
+        applyFilters();
     });
-});
+
+    [startYearInput, endYearInput].forEach(input => {
+        input.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                runRangeResearch();
+            }
+        });
+    });
+} else {
+    console.warn("Date-range research controls not found in the DOM — skipping their setup so the rest of the app still loads.");
+}
 
 // ---------------------------------------------------------------------
 // Play / Pause timeline
@@ -453,11 +457,13 @@ pauseBtn.addEventListener("click", stopPlayback);
 slider.addEventListener("pointerdown", stopPlayback);
 pauseBtn.disabled = true;
 
-nowBtn.addEventListener("click", () => {
-    stopPlayback();
-    slider.value = Math.min(Math.max(THIS_YEAR, MIN_YEAR), MAX_YEAR);
-    applyFilters();
-});
+if (nowBtn) {
+    nowBtn.addEventListener("click", () => {
+        stopPlayback();
+        slider.value = Math.min(Math.max(THIS_YEAR, MIN_YEAR), MAX_YEAR);
+        applyFilters();
+    });
+}
 
 // ---------------------------------------------------------------------
 // Side panel
@@ -537,3 +543,4 @@ window.addEventListener("resize", () => map.invalidateSize());
 
 buildLegend();
 updateYearReadout(slider.value);
+
