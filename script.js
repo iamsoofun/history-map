@@ -24,6 +24,48 @@ const HOTZONE_THRESHOLD = 25;
 const HOTZONE_COLOR = "#7A3E9D";
 
 // ---------------------------------------------------------------------
+// Country → region lookup, used by the Research & Statistics "Region"
+// filter. Anything not listed here falls back to "Other".
+// ---------------------------------------------------------------------
+
+const REGION_MAP = {
+    "United States": "North America", "Canada": "North America", "Mexico": "North America",
+
+    "Brazil": "South America", "Argentina": "South America", "Chile": "South America",
+    "Colombia": "South America", "Peru": "South America", "Venezuela": "South America",
+    "Ecuador": "South America", "Bolivia": "South America", "Uruguay": "South America",
+
+    "United Kingdom": "Europe", "France": "Europe", "Germany": "Europe", "Italy": "Europe",
+    "Spain": "Europe", "Portugal": "Europe", "Netherlands": "Europe", "Belgium": "Europe",
+    "Switzerland": "Europe", "Austria": "Europe", "Sweden": "Europe", "Norway": "Europe",
+    "Denmark": "Europe", "Finland": "Europe", "Poland": "Europe", "Russia": "Europe",
+    "Ukraine": "Europe", "Greece": "Europe", "Ireland": "Europe", "Hungary": "Europe",
+    "Romania": "Europe", "Czech Republic": "Europe", "Serbia": "Europe", "Croatia": "Europe",
+    "Bosnia and Herzegovina": "Europe", "Bulgaria": "Europe", "Slovakia": "Europe",
+
+    "China": "Asia", "Japan": "Asia", "India": "Asia", "Pakistan": "Asia",
+    "Bangladesh": "Asia", "Indonesia": "Asia", "Philippines": "Asia", "Vietnam": "Asia",
+    "Thailand": "Asia", "South Korea": "Asia", "North Korea": "Asia", "Myanmar": "Asia",
+    "Sri Lanka": "Asia", "Malaysia": "Asia", "Afghanistan": "Asia", "Nepal": "Asia",
+
+    "Israel": "Middle East", "Egypt": "Middle East", "Syria": "Middle East",
+    "Iraq": "Middle East", "Iran": "Middle East", "Saudi Arabia": "Middle East",
+    "Turkey": "Middle East", "Yemen": "Middle East", "Lebanon": "Middle East",
+    "Jordan": "Middle East", "United Arab Emirates": "Middle East", "Kuwait": "Middle East",
+
+    "Nigeria": "Africa", "South Africa": "Africa", "Kenya": "Africa", "Somalia": "Africa",
+    "Sudan": "Africa", "Ethiopia": "Africa", "Rwanda": "Africa", "Mali": "Africa",
+    "Congo": "Africa", "Democratic Republic of the Congo": "Africa", "Libya": "Africa",
+    "Algeria": "Africa", "Tunisia": "Africa", "Uganda": "Africa", "Ghana": "Africa",
+
+    "Australia": "Oceania", "New Zealand": "Oceania", "Papua New Guinea": "Oceania"
+};
+
+function getRegion(country) {
+    return REGION_MAP[country] || "Other";
+}
+
+// ---------------------------------------------------------------------
 // Map setup
 // ---------------------------------------------------------------------
 
@@ -63,6 +105,22 @@ const endYearInput = document.getElementById("endYear");
 const rangeSearchBtn = document.getElementById("rangeSearchBtn");
 const clearRangeBtn = document.getElementById("clearRangeBtn");
 const rangeResults = document.getElementById("rangeResults");
+
+// Research & Statistics panel
+const statsToggle = document.getElementById("statsToggle");
+const statsPanel = document.getElementById("statsPanel");
+const closeStats = document.getElementById("closeStats");
+const rsStartYear = document.getElementById("rsStartYear");
+const rsEndYear = document.getElementById("rsEndYear");
+const rsCountry = document.getElementById("rsCountry");
+const rsCategory = document.getElementById("rsCategory");
+const rsRegion = document.getElementById("rsRegion");
+const rsMinFatalities = document.getElementById("rsMinFatalities");
+const rsGenerateBtn = document.getElementById("rsGenerateBtn");
+const rsClearBtn = document.getElementById("rsClearBtn");
+const rsSummary = document.getElementById("rsSummary");
+const rsBreakdown = document.getElementById("rsBreakdown");
+const rsResultsList = document.getElementById("rsResultsList");
 
 const MIN_YEAR = Number(slider.min);
 const MAX_YEAR = Number(slider.max);
@@ -194,6 +252,7 @@ fetch("history.json")
         }
 
         applyFilters();
+        populateResearchFilters();
     })
     .catch(error => {
         console.error(error);
@@ -435,6 +494,154 @@ if (rangeSearchBtn && clearRangeBtn && startYearInput && endYearInput && rangeRe
 }
 
 // ---------------------------------------------------------------------
+// Research & Statistics panel
+//
+// Independent from the map search/filter above — this is a dedicated
+// query tool that computes live aggregate stats (and a matching results
+// list) from whatever's currently in `events`, so it automatically
+// reflects new data added to history.json.
+// ---------------------------------------------------------------------
+const RESEARCH_ELEMENTS_PRESENT = statsToggle && statsPanel && closeStats &&
+    rsStartYear && rsEndYear && rsCountry && rsCategory && rsRegion &&
+    rsMinFatalities && rsGenerateBtn && rsClearBtn && rsSummary && rsBreakdown && rsResultsList;
+
+function populateResearchFilters() {
+    if (!RESEARCH_ELEMENTS_PRESENT) return;
+
+    const countries = [...new Set(events.map(e => e.country).filter(Boolean))].sort();
+    const regions = [...new Set(events.map(e => getRegion(e.country)))].sort();
+
+    rsCountry.innerHTML = '<option value="">All countries</option>' +
+        countries.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+
+    rsRegion.innerHTML = '<option value="">All regions</option>' +
+        regions.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join("");
+
+    rsCategory.innerHTML = '<option value="">All categories</option>' +
+        Object.entries(INCIDENT_TYPES)
+            .map(([key, t]) => `<option value="${key}">${escapeHtml(t.label)}</option>`)
+            .join("");
+}
+
+function getResearchMatches() {
+    let startYear = Number(rsStartYear.value);
+    let endYear = Number(rsEndYear.value);
+    if (!Number.isFinite(startYear)) startYear = MIN_YEAR;
+    if (!Number.isFinite(endYear)) endYear = MAX_YEAR;
+    if (startYear > endYear) [startYear, endYear] = [endYear, startYear];
+
+    const country = rsCountry.value;
+    const category = rsCategory.value;
+    const region = rsRegion.value;
+    const minFatalities = Number(rsMinFatalities.value) || 0;
+
+    return events.filter(event => {
+        if (event.year < startYear || event.year > endYear) return false;
+        if (country && event.country !== country) return false;
+        if (category && event.resolvedType !== category) return false;
+        if (region && getRegion(event.country) !== region) return false;
+        if (event.fatalityCount < minFatalities) return false;
+        return true;
+    });
+}
+
+function renderResearch(matches) {
+    const totalFatalities = matches.reduce((sum, e) => sum + e.fatalityCount, 0);
+    const totalInjuries = matches.reduce((sum, e) => sum + toNumber(e.injuries), 0);
+    const countryCount = new Set(matches.map(e => e.country).filter(Boolean)).size;
+
+    rsSummary.innerHTML = `
+        <div class="stat-card"><b>${matches.length.toLocaleString()}</b><span>Incidents</span></div>
+        <div class="stat-card"><b>${totalFatalities.toLocaleString()}</b><span>Fatalities</span></div>
+        <div class="stat-card"><b>${totalInjuries.toLocaleString()}</b><span>Injuries</span></div>
+        <div class="stat-card"><b>${countryCount.toLocaleString()}</b><span>Countries</span></div>
+    `;
+
+    const counts = {};
+    matches.forEach(e => {
+        counts[e.resolvedType] = (counts[e.resolvedType] || 0) + 1;
+    });
+
+    const breakdownRows = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([typeKey, count]) => {
+            const type = INCIDENT_TYPES[typeKey] || INCIDENT_TYPES.other;
+            return `
+                <li>
+                    <span class="bar-label">
+                        <span class="swatch" style="background:${type.color}"></span>
+                        ${escapeHtml(type.label)}
+                    </span>
+                    <b>${count.toLocaleString()}</b>
+                </li>
+            `;
+        });
+
+    rsBreakdown.innerHTML = breakdownRows.length
+        ? breakdownRows.join("")
+        : "<li>No incidents match these filters.</li>";
+
+    const sortedMatches = [...matches].sort((a, b) => a.year - b.year);
+    const MAX_LISTED = 200;
+
+    rsResultsList.innerHTML = sortedMatches.slice(0, MAX_LISTED).map(e => `
+        <div class="result-row">
+            <div class="result-title">${escapeHtml(e.title)}</div>
+            <div class="result-meta">${escapeHtml(e.year)} · ${escapeHtml([e.city, e.country].filter(Boolean).join(", "))} · ${escapeHtml(e.fatalityCount)} fatalities</div>
+        </div>
+    `).join("");
+
+    if (sortedMatches.length > MAX_LISTED) {
+        rsResultsList.innerHTML += `<div class="result-row">…and ${(sortedMatches.length - MAX_LISTED).toLocaleString()} more.</div>`;
+    }
+}
+
+function runResearch() {
+    renderResearch(getResearchMatches());
+}
+
+function openStats() {
+    statsPanel.classList.add("open");
+    statsPanel.setAttribute("aria-hidden", "false");
+    statsToggle.setAttribute("aria-expanded", "true");
+    sidePanel.classList.remove("open"); // only one bottom sheet at a time on mobile
+    if (window.innerWidth < 760) scrim.hidden = false;
+    runResearch();
+}
+
+function closeStatsPanel() {
+    statsPanel.classList.remove("open");
+    statsPanel.setAttribute("aria-hidden", "true");
+    statsToggle.setAttribute("aria-expanded", "false");
+    scrim.hidden = true;
+}
+
+if (RESEARCH_ELEMENTS_PRESENT) {
+    statsToggle.addEventListener("click", () => {
+        if (statsPanel.classList.contains("open")) {
+            closeStatsPanel();
+        } else {
+            openStats();
+        }
+    });
+
+    closeStats.addEventListener("click", closeStatsPanel);
+    rsGenerateBtn.addEventListener("click", runResearch);
+
+    rsClearBtn.addEventListener("click", () => {
+        rsStartYear.value = MIN_YEAR;
+        rsEndYear.value = MAX_YEAR;
+        rsCountry.value = "";
+        rsCategory.value = "";
+        rsRegion.value = "";
+        rsMinFatalities.value = 0;
+        runResearch();
+    });
+} else {
+    console.warn("Research & Statistics controls not found in the DOM — skipping their setup so the rest of the app still loads.");
+}
+
+// ---------------------------------------------------------------------
 // Play / Pause timeline
 // ---------------------------------------------------------------------
 
@@ -492,6 +699,7 @@ if (nowBtn) {
 function openSheet() {
     sidePanel.classList.add("open");
     sidePanel.setAttribute("aria-hidden", "false");
+    if (RESEARCH_ELEMENTS_PRESENT) closeStatsPanel();
     if (window.innerWidth < 760) scrim.hidden = false;
 
     setTimeout(() => map.invalidateSize(), 300);
@@ -500,6 +708,7 @@ function openSheet() {
 function closeSheet() {
     sidePanel.classList.remove("open");
     sidePanel.setAttribute("aria-hidden", "true");
+    if (RESEARCH_ELEMENTS_PRESENT) closeStatsPanel();
     scrim.hidden = true;
     setTimeout(() => map.invalidateSize(), 300);
 }
@@ -519,15 +728,41 @@ function openPanel(event) {
               .join("<br>")
         : "No sources on file";
 
+    // Optional per-record fields — only rendered when present, so records
+    // without this data still display exactly as before.
+    const CONFIDENCE_LABELS = { high: "High", medium: "Medium", conflicting: "Conflicting" };
+
+    const confidenceKey = String(event.sourceConfidence || "").toLowerCase();
+    const confidenceHtml = CONFIDENCE_LABELS[confidenceKey]
+        ? `<div class="confidence-badge confidence-${confidenceKey}">Source confidence: ${CONFIDENCE_LABELS[confidenceKey]}</div>`
+        : "";
+
+    function statBlock(value, estimateRange, label) {
+        const hasEstimate = estimateRange !== undefined && estimateRange !== null && estimateRange !== "";
+        return `
+            <div class="stat">
+                <b>${escapeHtml(value ?? "—")}</b><span>${label}</span>
+                ${hasEstimate ? `
+                    <div class="estimate-note">
+                        <span class="estimate-label">Official historical figure</span>
+                        Other estimates: ${escapeHtml(estimateRange)}
+                    </div>
+                ` : ""}
+            </div>
+        `;
+    }
+
     panelContent.innerHTML = `
         <span class="tag" style="--tag:${type.color}">${escapeHtml(type.label)}${projected ? " &middot; projected" : ""}</span>
 
         <h2>${escapeHtml(event.title)}</h2>
         <p class="meta">${place} &middot; ${escapeHtml(event.date || event.year)}</p>
 
+        ${confidenceHtml}
+
         <div class="stats">
-            <div class="stat"><b>${escapeHtml(event.fatalities ?? "—")}</b><span>Fatalities</span></div>
-            <div class="stat"><b>${escapeHtml(event.injuries ?? "—")}</b><span>Injuries</span></div>
+            ${statBlock(event.fatalities, event.fatalitiesEstimateRange, "Fatalities")}
+            ${statBlock(event.injuries, event.injuriesEstimateRange, "Injuries")}
         </div>
 
         <p>${escapeHtml(event.description)}</p>
@@ -556,4 +791,3 @@ window.addEventListener("resize", () => map.invalidateSize());
 
 buildLegend();
 updateYearReadout(slider.value);
-
