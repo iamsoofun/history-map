@@ -313,6 +313,18 @@ function updateYearReadout(year) {
     eraTag.classList.toggle("is-projected", projected);
 }
 
+// Scores how well an event matches the search text, so the map zooms to
+// the most relevant hit instead of just whichever record is first in
+// history.json.
+function scoreMatch(event, text) {
+    const title = String(event.title || "").toLowerCase();
+
+    if (title === text) return 3;
+    if (title.startsWith(text)) return 2;
+    if (title.includes(text)) return 1;
+    return 0; // matched on city/state/country/venue/description/type instead
+}
+
 function applyFilters() {
     const year = Number(slider.value);
 
@@ -324,9 +336,12 @@ function applyFilters() {
 
     const text = search.value.trim().toLowerCase();
     if (text && matchedEvents.length > 0) {
-        const firstEvent = matchedEvents[0];
-        map.setView([firstEvent.lat, firstEvent.lng], 8);
-        openPanel(firstEvent);
+        const bestMatch = [...matchedEvents].sort(
+            (a, b) => scoreMatch(b, text) - scoreMatch(a, text)
+        )[0];
+
+        map.setView([bestMatch.lat, bestMatch.lng], 8);
+        openPanel(bestMatch);
     }
 }
 
@@ -536,3 +551,4 @@ window.addEventListener("resize", () => map.invalidateSize());
 
 buildLegend();
 updateYearReadout(slider.value);
+
