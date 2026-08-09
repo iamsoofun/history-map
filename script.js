@@ -474,13 +474,6 @@ function openSheet() {
     sidePanel.setAttribute("aria-hidden", "false");
     if (window.innerWidth < 760) scrim.hidden = false;
 
-    // Force a solid, readable panel regardless of what the stylesheet says —
-    // stopgap until the CSS itself is fixed.
-    sidePanel.style.background = "#FFFFFF";
-    sidePanel.style.color = "#0E1116";
-    sidePanel.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.35)";
-    sidePanel.style.zIndex = "1000";
-
     setTimeout(() => map.invalidateSize(), 300);
 }
 
@@ -543,4 +536,3 @@ window.addEventListener("resize", () => map.invalidateSize());
 
 buildLegend();
 updateYearReadout(slider.value);
-
