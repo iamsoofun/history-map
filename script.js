@@ -1,11 +1,12 @@
 // =====================================================================
 // NHIRA — script.js
-// Loads incidents from history.json, draws typed markers, drives the
-// timeline, and fills the detail panel.
+// Loads incidents from history.json, draws clustered typed markers,
+// drives the timeline, and fills the detail, statistics, and forecast
+// panels.
 // =====================================================================
 
 // ---------------------------------------------------------------------
-// Type registry — markers, legend, and severity rings all read from here
+// Type registry
 // ---------------------------------------------------------------------
 
 const INCIDENT_TYPES = {
@@ -19,22 +20,14 @@ const INCIDENT_TYPES = {
     other: { label: "Other incident", color: "#4A5560" }
 };
 
-// A hot zone ring is drawn around any incident at or above this fatality count.
 const HOTZONE_THRESHOLD = 25;
 const HOTZONE_COLOR = "#7A3E9D";
 
-// ---------------------------------------------------------------------
-// Country → region lookup, used by the Research & Statistics "Region"
-// filter. Anything not listed here falls back to "Other".
-// ---------------------------------------------------------------------
-
 const REGION_MAP = {
     "United States": "North America", "Canada": "North America", "Mexico": "North America",
-
     "Brazil": "South America", "Argentina": "South America", "Chile": "South America",
     "Colombia": "South America", "Peru": "South America", "Venezuela": "South America",
     "Ecuador": "South America", "Bolivia": "South America", "Uruguay": "South America",
-
     "United Kingdom": "Europe", "France": "Europe", "Germany": "Europe", "Italy": "Europe",
     "Spain": "Europe", "Portugal": "Europe", "Netherlands": "Europe", "Belgium": "Europe",
     "Switzerland": "Europe", "Austria": "Europe", "Sweden": "Europe", "Norway": "Europe",
@@ -42,22 +35,18 @@ const REGION_MAP = {
     "Ukraine": "Europe", "Greece": "Europe", "Ireland": "Europe", "Hungary": "Europe",
     "Romania": "Europe", "Czech Republic": "Europe", "Serbia": "Europe", "Croatia": "Europe",
     "Bosnia and Herzegovina": "Europe", "Bulgaria": "Europe", "Slovakia": "Europe",
-
     "China": "Asia", "Japan": "Asia", "India": "Asia", "Pakistan": "Asia",
     "Bangladesh": "Asia", "Indonesia": "Asia", "Philippines": "Asia", "Vietnam": "Asia",
     "Thailand": "Asia", "South Korea": "Asia", "North Korea": "Asia", "Myanmar": "Asia",
     "Sri Lanka": "Asia", "Malaysia": "Asia", "Afghanistan": "Asia", "Nepal": "Asia",
-
     "Israel": "Middle East", "Egypt": "Middle East", "Syria": "Middle East",
     "Iraq": "Middle East", "Iran": "Middle East", "Saudi Arabia": "Middle East",
     "Turkey": "Middle East", "Yemen": "Middle East", "Lebanon": "Middle East",
     "Jordan": "Middle East", "United Arab Emirates": "Middle East", "Kuwait": "Middle East",
-
     "Nigeria": "Africa", "South Africa": "Africa", "Kenya": "Africa", "Somalia": "Africa",
     "Sudan": "Africa", "Ethiopia": "Africa", "Rwanda": "Africa", "Mali": "Africa",
     "Congo": "Africa", "Democratic Republic of the Congo": "Africa", "Libya": "Africa",
     "Algeria": "Africa", "Tunisia": "Africa", "Uganda": "Africa", "Ghana": "Africa",
-
     "Australia": "Oceania", "New Zealand": "Oceania", "Papua New Guinea": "Oceania"
 };
 
@@ -78,7 +67,26 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
-const markerLayer = L.layerGroup().addTo(map);
+const hotZoneLayer = L.layerGroup().addTo(map);
+
+const markerLayer = L.markerClusterGroup({
+    maxClusterRadius: 50,
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    iconCreateFunction: cluster => {
+        const count = cluster.getChildCount();
+        const tier = count >= 100 ? "lg" : count >= 25 ? "md" : "sm";
+        return L.divIcon({
+            html: `<div class="cluster-inner">${count.toLocaleString()}</div>`,
+            className: `nhira-cluster nhira-cluster-${tier}`,
+            iconSize: null
+        });
+    }
+}).addTo(map);
+
+// Forecast risk overlay — off by default, toggled from the Forecast
+// panel. Not added to the map until the user turns it on.
+const forecastLayer = L.layerGroup();
 
 // ---------------------------------------------------------------------
 // Element references
@@ -99,14 +107,12 @@ const legend = document.getElementById("legend");
 const legendToggle = document.getElementById("legendToggle");
 const legendList = document.getElementById("legendList");
 
-// Date-range research panel
 const startYearInput = document.getElementById("startYear");
 const endYearInput = document.getElementById("endYear");
 const rangeSearchBtn = document.getElementById("rangeSearchBtn");
 const clearRangeBtn = document.getElementById("clearRangeBtn");
 const rangeResults = document.getElementById("rangeResults");
 
-// Research & Statistics panel
 const statsToggle = document.getElementById("statsToggle");
 const statsPanel = document.getElementById("statsPanel");
 const closeStats = document.getElementById("closeStats");
@@ -127,28 +133,39 @@ const rsTopFatalities = document.getElementById("rsTopFatalities");
 const rsTopCountries = document.getElementById("rsTopCountries");
 const rsConcentration = document.getElementById("rsConcentration");
 
-// Dataset Coverage / Source Coverage — describe the WHOLE dataset,
-// not the filtered subset, so they don't move when someone changes
-// filters. See renderDatasetCoverage() / renderSourceCoverage().
 const datasetCoverage = document.getElementById("datasetCoverage");
 const coverageLastUpdated = document.getElementById("coverageLastUpdated");
 const coverageNeedsReview = document.getElementById("coverageNeedsReview");
 const sourceCoverage = document.getElementById("sourceCoverage");
 
+// Forecast panel
+const forecastToggle = document.getElementById("forecastToggle");
+const forecastPanel = document.getElementById("forecastPanel");
+const closeForecast = document.getElementById("closeForecast");
+const fcCountry = document.getElementById("fcCountry");
+const fcGenerateBtn = document.getElementById("fcGenerateBtn");
+const fcMapToggle = document.getElementById("fcMapToggle");
+const fcOutput = document.getElementById("fcOutput");
+
+const FORECAST_ELEMENTS_PRESENT = forecastToggle && forecastPanel && closeForecast &&
+    fcCountry && fcGenerateBtn && fcMapToggle && fcOutput;
+
 const ANALYSIS_CANVAS_IDS = [
     "chartIncidentsByDecade", "chartIncidentsByCountry", "chartIncidentsByRegion",
     "chartFatalitiesByDecade", "chartInjuriesByDecade",
-    "chartFrequencyTrend", "chartFatalityTrend", "chartCategoryTrend"
+    "chartFrequencyTrend", "chartFatalityTrend", "chartCategoryTrend",
+    "chartCumulative", "chartSeverityScatter"
 ];
 const analysisCanvases = {};
 ANALYSIS_CANVAS_IDS.forEach(id => { analysisCanvases[id] = document.getElementById(id); });
-const analysisCharts = {}; // holds live Chart.js instances so they can be destroyed/redrawn
+const analysisCharts = {};
 
 const MIN_YEAR = Number(slider.min);
 const MAX_YEAR = Number(slider.max);
 const THIS_YEAR = new Date().getFullYear();
 const PLAY_STEP_MS = 200;
 const PLAY_STEP_YEARS = 1;
+const DUAL_PANEL_MIN_WIDTH = 1100;
 
 // ---------------------------------------------------------------------
 // State
@@ -195,9 +212,6 @@ function formatLastModified(rawDate) {
 
 // ---------------------------------------------------------------------
 // Type resolution
-//
-// Preferred: add "type": "shooting" to each record in history.json.
-// Until then, this guesses from the text so the legend still means something.
 // ---------------------------------------------------------------------
 
 const TYPE_HINTS = [
@@ -212,11 +226,7 @@ const TYPE_HINTS = [
 
 function resolveType(event) {
     if (event.type && INCIDENT_TYPES[event.type]) return event.type;
-
-    const haystack = [event.title, event.description, event.venue]
-        .filter(Boolean)
-        .join(" ");
-
+    const haystack = [event.title, event.description, event.venue].filter(Boolean).join(" ");
     for (const [pattern, type] of TYPE_HINTS) {
         if (pattern.test(haystack)) return type;
     }
@@ -231,12 +241,10 @@ function buildLegend() {
     const rows = Object.entries(INCIDENT_TYPES).map(([, t]) =>
         `<li><span class="swatch" style="background:${t.color}"></span>${t.label}</li>`
     );
-
     rows.push(
         `<li><span class="swatch is-zone" style="background:${HOTZONE_COLOR}"></span>Hot zone (${HOTZONE_THRESHOLD}+ fatalities)</li>`,
         `<li><span class="swatch is-projected"></span>Projected / future</li>`
     );
-
     legendList.innerHTML = rows.join("");
 }
 
@@ -253,10 +261,8 @@ legendToggle.addEventListener("click", () => {
 
 fetch("history.json")
     .then(response => {
-        if (!response.ok) {
-            throw new Error(`Failed to load history.json: ${response.status}`);
-        }
-        datasetLastModified = response.headers.get("Last-Modified"); // may be null if the host doesn't send it
+        if (!response.ok) throw new Error(`Failed to load history.json: ${response.status}`);
+        datasetLastModified = response.headers.get("Last-Modified");
         return response.json();
     })
     .then(data => {
@@ -271,10 +277,8 @@ fetch("history.json")
 
         const outOfRange = events.filter(e => e.year < MIN_YEAR || e.year > MAX_YEAR);
         if (outOfRange.length) {
-            console.warn(
-                `${outOfRange.length} incident(s) fall outside ${MIN_YEAR}-${MAX_YEAR} and will never appear:`,
-                outOfRange.map(e => `${e.year} ${e.title}`)
-            );
+            console.warn(`${outOfRange.length} incident(s) fall outside ${MIN_YEAR}-${MAX_YEAR} and will never appear:`,
+                outOfRange.map(e => `${e.year} ${e.title}`));
         }
 
         const badCoords = events.filter(e => !Number.isFinite(e.lat) || !Number.isFinite(e.lng));
@@ -287,6 +291,7 @@ fetch("history.json")
         populateResearchFilters();
         renderDatasetCoverage();
         renderSourceCoverage();
+        populateForecastCountries();
     })
     .catch(error => {
         console.error(error);
@@ -303,55 +308,45 @@ function addMarker(event) {
     const type = INCIDENT_TYPES[event.resolvedType] || INCIDENT_TYPES.other;
     const projected = event.year > THIS_YEAR;
 
-    // Hot zone ring for high-casualty incidents
     if (event.fatalityCount >= HOTZONE_THRESHOLD) {
         const radius = Math.min(600000, 40000 + event.fatalityCount * 3000);
         L.circle([event.lat, event.lng], {
-            radius,
-            color: HOTZONE_COLOR,
-            weight: 1,
+            radius, color: HOTZONE_COLOR, weight: 1,
             dashArray: projected ? "5,5" : null,
-            fillColor: HOTZONE_COLOR,
-            fillOpacity: projected ? 0.04 : 0.12,
+            fillColor: HOTZONE_COLOR, fillOpacity: projected ? 0.04 : 0.12,
             interactive: false
-        }).addTo(markerLayer);
+        }).addTo(hotZoneLayer);
     }
 
-    // Marker scales gently with fatalities so severity reads at a glance
-    const radius = 6 + Math.min(8, Math.sqrt(event.fatalityCount));
+    const pxRadius = 6 + Math.min(8, Math.sqrt(event.fatalityCount));
+    const diameter = pxRadius * 2;
+    const borderColor = projected ? type.color : "#0E1116";
+    const fillStyle = projected ? "transparent" : type.color;
+    const borderStyle = projected ? "dashed" : "solid";
 
-    L.circleMarker([event.lat, event.lng], {
-        radius,
-        color: projected ? type.color : "#0E1116",
-        weight: 2,
-        dashArray: projected ? "3,3" : null,
-        fillColor: type.color,
-        fillOpacity: projected ? 0 : 0.85
-    })
-        .addTo(markerLayer)
+    const icon = L.divIcon({
+        className: "",
+        html: `<div class="nhira-marker" style="width:${diameter}px;height:${diameter}px;background:${fillStyle};border:2px ${borderStyle} ${borderColor};"></div>`,
+        iconSize: [diameter, diameter],
+        iconAnchor: [diameter / 2, diameter / 2]
+    });
+
+    L.marker([event.lat, event.lng], { icon })
         .bindTooltip(`${event.title} (${event.year})`, { direction: "top" })
         .on("click", e => {
             L.DomEvent.stop(e);
             openPanel(event);
-        });
+        })
+        .addTo(markerLayer);
 }
 
 function clearMarkers() {
     markerLayer.clearLayers();
+    hotZoneLayer.clearLayers();
 }
 
 // ---------------------------------------------------------------------
 // Unified filter state
-//
-// Both the map/timeline/search AND the Research & Statistics panel read
-// through this one function. It is the single source of truth for
-// "does this incident match what the user currently has selected" —
-// nothing downstream (map, stats, charts, timeline, rankings, search
-// results) computes its own separate notion of "matches."
-//
-// RESEARCH_ELEMENTS_PRESENT is declared later in this file, before this
-// function is ever called (data doesn't load, and therefore this isn't
-// invoked, until after the whole script has parsed) — see "Data load."
 // ---------------------------------------------------------------------
 
 function matchesActiveResearchFilters(event) {
@@ -372,17 +367,6 @@ function matchesActiveResearchFilters(event) {
     return true;
 }
 
-// ---------------------------------------------------------------------
-// Combined range + search filtering
-//
-// If startYear/endYear are left blank or invalid, this falls back to the
-// old cumulative behavior: everything from MIN_YEAR up through whatever
-// year the timeline slider is sitting on. Also intersected with whatever
-// is currently set in the Research & Statistics panel, via
-// matchesActiveResearchFilters — so the map can never show incidents the
-// stats panel has filtered out, or vice versa.
-// ---------------------------------------------------------------------
-
 function getMatchedEvents() {
     const sliderYear = Number(slider.value);
     const text = search.value.trim().toLowerCase();
@@ -390,45 +374,21 @@ function getMatchedEvents() {
     let startYear = Number(startYearInput?.value);
     let endYear = Number(endYearInput?.value);
 
-    // If no valid range is entered, use the timeline
-    if (!Number.isFinite(startYear)) {
-        startYear = MIN_YEAR;
-    }
-
-    if (!Number.isFinite(endYear)) {
-        endYear = sliderYear;
-    }
-
-    // Prevent reversed ranges
-    if (startYear > endYear) {
-        [startYear, endYear] = [endYear, startYear];
-    }
+    if (!Number.isFinite(startYear)) startYear = MIN_YEAR;
+    if (!Number.isFinite(endYear)) endYear = sliderYear;
+    if (startYear > endYear) [startYear, endYear] = [endYear, startYear];
 
     return events.filter(event => {
-
-        // Event must fall inside selected historical range
-        const withinRange =
-            event.year >= startYear &&
-            event.year <= endYear;
-
-        // Text search across the full record
+        const withinRange = event.year >= startYear && event.year <= endYear;
         const matchesText =
             !text ||
             [
-                event.title,
-                event.city,
-                event.state,
-                event.country,
-                event.venue,
-                event.description,
-                event.year,
-                event.resolvedType,
+                event.title, event.city, event.state, event.country, event.venue,
+                event.description, event.year, event.resolvedType,
                 INCIDENT_TYPES[event.resolvedType]?.label
             ]
                 .filter(Boolean)
-                .some(field =>
-                    String(field).toLowerCase().includes(text)
-                );
+                .some(field => String(field).toLowerCase().includes(text));
 
         return withinRange && matchesText && matchesActiveResearchFilters(event);
     });
@@ -441,21 +401,16 @@ function updateYearReadout(year) {
     eraTag.classList.toggle("is-projected", projected);
 }
 
-// Scores how well an event matches the search text, so the map zooms to
-// the most relevant hit instead of just whichever record is first in
-// history.json.
 function scoreMatch(event, text) {
     const title = String(event.title || "").toLowerCase();
-
     if (title === text) return 3;
     if (title.startsWith(text)) return 2;
     if (title.includes(text)) return 1;
-    return 0; // matched on city/state/country/venue/description/type instead
+    return 0;
 }
 
 function applyFilters() {
     const year = Number(slider.value);
-
     updateYearReadout(year);
     clearMarkers();
 
@@ -464,15 +419,10 @@ function applyFilters() {
 
     const text = search.value.trim().toLowerCase();
     if (text && matchedEvents.length > 0) {
-        const bestMatch = [...matchedEvents].sort(
-            (a, b) => scoreMatch(b, text) - scoreMatch(a, text)
-        )[0];
-
+        const bestMatch = [...matchedEvents].sort((a, b) => scoreMatch(b, text) - scoreMatch(a, text))[0];
         map.setView([bestMatch.lat, bestMatch.lng], 8);
         openPanel(bestMatch);
     } else if (text && matchedEvents.length === 0) {
-        // Nothing matched — don't leave a stale record from a previous
-        // search sitting in the panel.
         panelContent.innerHTML = `<h2>No incidents found</h2><p>No recorded incidents match "${escapeHtml(search.value.trim())}".</p>`;
         openSheet();
     }
@@ -481,7 +431,7 @@ function applyFilters() {
 const debouncedApplyFilters = debounce(applyFilters, 150);
 
 slider.addEventListener("input", () => {
-    updateYearReadout(slider.value); // instant feedback while dragging
+    updateYearReadout(slider.value);
     debouncedApplyFilters();
 });
 
@@ -502,19 +452,13 @@ function runRangeResearch() {
 
     if (startYear > endYear) {
         [startYear, endYear] = [endYear, startYear];
-
         startYearInput.value = startYear;
         endYearInput.value = endYear;
     }
 
-    // Move the timeline to the end of the research period
-    slider.value = Math.min(
-        Math.max(endYear, MIN_YEAR),
-        MAX_YEAR
-    );
+    slider.value = Math.min(Math.max(endYear, MIN_YEAR), MAX_YEAR);
 
     const matchedEvents = getMatchedEvents();
-
     clearMarkers();
     matchedEvents.forEach(addMarker);
     updateYearReadout(slider.value);
@@ -528,7 +472,6 @@ function runRangeResearch() {
         <strong>${endYear}</strong>.
     `;
 
-    // If we found something, zoom to the first result
     if (matchedEvents.length > 0) {
         const firstEvent = matchedEvents[0];
         map.setView([firstEvent.lat, firstEvent.lng], 4);
@@ -541,21 +484,15 @@ if (rangeSearchBtn && clearRangeBtn && startYearInput && endYearInput && rangeRe
     clearRangeBtn.addEventListener("click", () => {
         startYearInput.value = MIN_YEAR;
         endYearInput.value = MAX_YEAR;
-
         rangeResults.textContent = "";
-
         search.value = "";
-
         slider.value = MAX_YEAR;
-
         applyFilters();
     });
 
     [startYearInput, endYearInput].forEach(input => {
         input.addEventListener("keydown", event => {
-            if (event.key === "Enter") {
-                runRangeResearch();
-            }
+            if (event.key === "Enter") runRangeResearch();
         });
     });
 } else {
@@ -564,10 +501,6 @@ if (rangeSearchBtn && clearRangeBtn && startYearInput && endYearInput && rangeRe
 
 // ---------------------------------------------------------------------
 // Research & Statistics panel
-//
-// Reads through matchesActiveResearchFilters (see above) — the same
-// gate the map applies — so the map and the stats panel can never show
-// two different filtered datasets.
 // ---------------------------------------------------------------------
 
 const RESEARCH_ELEMENTS_PRESENT = statsToggle && statsPanel && closeStats &&
@@ -587,9 +520,7 @@ function populateResearchFilters() {
         regions.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join("");
 
     rsCategory.innerHTML = '<option value="">All categories</option>' +
-        Object.entries(INCIDENT_TYPES)
-            .map(([key, t]) => `<option value="${key}">${escapeHtml(t.label)}</option>`)
-            .join("");
+        Object.entries(INCIDENT_TYPES).map(([key, t]) => `<option value="${key}">${escapeHtml(t.label)}</option>`).join("");
 }
 
 function getResearchMatches() {
@@ -598,23 +529,11 @@ function getResearchMatches() {
 
 // ---------------------------------------------------------------------
 // Dataset Coverage + Source Coverage
-//
-// These describe the ENTIRE dataset (all of `events`), not the current
-// filtered subset — they're a snapshot of how much of NHIRA's data is
-// sourced and reviewed, so they should stay stable while someone plays
-// with filters elsewhere in the panel. Re-run once, after data loads.
-//
-// Source coverage categories are derived only from fields that already
-// exist on each record — nothing here is a placeholder number:
-//   cited          → has at least one source AND sourceConfidence "high"
-//   partial        → has at least one source, but not high confidence
-//   needsReview    → no sources on file at all
 // ---------------------------------------------------------------------
 
 function sourceCoverageCategory(event) {
     const hasSources = Array.isArray(event.sources) && event.sources.length > 0;
     if (!hasSources) return "needsReview";
-
     const confidence = String(event.sourceConfidence || "").toLowerCase();
     return confidence === "high" ? "cited" : "partial";
 }
@@ -638,10 +557,7 @@ function renderDatasetCoverage() {
         <div class="stat-card"><b>${pctSourced}%</b><span>Records with sources</span></div>
     `;
 
-    if (coverageLastUpdated) {
-        coverageLastUpdated.textContent = `Dataset last updated: ${formatLastModified(datasetLastModified)}`;
-    }
-
+    if (coverageLastUpdated) coverageLastUpdated.textContent = `Dataset last updated: ${formatLastModified(datasetLastModified)}`;
     if (coverageNeedsReview) {
         coverageNeedsReview.textContent = events.length
             ? `${needsReview.toLocaleString()} of ${events.length.toLocaleString()} record${events.length === 1 ? "" : "s"} currently have no sources on file and need review.`
@@ -676,9 +592,7 @@ function renderSourceCoverage() {
 // Analysis helpers
 // ---------------------------------------------------------------------
 
-function decadeOf(year) {
-    return Math.floor(year / 10) * 10;
-}
+function decadeOf(year) { return Math.floor(year / 10) * 10; }
 
 function countBy(items, keyFn) {
     const counts = {};
@@ -700,23 +614,13 @@ function sumBy(items, keyFn, valueFn) {
     return sums;
 }
 
-function topEntries(obj, n) {
-    return Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n);
-}
+function topEntries(obj, n) { return Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n); }
+function sortedDecadeLabels(obj) { return Object.keys(obj).map(Number).sort((a, b) => a - b).map(String); }
 
-function sortedDecadeLabels(obj) {
-    return Object.keys(obj).map(Number).sort((a, b) => a - b).map(String);
-}
-
-// Renders (or re-renders) a Chart.js chart into the given canvas,
-// destroying any previous instance on that canvas first.
 function drawChart(canvasId, config) {
     const canvas = analysisCanvases[canvasId];
     if (!canvas || typeof Chart === "undefined") return;
-
-    if (analysisCharts[canvasId]) {
-        analysisCharts[canvasId].destroy();
-    }
+    if (analysisCharts[canvasId]) analysisCharts[canvasId].destroy();
     analysisCharts[canvasId] = new Chart(canvas, config);
 }
 
@@ -731,44 +635,31 @@ const CHART_BASE_OPTIONS = {
 };
 
 function renderCharts(matches) {
-    if (typeof Chart === "undefined") return; // Chart.js failed to load — skip charts, rest of the panel still works
+    if (typeof Chart === "undefined") return;
 
-    // --- Incidents by decade ---
     const byDecade = countBy(matches, e => decadeOf(e.year));
     const decadeLabels = sortedDecadeLabels(byDecade);
     drawChart("chartIncidentsByDecade", {
         type: "bar",
-        data: {
-            labels: decadeLabels,
-            datasets: [{ data: decadeLabels.map(d => byDecade[d]), backgroundColor: "#256B9A" }]
-        },
+        data: { labels: decadeLabels, datasets: [{ data: decadeLabels.map(d => byDecade[d]), backgroundColor: "#256B9A" }] },
         options: CHART_BASE_OPTIONS
     });
 
-    // --- Incidents by country (top 10) ---
     const byCountry = topEntries(countBy(matches, e => e.country), 10);
     drawChart("chartIncidentsByCountry", {
         type: "bar",
-        data: {
-            labels: byCountry.map(([c]) => c),
-            datasets: [{ data: byCountry.map(([, v]) => v), backgroundColor: "#B3322B" }]
-        },
+        data: { labels: byCountry.map(([c]) => c), datasets: [{ data: byCountry.map(([, v]) => v), backgroundColor: "#B3322B" }] },
         options: { ...CHART_BASE_OPTIONS, indexAxis: "y" }
     });
 
-    // --- Incidents by region ---
     const byRegion = countBy(matches, e => getRegion(e.country));
     const regionLabels = Object.keys(byRegion).sort();
     drawChart("chartIncidentsByRegion", {
         type: "bar",
-        data: {
-            labels: regionLabels,
-            datasets: [{ data: regionLabels.map(r => byRegion[r]), backgroundColor: "#7A3E9D" }]
-        },
+        data: { labels: regionLabels, datasets: [{ data: regionLabels.map(r => byRegion[r]), backgroundColor: "#7A3E9D" }] },
         options: CHART_BASE_OPTIONS
     });
 
-    // --- Fatalities / injuries by decade ---
     const fatByDecade = sumBy(matches, e => decadeOf(e.year), e => e.fatalityCount);
     const injByDecade = sumBy(matches, e => decadeOf(e.year), e => toNumber(e.injuries));
     const fatDecadeLabels = sortedDecadeLabels(fatByDecade);
@@ -776,54 +667,28 @@ function renderCharts(matches) {
 
     drawChart("chartFatalitiesByDecade", {
         type: "bar",
-        data: {
-            labels: fatDecadeLabels,
-            datasets: [{ data: fatDecadeLabels.map(d => fatByDecade[d]), backgroundColor: "#D97A17" }]
-        },
+        data: { labels: fatDecadeLabels, datasets: [{ data: fatDecadeLabels.map(d => fatByDecade[d]), backgroundColor: "#D97A17" }] },
         options: CHART_BASE_OPTIONS
     });
 
     drawChart("chartInjuriesByDecade", {
         type: "bar",
-        data: {
-            labels: injDecadeLabels,
-            datasets: [{ data: injDecadeLabels.map(d => injByDecade[d]), backgroundColor: "#2E7D5B" }]
-        },
+        data: { labels: injDecadeLabels, datasets: [{ data: injDecadeLabels.map(d => injByDecade[d]), backgroundColor: "#2E7D5B" }] },
         options: CHART_BASE_OPTIONS
     });
 
-    // --- Trend: incident frequency + fatalities over time (line) ---
     drawChart("chartFrequencyTrend", {
         type: "line",
-        data: {
-            labels: decadeLabels,
-            datasets: [{
-                data: decadeLabels.map(d => byDecade[d]),
-                borderColor: "#256B9A",
-                backgroundColor: "rgba(37,107,154,.15)",
-                tension: .3,
-                fill: true
-            }]
-        },
+        data: { labels: decadeLabels, datasets: [{ data: decadeLabels.map(d => byDecade[d]), borderColor: "#256B9A", backgroundColor: "rgba(37,107,154,.15)", tension: .3, fill: true }] },
         options: CHART_BASE_OPTIONS
     });
 
     drawChart("chartFatalityTrend", {
         type: "line",
-        data: {
-            labels: fatDecadeLabels,
-            datasets: [{
-                data: fatDecadeLabels.map(d => fatByDecade[d]),
-                borderColor: "#B3322B",
-                backgroundColor: "rgba(179,50,43,.15)",
-                tension: .3,
-                fill: true
-            }]
-        },
+        data: { labels: fatDecadeLabels, datasets: [{ data: fatDecadeLabels.map(d => fatByDecade[d]), borderColor: "#B3322B", backgroundColor: "rgba(179,50,43,.15)", tension: .3, fill: true }] },
         options: CHART_BASE_OPTIONS
     });
 
-    // --- Category mix by decade (stacked bar) ---
     const categoryKeys = Object.keys(INCIDENT_TYPES);
     const categoryDatasets = categoryKeys.map(key => ({
         label: INCIDENT_TYPES[key].label,
@@ -845,7 +710,31 @@ function renderCharts(matches) {
         }
     });
 
-    // --- Highest-fatality incidents ---
+    const sortedByYear = [...matches].sort((a, b) => a.year - b.year);
+    const cumulativeLabels = [];
+    const cumulativeCounts = [];
+    sortedByYear.forEach((e, i) => {
+        cumulativeLabels.push(e.year);
+        cumulativeCounts.push(i + 1);
+    });
+    drawChart("chartCumulative", {
+        type: "line",
+        data: { labels: cumulativeLabels, datasets: [{ data: cumulativeCounts, borderColor: "#4A5560", backgroundColor: "rgba(74,85,96,.1)", pointRadius: 0, tension: 0, fill: true }] },
+        options: CHART_BASE_OPTIONS
+    });
+
+    drawChart("chartSeverityScatter", {
+        type: "scatter",
+        data: { datasets: [{ data: matches.map(e => ({ x: e.fatalityCount, y: toNumber(e.injuries) })), backgroundColor: "rgba(179,50,43,.55)" }] },
+        options: {
+            ...CHART_BASE_OPTIONS,
+            scales: {
+                x: { title: { display: true, text: "Fatalities" }, ticks: { font: { size: 10 } } },
+                y: { title: { display: true, text: "Injuries" }, ticks: { font: { size: 10 } }, beginAtZero: true }
+            }
+        }
+    });
+
     const topFatalities = [...matches].sort((a, b) => b.fatalityCount - a.fatalityCount).slice(0, 8);
     rsTopFatalities.innerHTML = topFatalities.length
         ? topFatalities.map(e => `
@@ -856,7 +745,6 @@ function renderCharts(matches) {
         `).join("")
         : "<li>No incidents match these filters.</li>";
 
-    // --- Countries with the most incidents ---
     const topCountries = topEntries(countBy(matches, e => e.country), 8);
     rsTopCountries.innerHTML = topCountries.length
         ? topCountries.map(([country, count]) => `
@@ -864,7 +752,6 @@ function renderCharts(matches) {
         `).join("")
         : "<li>No incidents match these filters.</li>";
 
-    // --- Geographic concentration ---
     const allCountryEntries = topEntries(countBy(matches, e => e.country), 5);
     const top5Total = allCountryEntries.reduce((sum, [, v]) => sum + v, 0);
     const share = matches.length ? Math.round((top5Total / matches.length) * 100) : 0;
@@ -878,9 +765,7 @@ function renderMethodology(matches) {
 
     const startYear = rsStartYear.value || MIN_YEAR;
     const endYear = rsEndYear.value || MAX_YEAR;
-    const categoryLabel = rsCategory.value
-        ? (INCIDENT_TYPES[rsCategory.value]?.label || rsCategory.value)
-        : "All categories";
+    const categoryLabel = rsCategory.value ? (INCIDENT_TYPES[rsCategory.value]?.label || rsCategory.value) : "All categories";
     const countryLabel = rsCountry.value || "All countries";
     const regionLabel = rsRegion.value || "All regions";
     const minFatalities = Number(rsMinFatalities.value) || 0;
@@ -929,9 +814,7 @@ function renderResearch(matches) {
     renderMethodology(matches);
 
     const counts = {};
-    matches.forEach(e => {
-        counts[e.resolvedType] = (counts[e.resolvedType] || 0) + 1;
-    });
+    matches.forEach(e => { counts[e.resolvedType] = (counts[e.resolvedType] || 0) + 1; });
 
     const breakdownRows = Object.entries(counts)
         .sort((a, b) => b[1] - a[1])
@@ -948,9 +831,7 @@ function renderResearch(matches) {
             `;
         });
 
-    rsBreakdown.innerHTML = breakdownRows.length
-        ? breakdownRows.join("")
-        : "<li>No incidents match these filters.</li>";
+    rsBreakdown.innerHTML = breakdownRows.length ? breakdownRows.join("") : "<li>No incidents match these filters.</li>";
 
     const sortedMatches = [...matches].sort((a, b) => a.year - b.year);
     const MAX_LISTED = 200;
@@ -977,7 +858,8 @@ function openStats() {
     statsPanel.classList.add("open");
     statsPanel.setAttribute("aria-hidden", "false");
     statsToggle.setAttribute("aria-expanded", "true");
-    sidePanel.classList.remove("open"); // only one bottom sheet at a time on mobile
+    if (FORECAST_ELEMENTS_PRESENT) closeForecastPanel();
+    if (window.innerWidth < DUAL_PANEL_MIN_WIDTH) sidePanel.classList.remove("open");
     if (window.innerWidth < 760) scrim.hidden = false;
     runResearch();
 }
@@ -989,12 +871,6 @@ function closeStatsPanel() {
     scrim.hidden = true;
 }
 
-// Any change in the Research & Statistics filters re-renders BOTH the
-// stats panel and the map/timeline, since both now read through the
-// same matchesActiveResearchFilters gate. This is what keeps them from
-// ever showing two different filtered datasets. Dataset Coverage and
-// Source Coverage describe the whole dataset and don't need to be
-// re-run here — they only change when the underlying data changes.
 function refreshEverything() {
     runResearch();
     applyFilters();
@@ -1020,8 +896,6 @@ if (RESEARCH_ELEMENTS_PRESENT) {
     }
     rsGenerateBtn.addEventListener("click", refreshEverything);
 
-    // Interactive filters: any change re-runs the analysis AND the map
-    // automatically, so they never drift apart.
     const debouncedRefresh = debounce(refreshEverything, 200);
     [rsStartYear, rsEndYear, rsMinFatalities].forEach(input => {
         input.addEventListener("input", debouncedRefresh);
@@ -1042,6 +916,301 @@ if (RESEARCH_ELEMENTS_PRESENT) {
 } else {
     console.warn("Research & Statistics controls not found in the DOM — skipping their setup so the rest of the app still loads.");
 }
+
+// =====================================================================
+// FORECAST — NHIRA v1
+//
+// This is a transparent descriptive-statistics model, NOT a fitted
+// Poisson/negative-binomial regression, random forest, or gradient
+// boosting model. It computes:
+//   - a long-run per-year baseline
+//   - a linear trend over the recent window
+//   - a recent-year rate compared to that baseline
+//   - month-of-year seasonality (only when enough dated — not just
+//     year-only — records exist for the country)
+//   - an uncertainty band derived from the dataset's own year-to-year
+//     variance (a lightweight proxy for the fact that incident counts
+//     are frequently overdispersed relative to a plain Poisson model,
+//     which is exactly why negative-binomial is the right next step
+//     once real regression is built server-side)
+//
+// Wording spec (locked): every result and map tooltip reads as
+// "NHIRA statistical forecast: <level> expected incident activity" —
+// never a prediction that an incident will occur. Population-adjusted
+// rate is permanently reported NOT AVAILABLE until a real population
+// denominator dataset exists.
+// =====================================================================
+
+const FORECAST_WINDOW_YEARS = 10;
+const RISK_COLORS = { lower: "#2E7D5B", elevated: "#F0A202", high: "#D97A17", veryhigh: "#B3322B" };
+const RISK_LABELS = { lower: "Lower", elevated: "Elevated", high: "High", veryhigh: "Very High" };
+
+function linearTrendSlope(points) {
+    const n = points.length;
+    if (n < 2) return 0;
+    const sumX = points.reduce((s, p) => s + p[0], 0);
+    const sumY = points.reduce((s, p) => s + p[1], 0);
+    const sumXY = points.reduce((s, p) => s + p[0] * p[1], 0);
+    const sumXX = points.reduce((s, p) => s + p[0] * p[0], 0);
+    const denom = n * sumXX - sumX * sumX;
+    if (denom === 0) return 0;
+    return (n * sumXY - sumX * sumY) / denom;
+}
+
+function computeForecast(country) {
+    const countryEvents = events.filter(e => e.country === country && e.year <= THIS_YEAR);
+    if (countryEvents.length === 0) return null;
+
+    const yearlyCounts = countBy(countryEvents, e => e.year);
+    const allYears = Object.keys(yearlyCounts).map(Number).sort((a, b) => a - b);
+    if (allYears.length === 0) return null;
+
+    const windowYears = allYears.filter(y => y > THIS_YEAR - FORECAST_WINDOW_YEARS);
+    const usableYears = windowYears.length >= 2 ? windowYears : allYears;
+
+    const counts = usableYears.map(y => yearlyCounts[y] || 0);
+    const mean = counts.reduce((a, b) => a + b, 0) / counts.length;
+    const variance = counts.reduce((a, b) => a + (b - mean) ** 2, 0) / counts.length;
+    const dispersionRatio = mean > 0 ? Math.round((variance / mean) * 100) / 100 : 0;
+
+    const trendPoints = usableYears.map((y, i) => [i, yearlyCounts[y] || 0]);
+    const slope = linearTrendSlope(trendPoints);
+
+    const last2 = usableYears.slice(-2).map(y => yearlyCounts[y] || 0);
+    const recentRate = last2.length ? last2.reduce((a, b) => a + b, 0) / last2.length : mean;
+
+    const last3 = usableYears.slice(-3).map(y => yearlyCounts[y] || 0);
+    const movAvg3 = last3.length ? last3.reduce((a, b) => a + b, 0) / last3.length : mean;
+
+    const lastYear = usableYears[usableYears.length - 1];
+    const prevYear = usableYears[usableYears.length - 2];
+    let yoyChangePct = null;
+    if (prevYear !== undefined && yearlyCounts[prevYear] > 0) {
+        yoyChangePct = Math.round((((yearlyCounts[lastYear] || 0) - yearlyCounts[prevYear]) / yearlyCounts[prevYear]) * 1000) / 10;
+    }
+
+    const allCounts = allYears.map(y => yearlyCounts[y] || 0);
+    const longRunRate = allCounts.reduce((a, b) => a + b, 0) / allCounts.length;
+
+    // Seasonality needs real dates, not just years — skip gracefully
+    // if there isn't enough dated data to say anything meaningful.
+    const datedEvents = countryEvents.filter(e => /^\d{4}-\d{2}-\d{2}$/.test(String(e.date || "")));
+    let seasonalityLabel = "Insufficient dated records";
+    if (datedEvents.length >= 20) {
+        const byMonth = new Array(12).fill(0);
+        datedEvents.forEach(e => { byMonth[new Date(e.date).getMonth()]++; });
+        const overallAvg = datedEvents.length / 12;
+        const now = new Date();
+        const targetMonths = [1, 2, 3].map(offset => (now.getMonth() + offset) % 12);
+        const targetAvg = targetMonths.reduce((sum, m) => sum + byMonth[m], 0) / targetMonths.length;
+        const seasonalityRatio = overallAvg > 0 ? targetAvg / overallAvg : 1;
+        seasonalityLabel = seasonalityRatio > 1.15 ? "Elevated" : seasonalityRatio < 0.85 ? "Reduced" : "Typical";
+    }
+
+    const now = new Date();
+    const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+    const periodMonths = [1, 2, 3].map(offset => {
+        const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+        return { name: MONTH_NAMES[d.getMonth()], year: d.getFullYear() };
+    });
+    const periodLabel = `${periodMonths[0].name}–${periodMonths[2].name} ${periodMonths[2].year}`;
+
+    const projected = Math.max(0, movAvg3 + slope);
+    const margin = Math.max(1, Math.round(Math.sqrt(Math.max(variance, projected))));
+    const estimateLow = Math.max(0, Math.round(projected - margin));
+    const estimateHigh = Math.round(projected + margin);
+
+    const ratio = longRunRate > 0 ? recentRate / longRunRate : (recentRate > 0 ? 2 : 0);
+    let riskTier;
+    if (ratio < 0.85) riskTier = "lower";
+    else if (ratio < 1.15) riskTier = "elevated";
+    else if (ratio < 1.5) riskTier = "high";
+    else riskTier = "veryhigh";
+
+    const totalInWindow = counts.reduce((a, b) => a + b, 0);
+    let confidence;
+    if (usableYears.length >= 8 && totalInWindow >= 15 && dispersionRatio < 3) confidence = "High";
+    else if (usableYears.length >= 4 && totalInWindow >= 6) confidence = "Moderate";
+    else confidence = "Low";
+
+    const trendLabel = slope > 0.15 ? "Increasing" : slope < -0.15 ? "Decreasing" : "Stable";
+
+    return {
+        country, periodLabel, riskTier, estimateLow, estimateHigh,
+        baseline: Math.round(longRunRate * 10) / 10,
+        trendLabel, seasonalityLabel, confidence, dispersionRatio, yoyChangePct,
+        yearsOfData: usableYears.length, totalInWindow
+    };
+}
+
+function renderForecast(country) {
+    if (!fcOutput) return;
+
+    if (!country) {
+        fcOutput.innerHTML = `<p class="dq-empty">Select a country to generate a forecast.</p>`;
+        return;
+    }
+
+    const result = computeForecast(country);
+    if (!result) {
+        fcOutput.innerHTML = `<p class="dq-empty">Not enough historical NHIRA records for ${escapeHtml(country)} to generate a forecast.</p>`;
+        return;
+    }
+
+    const riskLabel = RISK_LABELS[result.riskTier];
+
+    fcOutput.innerHTML = `
+        <div class="forecast-header">
+            <span class="risk-badge risk-${result.riskTier}">${riskLabel}</span>
+            <h3>NHIRA statistical forecast: ${riskLabel.toLowerCase()} expected incident activity</h3>
+            <p class="forecast-subhead">${escapeHtml(result.country)} · ${result.periodLabel}</p>
+        </div>
+
+        <dl class="forecast-fields">
+            <dt>Forecast period</dt><dd>${result.periodLabel}</dd>
+            <dt>Expected incident level</dt><dd>${riskLabel}</dd>
+            <dt>Estimated incident count</dt><dd>${result.estimateLow}–${result.estimateHigh}</dd>
+            <dt>Baseline (long-run avg/year)</dt><dd>${result.baseline}</dd>
+            <dt>Trend</dt><dd>${result.trendLabel}</dd>
+            <dt>Seasonality</dt><dd>${result.seasonalityLabel}</dd>
+            <dt>Confidence</dt><dd>${result.confidence}</dd>
+        </dl>
+
+        <p class="chart-title">Primary contributing factors</p>
+        <ul class="forecast-factors">
+            <li>Long-term incident trend (${result.trendLabel.toLowerCase()} over ${result.yearsOfData} year${result.yearsOfData === 1 ? "" : "s"} of data)</li>
+            <li>Recent incident frequency${result.yoyChangePct === null ? "" : ` (${result.yoyChangePct > 0 ? "+" : ""}${result.yoyChangePct}% year-over-year)`}</li>
+            <li>Seasonal pattern (${result.seasonalityLabel.toLowerCase()})</li>
+            <li>Regional historical rate (${result.baseline} incidents/year long-run average)</li>
+            <li>Population-adjusted rate — not available (no population dataset integrated yet)</li>
+        </ul>
+
+        <p class="forecast-disclaimer">
+            This is a statistical risk category based on historical patterns in NHIRA's current dataset —
+            not a prediction that an incident will occur.
+        </p>
+
+        <button id="fcMethodologyToggle" class="methodology-toggle" type="button" aria-expanded="false">
+            How is this forecast calculated?
+        </button>
+        <div id="fcMethodologyBody" class="methodology-body" hidden>
+            <dl>
+                <dt>Model type</dt>
+                <dd>V1 is a transparent descriptive-statistics model — long-run average, linear trend, recent-year rate, and month-of-year seasonality (when enough dated records exist) — with an uncertainty band derived from this country's own year-to-year variance in NHIRA. Every number here traces back to visible arithmetic on the current dataset.</dd>
+
+                <dt>Not yet implemented</dt>
+                <dd>Formal Poisson or negative-binomial regression, random forest, gradient boosting, and proper backtesting all require a fitted statistical/ML model and a validation harness — real modeling work best done server-side (e.g. Python with statsmodels or scikit-learn), not approximated in client-side JavaScript. This V1 is the "clean dataset → features" stage of that pipeline; "statistical model → backtesting" is the planned next step.</dd>
+
+                <dt>Dispersion</dt>
+                <dd>Variance-to-mean ratio for ${escapeHtml(result.country)}'s yearly counts: ${result.dispersionRatio}. A ratio noticeably above 1 indicates overdispersion, which is why negative-binomial (rather than plain Poisson) is the better candidate once real regression is built.</dd>
+
+                <dt>Data used</dt>
+                <dd>${result.yearsOfData} year${result.yearsOfData === 1 ? "" : "s"} of data, ${result.totalInWindow} incident${result.totalInWindow === 1 ? "" : "s"} in the window used for this forecast.</dd>
+
+                <dt>Population-adjusted rate</dt>
+                <dd>Not available. NHIRA does not yet store a population dataset — this is listed as a planned contributing factor, not a computed one.</dd>
+            </dl>
+        </div>
+    `;
+
+    const fcMethodologyToggle = document.getElementById("fcMethodologyToggle");
+    const fcMethodologyBody = document.getElementById("fcMethodologyBody");
+    if (fcMethodologyToggle && fcMethodologyBody) {
+        fcMethodologyToggle.addEventListener("click", () => {
+            const open = fcMethodologyBody.hidden;
+            fcMethodologyBody.hidden = !open;
+            fcMethodologyToggle.setAttribute("aria-expanded", String(open));
+        });
+    }
+}
+
+// --- Forecast risk overlay on the map (approximate — country centroid) ---
+
+function countryCentroids() {
+    const groups = {};
+    events.forEach(e => {
+        if (!e.country || !Number.isFinite(e.lat) || !Number.isFinite(e.lng)) return;
+        if (!groups[e.country]) groups[e.country] = { latSum: 0, lngSum: 0, n: 0 };
+        groups[e.country].latSum += e.lat;
+        groups[e.country].lngSum += e.lng;
+        groups[e.country].n++;
+    });
+    const centroids = {};
+    Object.entries(groups).forEach(([country, g]) => {
+        centroids[country] = { lat: g.latSum / g.n, lng: g.lngSum / g.n };
+    });
+    return centroids;
+}
+
+function renderForecastMapOverlay() {
+    forecastLayer.clearLayers();
+    const centroids = countryCentroids();
+    Object.keys(centroids).forEach(country => {
+        const result = computeForecast(country);
+        if (!result) return;
+        const c = centroids[country];
+        L.circleMarker([c.lat, c.lng], {
+            radius: 14,
+            color: "#0E1116",
+            weight: 1,
+            fillColor: RISK_COLORS[result.riskTier],
+            fillOpacity: 0.75
+        })
+            .bindTooltip(`NHIRA statistical forecast for ${country}: ${RISK_LABELS[result.riskTier]} expected incident activity`, { direction: "top" })
+            .addTo(forecastLayer);
+    });
+}
+
+function populateForecastCountries() {
+    if (!FORECAST_ELEMENTS_PRESENT) return;
+    const countries = [...new Set(events.map(e => e.country).filter(Boolean))].sort();
+    fcCountry.innerHTML = '<option value="">Select a country…</option>' +
+        countries.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+}
+
+function openForecastPanel() {
+    forecastPanel.classList.add("open");
+    forecastPanel.setAttribute("aria-hidden", "false");
+    forecastToggle.setAttribute("aria-expanded", "true");
+    if (RESEARCH_ELEMENTS_PRESENT) closeStatsPanel();
+    if (window.innerWidth < DUAL_PANEL_MIN_WIDTH) sidePanel.classList.remove("open");
+    if (window.innerWidth < 760) scrim.hidden = false;
+}
+
+function closeForecastPanel() {
+    forecastPanel.classList.remove("open");
+    forecastPanel.setAttribute("aria-hidden", "true");
+    forecastToggle.setAttribute("aria-expanded", "false");
+    scrim.hidden = true;
+}
+
+if (FORECAST_ELEMENTS_PRESENT) {
+    forecastToggle.addEventListener("click", () => {
+        if (forecastPanel.classList.contains("open")) {
+            closeForecastPanel();
+        } else {
+            openForecastPanel();
+        }
+    });
+
+    closeForecast.addEventListener("click", closeForecastPanel);
+
+    fcGenerateBtn.addEventListener("click", () => renderForecast(fcCountry.value));
+    fcCountry.addEventListener("change", () => renderForecast(fcCountry.value));
+
+    fcMapToggle.addEventListener("change", () => {
+        if (fcMapToggle.checked) {
+            renderForecastMapOverlay();
+            map.addLayer(forecastLayer);
+        } else {
+            map.removeLayer(forecastLayer);
+        }
+    });
+} else {
+    console.warn("Forecast controls not found in the DOM — skipping their setup so the rest of the app still loads.");
+}
+
 // ---------------------------------------------------------------------
 // Play / Pause timeline
 // ---------------------------------------------------------------------
@@ -1057,24 +1226,19 @@ function stopPlayback() {
 
 function startPlayback() {
     if (playTimer) return;
-
-    if (Number(slider.value) >= MAX_YEAR) {
-        slider.value = MIN_YEAR;
-    }
+    if (Number(slider.value) >= MAX_YEAR) slider.value = MIN_YEAR;
 
     playBtn.disabled = true;
     pauseBtn.disabled = false;
 
     playTimer = setInterval(() => {
         const nextYear = Number(slider.value) + PLAY_STEP_YEARS;
-
         if (nextYear >= MAX_YEAR) {
             slider.value = MAX_YEAR;
             applyFilters();
             stopPlayback();
             return;
         }
-
         slider.value = nextYear;
         applyFilters();
     }, PLAY_STEP_MS);
@@ -1100,45 +1264,26 @@ if (nowBtn) {
 function openSheet() {
     sidePanel.classList.add("open");
     sidePanel.setAttribute("aria-hidden", "false");
-    if (RESEARCH_ELEMENTS_PRESENT) closeStatsPanel();
+    if (RESEARCH_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeStatsPanel();
+    if (FORECAST_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeForecastPanel();
     if (window.innerWidth < 760) scrim.hidden = false;
-
     setTimeout(() => map.invalidateSize(), 300);
 }
 
 function closeSheet() {
     sidePanel.classList.remove("open");
     sidePanel.setAttribute("aria-hidden", "true");
-    if (RESEARCH_ELEMENTS_PRESENT) closeStatsPanel();
+    if (RESEARCH_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeStatsPanel();
+    if (FORECAST_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeForecastPanel();
     scrim.hidden = true;
     setTimeout(() => map.invalidateSize(), 300);
 }
 
 // ---------------------------------------------------------------------
 // Research Context
-//
-// Computes how a given incident relates to others already in the
-// dataset:
-//   - Nearby             — geographic proximity, tiered by distance
-//   - Same Date           — exact date match (only when both records
-//                           carry a specific `date` field, not just a
-//                           year)
-//   - Same Year            — same calendar year, excluding anything
-//                           already shown under Same Date
-//   - Surrounding Period    — within a few years either side, excluding
-//                           anything already shown above
-//   - Subsequent            — same country, in the years afterward
-//
-// This needs no new data; it's derived from lat/lng/year/date on
-// existing records. "Who was involved" and "Consequences" are optional
-// fields you can add per record when you have that research.
-//
-// Absence of a match is reported as a gap in NHIRA's current dataset,
-// never as evidence that nothing happened — NHIRA only knows what's in
-// its own records.
 // ---------------------------------------------------------------------
 
-const NEARBY_RADIUS_KM = 1000; // outer edge of the "National" tier — see distanceTier()
+const NEARBY_RADIUS_KM = 1000;
 const SURROUNDING_WINDOW_YEARS = 5;
 const SUBSEQUENT_WINDOW_YEARS = 15;
 const CONTEXT_LIST_LIMIT = 5;
@@ -1153,8 +1298,6 @@ function haversineKm(lat1, lng1, lat2, lng2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Named distance tiers so "nearby" always means something explicit
-// instead of a single vague radius.
 function distanceTier(km) {
     if (km <= 25) return "Very close";
     if (km <= 100) return "Regional";
@@ -1172,12 +1315,8 @@ function buildResearchContext(event) {
         .slice(0, CONTEXT_LIST_LIMIT)
         .map(x => ({ ...x, tier: distanceTier(x.distanceKm) }));
 
-    // Same Date only applies when both records carry a specific date
-    // string (not just a year) and those strings match exactly.
     const sameDate = event.date
-        ? others
-            .filter(e => e.date && e.date === event.date)
-            .slice(0, CONTEXT_LIST_LIMIT)
+        ? others.filter(e => e.date && e.date === event.date).slice(0, CONTEXT_LIST_LIMIT)
         : [];
     const sameDateIds = new Set(sameDate.map(e => e.id));
 
@@ -1224,32 +1363,26 @@ function locationText(e) {
 function renderResearchContext(event) {
     const { nearby, sameDate, sameYear, surrounding, subsequent } = buildResearchContext(event);
 
-    // --- Nearby, with explicit distance + tier on every result ---
     const nearbyHtml = nearby.length
         ? nearby.map(({ event: e, distanceKm, tier }) =>
             contextListItem(e, `${Math.round(distanceKm).toLocaleString()} km away · ${tier} · ${escapeHtml(e.year)}`)
           ).join("")
         : `<li class="rc-empty">No matching NHIRA records within ${NEARBY_RADIUS_KM.toLocaleString()} km. This reflects the current dataset, not confirmed evidence that nothing occurred nearby.</li>`;
 
-    // --- Same Date ---
     const sameDateHtml = sameDate.length
         ? sameDate.map(e => contextListItem(e, `Same date · ${locationText(e)}`)).join("")
         : `<li class="rc-empty">No matching NHIRA records on the same date.</li>`;
 
-    // --- Same Year ---
     const sameYearHtml = sameYear.length
         ? sameYear.map(e => contextListItem(e, `Same year · ${locationText(e)}`)).join("")
         : `<li class="rc-empty">No matching NHIRA records in ${escapeHtml(event.year)}.</li>`;
 
-    // --- Surrounding Period ---
     const surroundingHtml = surrounding.length
         ? surrounding.map(({ event: e, yearDiff }) =>
             contextListItem(e, `${yearDiff} year${yearDiff === 1 ? "" : "s"} apart · ${locationText(e)}`)
           ).join("")
         : `<li class="rc-empty">No matching NHIRA records within ${SURROUNDING_WINDOW_YEARS} years of ${escapeHtml(event.year)}.</li>`;
 
-    // --- Who was involved (structured fields; free text until a
-    //     people/organizations database exists — see NHIRA v0.7) ---
     const people = Array.isArray(event.peopleInvolved) ? event.peopleInvolved : [];
     const orgs = Array.isArray(event.organizationsInvolved) ? event.organizationsInvolved : [];
     const involvedHtml = (people.length || orgs.length)
@@ -1264,9 +1397,7 @@ function renderResearchContext(event) {
         : (event.consequences ? escapeHtml(event.consequences) : "");
 
     const subsequentHtml = subsequent.length
-        ? subsequent.map(e =>
-            contextListItem(e, `${escapeHtml(e.year)} · ${escapeHtml(e.country)}`)
-          ).join("")
+        ? subsequent.map(e => contextListItem(e, `${escapeHtml(e.year)} · ${escapeHtml(e.country)}`)).join("")
         : `<li class="rc-empty">No matching NHIRA records found in ${escapeHtml(event.country || "this country")} in the following ${SUBSEQUENT_WINDOW_YEARS} years — this reflects a gap in the current dataset, not confirmed evidence that no incidents occurred.</li>`;
 
     return `
@@ -1307,18 +1438,6 @@ function renderResearchContext(event) {
 
 // ---------------------------------------------------------------------
 // Per-incident Data Quality
-//
-// Reads an optional `dataQuality` object on the record, e.g.:
-//   "dataQuality": {
-//     "date": "verified",
-//     "location": "verified",
-//     "fatalities": "multiple",
-//     "coordinates": "verified",
-//     "category": "reviewed"
-//   }
-// Only fields actually present are shown — nothing here is invented.
-// A record with no dataQuality object at all just says so plainly,
-// rather than displaying a fabricated "verified" badge.
 // ---------------------------------------------------------------------
 
 const DQ_FIELD_LABELS = [
@@ -1372,10 +1491,7 @@ function openPanel(event) {
               .join("<br>")
         : "No sources on file";
 
-    // Optional per-record fields — only rendered when present, so records
-    // without this data still display exactly as before.
     const CONFIDENCE_LABELS = { high: "High", medium: "Medium", conflicting: "Conflicting" };
-
     const confidenceKey = String(event.sourceConfidence || "").toLowerCase();
     const confidenceHtml = CONFIDENCE_LABELS[confidenceKey]
         ? `<div class="confidence-badge confidence-${confidenceKey}">Source confidence: ${CONFIDENCE_LABELS[confidenceKey]}</div>`
@@ -1427,9 +1543,6 @@ function openPanel(event) {
     openSheet();
 }
 
-// Clicking any Research Context item jumps to that incident's own panel —
-// one listener handles it for every render since panelContent is rebuilt
-// each time.
 panelContent.addEventListener("click", e => {
     const item = e.target.closest("[data-goto-id]");
     if (!item) return;
