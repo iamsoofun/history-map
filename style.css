@@ -757,3 +757,39 @@ body {
     -webkit-overflow-scrolling: touch !important;
   }
 }
+
+/* ---------- Desktop hardening ----------
+   Forces the fixed-layout app shell (no whole-page scrolling, map
+   always visible, panel close buttons always clickable) regardless
+   of window size edge cases or CSS load-order quirks. */
+
+html, body {
+  overflow: hidden !important;
+  height: 100% !important;
+  width: 100% !important;
+  position: fixed !important;
+}
+
+#stage {
+  position: relative !important;
+  min-height: 200px;
+}
+
+#map {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+}
+
+#statsPanel, #forecastPanel, #sidePanel {
+  position: fixed !important;
+  z-index: 1200 !important;
+}
+
+#closeStats, #closeForecast, #closePanel {
+  z-index: 50 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
