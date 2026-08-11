@@ -84,9 +84,15 @@ const markerLayer = L.markerClusterGroup({
     }
 }).addTo(map);
 
-// Forecast risk overlay — off by default, toggled from the Forecast
-// panel. Not added to the map until the user turns it on.
+// Forecast risk overlay — off by default, only shown in Forecast map
+// mode. Not added to the map until the mode is switched.
 const forecastLayer = L.layerGroup();
+
+// Context highlight layer — only shown in Context map mode, and only
+// once an incident is open. Draws rings around events that appeared
+// in that incident's Research Context (nearby, same date, same year,
+// surrounding period, subsequent).
+const contextLayer = L.layerGroup();
 
 // ---------------------------------------------------------------------
 // Element references
@@ -144,11 +150,11 @@ const forecastPanel = document.getElementById("forecastPanel");
 const closeForecast = document.getElementById("closeForecast");
 const fcCountry = document.getElementById("fcCountry");
 const fcGenerateBtn = document.getElementById("fcGenerateBtn");
-const fcMapToggle = document.getElementById("fcMapToggle");
 const fcOutput = document.getElementById("fcOutput");
+const mapModeButtons = document.querySelectorAll(".map-mode-btn");
 
 const FORECAST_ELEMENTS_PRESENT = forecastToggle && forecastPanel && closeForecast &&
-    fcCountry && fcGenerateBtn && fcMapToggle && fcOutput;
+    fcCountry && fcGenerateBtn && fcOutput;
 
 const ANALYSIS_CANVAS_IDS = [
     "chartIncidentsByDecade", "chartIncidentsByCountry", "chartIncidentsByRegion",
@@ -979,9 +985,6 @@ function computeForecast(country) {
     const last2 = usableYears.slice(-2).map(y => yearlyCounts[y] || 0);
     const recentRate = last2.length ? last2.reduce((a, b) => a + b, 0) / last2.length : mean;
 
-    const last3 = usableYears.slice(-3).map(y => yearlyCounts[y] || 0);
-    const movAvg3 = last3.length ? last3.reduce((a, b) => a + b, 0) / last3.length : mean;
-
     const lastYear = usableYears[usableYears.length - 1];
     const prevYear = usableYears[usableYears.length - 2];
     let yoyChangePct = null;
@@ -996,6 +999,7 @@ function computeForecast(country) {
     // if there isn't enough dated data to say anything meaningful.
     const datedEvents = countryEvents.filter(e => /^\d{4}-\d{2}-\d{2}$/.test(String(e.date || "")));
     let seasonalityLabel = "Insufficient dated records";
+    let seasonalityRatio = null;
     if (datedEvents.length >= 20) {
         const byMonth = new Array(12).fill(0);
         datedEvents.forEach(e => { byMonth[new Date(e.date).getMonth()]++; });
@@ -1003,7 +1007,7 @@ function computeForecast(country) {
         const now = new Date();
         const targetMonths = [1, 2, 3].map(offset => (now.getMonth() + offset) % 12);
         const targetAvg = targetMonths.reduce((sum, m) => sum + byMonth[m], 0) / targetMonths.length;
-        const seasonalityRatio = overallAvg > 0 ? targetAvg / overallAvg : 1;
+        seasonalityRatio = overallAvg > 0 ? targetAvg / overallAvg : 1;
         seasonalityLabel = seasonalityRatio > 1.15 ? "Elevated" : seasonalityRatio < 0.85 ? "Reduced" : "Typical";
     }
 
@@ -1016,10 +1020,23 @@ function computeForecast(country) {
     });
     const periodLabel = `${periodMonths[0].name}–${periodMonths[2].name} ${periodMonths[2].year}`;
 
-    const projected = Math.max(0, movAvg3 + slope);
-    const margin = Math.max(1, Math.round(Math.sqrt(Math.max(variance, projected))));
-    const estimateLow = Math.max(0, Math.round(projected - margin));
-    const estimateHigh = Math.round(projected + margin);
+    // ---- Forecast components ----
+    // The central estimate is built additively from four visible
+    // terms, each reported to the user, so the final number is never
+    // a black box: baseline + trend adjustment + recent-rate
+    // adjustment + seasonality adjustment = central estimate.
+    const trendAdjustment = Math.round(slope * 10) / 10;
+    const recentRateAdjustment = Math.round((recentRate - longRunRate) * 10) / 10;
+    const seasonalityAdjustment = seasonalityRatio !== null
+        ? Math.round(longRunRate * (seasonalityRatio - 1) * 10) / 10
+        : 0;
+
+    const rawEstimate = longRunRate + trendAdjustment + recentRateAdjustment + seasonalityAdjustment;
+    const modelEstimate = Math.max(0, Math.round(rawEstimate * 10) / 10);
+
+    const margin = Math.max(1, Math.round(Math.sqrt(Math.max(variance, modelEstimate))));
+    const estimateLow = Math.max(0, Math.round(modelEstimate - margin));
+    const estimateHigh = Math.round(modelEstimate + margin);
 
     const ratio = longRunRate > 0 ? recentRate / longRunRate : (recentRate > 0 ? 2 : 0);
     let riskTier;
@@ -1061,8 +1078,9 @@ function computeForecast(country) {
 
     return {
         country, periodLabel, riskTier, estimateLow, estimateHigh,
-        modelEstimate: Math.round(projected * 10) / 10,
+        modelEstimate,
         baseline: Math.round(longRunRate * 10) / 10,
+        trendAdjustment, recentRateAdjustment, seasonalityAdjustment,
         trendLabel, seasonalityLabel, dataConfidence, forecastValidation, dataCoverage,
         dispersionRatio, yoyChangePct, yoyContradictsTier,
         yearsOfData: usableYears.length, totalInWindow
@@ -1092,6 +1110,8 @@ function renderForecast(country) {
         </div>
     ` : "";
 
+    const sign = n => (n >= 0 ? "+" : "") + n;
+
     fcOutput.innerHTML = `
         <div class="forecast-header">
             <span class="risk-badge risk-${result.riskTier}">${riskLabel}</span>
@@ -1099,14 +1119,38 @@ function renderForecast(country) {
             <p class="forecast-subhead">${escapeHtml(result.country)} · ${result.periodLabel}</p>
         </div>
 
+        <div class="forecast-blocks">
+            <div class="forecast-block forecast-block-category">
+                <p class="forecast-block-label">Historical activity category</p>
+                <p class="forecast-block-value risk-${result.riskTier}">${riskLabel}</p>
+            </div>
+            <div class="forecast-block">
+                <p class="forecast-block-label">Model estimate</p>
+                <p class="forecast-block-value">${result.modelEstimate}<span class="forecast-block-unit"> incidents</span></p>
+            </div>
+            <div class="forecast-block">
+                <p class="forecast-block-label">Uncertainty range</p>
+                <p class="forecast-block-value">${result.estimateLow}–${result.estimateHigh}</p>
+            </div>
+        </div>
+
         <dl class="forecast-fields">
-            <dt>Historical activity</dt><dd>${riskLabel}</dd>
-            <dt>Model estimate</dt><dd>${result.modelEstimate} incidents</dd>
-            <dt>Uncertainty interval</dt><dd>${result.estimateLow}–${result.estimateHigh}</dd>
             <dt>Data confidence</dt><dd>${result.dataConfidence}</dd>
             <dt>Forecast validation</dt><dd>${result.forecastValidation}</dd>
             <dt>Data coverage</dt><dd>${result.dataCoverage}</dd>
         </dl>
+
+        <p class="chart-title">Forecast components</p>
+        <table class="forecast-components">
+            <tbody>
+                <tr><td>Long-run baseline</td><td>${result.baseline}</td></tr>
+                <tr><td>Trend adjustment</td><td>${sign(result.trendAdjustment)}</td></tr>
+                <tr><td>Recent-rate adjustment</td><td>${sign(result.recentRateAdjustment)}</td></tr>
+                <tr><td>Seasonality adjustment</td><td>${sign(result.seasonalityAdjustment)}</td></tr>
+                <tr class="forecast-components-total"><td>Central estimate</td><td>${result.modelEstimate}</td></tr>
+                <tr><td>Uncertainty range</td><td>${result.estimateLow}–${result.estimateHigh}</td></tr>
+            </tbody>
+        </table>
 
         <p class="chart-title">Primary contributing factors</p>
         <ul class="forecast-factors">
@@ -1133,13 +1177,13 @@ function renderForecast(country) {
                 <dd>${result.baseline} incidents/year</dd>
 
                 <dt>Long-term trend</dt>
-                <dd>${result.trendLabel}</dd>
+                <dd>${result.trendLabel} (adjustment: ${sign(result.trendAdjustment)})</dd>
 
                 <dt>Recent activity</dt>
-                <dd>${result.yoyChangePct === null ? "Not enough consecutive years to compute" : `${result.yoyChangePct > 0 ? "+" : ""}${result.yoyChangePct}% YoY`}</dd>
+                <dd>${result.yoyChangePct === null ? "Not enough consecutive years to compute" : `${result.yoyChangePct > 0 ? "+" : ""}${result.yoyChangePct}% YoY`} (adjustment: ${sign(result.recentRateAdjustment)})</dd>
 
                 <dt>Seasonality</dt>
-                <dd>${result.seasonalityLabel}</dd>
+                <dd>${result.seasonalityLabel} (adjustment: ${sign(result.seasonalityAdjustment)})</dd>
 
                 <dt>Overdispersion</dt>
                 <dd>${result.dispersionRatio} (variance-to-mean ratio — a value noticeably above 1 indicates overdispersion, which is why negative-binomial, rather than plain Poisson, is the better candidate once real regression is built)</dd>
@@ -1148,7 +1192,7 @@ function renderForecast(country) {
                 <dd>Not available — no population dataset integrated yet</dd>
 
                 <dt>Forecast method</dt>
-                <dd>Descriptive V1 — long-run average, linear trend, recent-year rate, and month-of-year seasonality, with an uncertainty band from this country's own year-to-year variance. Not a fitted Poisson/negative-binomial regression, random forest, or gradient boosting model — those require server-side fitting and validation, not client-side approximation.</dd>
+                <dd>Descriptive V1 — baseline + trend adjustment + recent-rate adjustment + seasonality adjustment = central estimate, with an uncertainty band from this country's own year-to-year variance. Not a fitted Poisson/negative-binomial regression, random forest, or gradient boosting model — those require server-side fitting and validation, not client-side approximation.</dd>
 
                 <dt>Backtesting</dt>
                 <dd>Not yet completed. Forecast validation will remain "Not yet established" until historical forecasts are checked against what actually happened.</dd>
@@ -1262,20 +1306,85 @@ if (FORECAST_ELEMENTS_PRESENT) {
 
     fcGenerateBtn.addEventListener("click", () => renderForecast(fcCountry.value));
     fcCountry.addEventListener("change", () => renderForecast(fcCountry.value));
-
-    fcMapToggle.addEventListener("change", () => {
-        if (fcMapToggle.checked) {
-            renderForecastMapOverlay();
-            map.addLayer(forecastLayer);
-            forecastLegendControl.addTo(map);
-        } else {
-            map.removeLayer(forecastLayer);
-            map.removeControl(forecastLegendControl);
-        }
-    });
 } else {
     console.warn("Forecast controls not found in the DOM — skipping their setup so the rest of the app still loads.");
 }
+
+// ---------------------------------------------------------------------
+// Map modes — Observed / Context / Forecast
+//
+// Observed (default): only actual historical incident markers and hot
+// zone rings — nothing model-derived, nothing highlighted.
+// Context: Observed, plus rings around whatever incidents appeared in
+// the currently open incident's Research Context — only active while
+// an incident panel is open.
+// Forecast: Observed, plus the forecast risk overlay (off by default,
+// so nobody mistakes a model output for an actual incident count).
+// ---------------------------------------------------------------------
+
+let mapMode = "observed";
+let currentOpenEvent = null;
+
+function renderContextHighlightLayer() {
+    contextLayer.clearLayers();
+    if (!currentOpenEvent) return;
+
+    const { nearby, sameDate, sameYear, surrounding, subsequent } = buildResearchContext(currentOpenEvent);
+    const related = [
+        ...nearby.map(x => x.event),
+        ...sameDate,
+        ...sameYear,
+        ...surrounding.map(x => x.event),
+        ...subsequent
+    ];
+
+    related.forEach(e => {
+        if (!Number.isFinite(e.lat) || !Number.isFinite(e.lng)) return;
+        L.circleMarker([e.lat, e.lng], {
+            radius: 12,
+            color: "#F0A202",
+            weight: 2,
+            dashArray: "3,3",
+            fillOpacity: 0
+        })
+            .bindTooltip(`Related to "${currentOpenEvent.title}" (Research Context)`, { direction: "top" })
+            .addTo(contextLayer);
+    });
+
+    if (Number.isFinite(currentOpenEvent.lat) && Number.isFinite(currentOpenEvent.lng)) {
+        L.circleMarker([currentOpenEvent.lat, currentOpenEvent.lng], {
+            radius: 18,
+            color: "#F0A202",
+            weight: 3,
+            fillOpacity: 0
+        }).addTo(contextLayer);
+    }
+}
+
+function setMapMode(mode) {
+    mapMode = mode;
+    mapModeButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.mode === mode));
+
+    if (mapMode === "forecast" && FORECAST_ELEMENTS_PRESENT) {
+        renderForecastMapOverlay();
+        if (!map.hasLayer(forecastLayer)) map.addLayer(forecastLayer);
+        forecastLegendControl.addTo(map);
+    } else {
+        if (map.hasLayer(forecastLayer)) map.removeLayer(forecastLayer);
+        map.removeControl(forecastLegendControl);
+    }
+
+    if (mapMode === "context") {
+        renderContextHighlightLayer();
+        if (!map.hasLayer(contextLayer)) map.addLayer(contextLayer);
+    } else {
+        if (map.hasLayer(contextLayer)) map.removeLayer(contextLayer);
+    }
+}
+
+mapModeButtons.forEach(btn => {
+    btn.addEventListener("click", () => setMapMode(btn.dataset.mode));
+});
 
 // ---------------------------------------------------------------------
 // Play / Pause timeline
@@ -1342,6 +1451,8 @@ function closeSheet() {
     if (RESEARCH_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeStatsPanel();
     if (FORECAST_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeForecastPanel();
     scrim.hidden = true;
+    currentOpenEvent = null;
+    if (mapMode === "context") renderContextHighlightLayer();
     setTimeout(() => map.invalidateSize(), 300);
 }
 
@@ -1392,7 +1503,7 @@ function buildResearchContext(event) {
     const sameYearIds = new Set(sameYear.map(e => e.id));
 
     const surrounding = others
-        .map(e => ({ event: e, yearDiff: Math.abs(e.year - event.year) }))
+        .map(e => ({ event: e, rawDiff: e.year - event.year, yearDiff: Math.abs(e.year - event.year) }))
         .filter(x =>
             x.yearDiff > 0 &&
             x.yearDiff <= SURROUNDING_WINDOW_YEARS &&
@@ -1444,9 +1555,10 @@ function renderResearchContext(event) {
         : `<li class="rc-empty">No matching NHIRA records in ${escapeHtml(event.year)}.</li>`;
 
     const surroundingHtml = surrounding.length
-        ? surrounding.map(({ event: e, yearDiff }) =>
-            contextListItem(e, `${yearDiff} year${yearDiff === 1 ? "" : "s"} apart · ${locationText(e)}`)
-          ).join("")
+        ? surrounding.map(({ event: e, yearDiff, rawDiff }) => {
+            const direction = rawDiff < 0 ? "before" : "after";
+            return contextListItem(e, `${yearDiff} year${yearDiff === 1 ? "" : "s"} ${direction} · ${locationText(e)}`);
+          }).join("")
         : `<li class="rc-empty">No matching NHIRA records within ${SURROUNDING_WINDOW_YEARS} years of ${escapeHtml(event.year)}.</li>`;
 
     const people = Array.isArray(event.peopleInvolved) ? event.peopleInvolved : [];
@@ -1543,6 +1655,9 @@ function renderDataQuality(event) {
 }
 
 function openPanel(event) {
+    currentOpenEvent = event;
+    if (mapMode === "context") renderContextHighlightLayer();
+
     const type = INCIDENT_TYPES[event.resolvedType] || INCIDENT_TYPES.other;
     const projected = event.year > THIS_YEAR;
 
