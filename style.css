@@ -793,3 +793,48 @@ html, body {
   pointer-events: auto !important;
   cursor: pointer !important;
 }
+
+/* ---------- Forecast: explanation callout + map legend ---------- */
+
+.forecast-explain {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  background: #E4EEF8;
+  border: 1px solid #C7DCF0;
+  border-radius: 8px;
+  font-size: .82rem;
+  line-height: 1.5;
+  color: #1F4E8C;
+}
+
+.forecast-explain-title {
+  margin: 0 0 4px;
+  font: 600 .68rem/1 var(--font-body);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.forecast-explain p:last-child { margin: 0; }
+
+.forecast-map-legend {
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, .95);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(14, 17, 22, .18);
+  font-size: .72rem;
+  line-height: 1.4;
+  max-width: 220px;
+}
+
+.forecast-map-legend-title {
+  margin: 0 0 3px;
+  font: 600 .68rem/1 var(--font-body);
+  letter-spacing: .03em;
+  color: var(--ink);
+}
+
+.forecast-map-legend-note {
+  margin: 0;
+  color: var(--ink-soft);
+}

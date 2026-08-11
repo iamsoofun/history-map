@@ -1029,17 +1029,42 @@ function computeForecast(country) {
     else riskTier = "veryhigh";
 
     const totalInWindow = counts.reduce((a, b) => a + b, 0);
-    let confidence;
-    if (usableYears.length >= 8 && totalInWindow >= 15 && dispersionRatio < 3) confidence = "High";
-    else if (usableYears.length >= 4 && totalInWindow >= 6) confidence = "Moderate";
-    else confidence = "Low";
+
+    // "Data confidence" — how much evidence exists to compute this at
+    // all. Separate from "forecast validation" (below), which is about
+    // whether the resulting classification has ever been checked
+    // against reality.
+    let dataConfidence;
+    if (usableYears.length >= 8 && totalInWindow >= 15 && dispersionRatio < 3) dataConfidence = "High";
+    else if (usableYears.length >= 4 && totalInWindow >= 6) dataConfidence = "Moderate";
+    else dataConfidence = "Low";
+
+    // Forecast validation is permanently "Not yet established" in V1 —
+    // no backtesting harness exists yet. This is not computed from the
+    // data; it's a fixed statement of what has and hasn't been done.
+    const forecastValidation = "Not yet established";
+
+    let dataCoverage;
+    if (usableYears.length >= 8 && totalInWindow >= 20) dataCoverage = "Good";
+    else if (usableYears.length >= 4 && totalInWindow >= 8) dataCoverage = "Adequate";
+    else dataCoverage = "Limited";
 
     const trendLabel = slope > 0.15 ? "Increasing" : slope < -0.15 ? "Decreasing" : "Stable";
 
+    // Flag when the single-year YoY swing points the opposite direction
+    // from the overall classification, so the UI can explain the
+    // apparent contradiction instead of leaving it unexplained.
+    const yoyContradictsTier = yoyChangePct !== null && (
+        (yoyChangePct < 0 && (riskTier === "high" || riskTier === "veryhigh")) ||
+        (yoyChangePct > 0 && riskTier === "lower")
+    );
+
     return {
         country, periodLabel, riskTier, estimateLow, estimateHigh,
+        modelEstimate: Math.round(projected * 10) / 10,
         baseline: Math.round(longRunRate * 10) / 10,
-        trendLabel, seasonalityLabel, confidence, dispersionRatio, yoyChangePct,
+        trendLabel, seasonalityLabel, dataConfidence, forecastValidation, dataCoverage,
+        dispersionRatio, yoyChangePct, yoyContradictsTier,
         yearsOfData: usableYears.length, totalInWindow
     };
 }
@@ -1060,21 +1085,27 @@ function renderForecast(country) {
 
     const riskLabel = RISK_LABELS[result.riskTier];
 
+    const explainHtml = result.yoyContradictsTier ? `
+        <div class="forecast-explain">
+            <p class="forecast-explain-title">Why the forecast remains ${riskLabel.toLowerCase()}</p>
+            <p>The recent-year change (${result.yoyChangePct > 0 ? "+" : ""}${result.yoyChangePct}% year-over-year) is only one component of the model. The classification also incorporates the longer historical trend (${result.trendLabel.toLowerCase()}) and the long-run country average (${result.baseline} incidents/year). A single year's change does not necessarily overcome a historically ${riskLabel.toLowerCase()} baseline.</p>
+        </div>
+    ` : "";
+
     fcOutput.innerHTML = `
         <div class="forecast-header">
             <span class="risk-badge risk-${result.riskTier}">${riskLabel}</span>
-            <h3>NHIRA statistical forecast: ${riskLabel.toLowerCase()} expected incident activity</h3>
+            <h3>NHIRA statistical forecast: ${riskLabel.toLowerCase()} historical-activity category</h3>
             <p class="forecast-subhead">${escapeHtml(result.country)} · ${result.periodLabel}</p>
         </div>
 
         <dl class="forecast-fields">
-            <dt>Forecast period</dt><dd>${result.periodLabel}</dd>
-            <dt>Expected incident level</dt><dd>${riskLabel}</dd>
-            <dt>Estimated incident count</dt><dd>${result.estimateLow}–${result.estimateHigh}</dd>
-            <dt>Baseline (long-run avg/year)</dt><dd>${result.baseline}</dd>
-            <dt>Trend</dt><dd>${result.trendLabel}</dd>
-            <dt>Seasonality</dt><dd>${result.seasonalityLabel}</dd>
-            <dt>Confidence</dt><dd>${result.confidence}</dd>
+            <dt>Historical activity</dt><dd>${riskLabel}</dd>
+            <dt>Model estimate</dt><dd>${result.modelEstimate} incidents</dd>
+            <dt>Uncertainty interval</dt><dd>${result.estimateLow}–${result.estimateHigh}</dd>
+            <dt>Data confidence</dt><dd>${result.dataConfidence}</dd>
+            <dt>Forecast validation</dt><dd>${result.forecastValidation}</dd>
+            <dt>Data coverage</dt><dd>${result.dataCoverage}</dd>
         </dl>
 
         <p class="chart-title">Primary contributing factors</p>
@@ -1086,9 +1117,11 @@ function renderForecast(country) {
             <li>Population-adjusted rate — not available (no population dataset integrated yet)</li>
         </ul>
 
+        ${explainHtml}
+
         <p class="forecast-disclaimer">
             This is a statistical risk category based on historical patterns in NHIRA's current dataset —
-            not a prediction that an incident will occur.
+            not a prediction that an incident will occur. It has not yet been backtested against real outcomes.
         </p>
 
         <button id="fcMethodologyToggle" class="methodology-toggle" type="button" aria-expanded="false">
@@ -1096,20 +1129,32 @@ function renderForecast(country) {
         </button>
         <div id="fcMethodologyBody" class="methodology-body" hidden>
             <dl>
-                <dt>Model type</dt>
-                <dd>V1 is a transparent descriptive-statistics model — long-run average, linear trend, recent-year rate, and month-of-year seasonality (when enough dated records exist) — with an uncertainty band derived from this country's own year-to-year variance in NHIRA. Every number here traces back to visible arithmetic on the current dataset.</dd>
+                <dt>Long-run baseline</dt>
+                <dd>${result.baseline} incidents/year</dd>
 
-                <dt>Not yet implemented</dt>
-                <dd>Formal Poisson or negative-binomial regression, random forest, gradient boosting, and proper backtesting all require a fitted statistical/ML model and a validation harness — real modeling work best done server-side (e.g. Python with statsmodels or scikit-learn), not approximated in client-side JavaScript. This V1 is the "clean dataset → features" stage of that pipeline; "statistical model → backtesting" is the planned next step.</dd>
+                <dt>Long-term trend</dt>
+                <dd>${result.trendLabel}</dd>
 
-                <dt>Dispersion</dt>
-                <dd>Variance-to-mean ratio for ${escapeHtml(result.country)}'s yearly counts: ${result.dispersionRatio}. A ratio noticeably above 1 indicates overdispersion, which is why negative-binomial (rather than plain Poisson) is the better candidate once real regression is built.</dd>
+                <dt>Recent activity</dt>
+                <dd>${result.yoyChangePct === null ? "Not enough consecutive years to compute" : `${result.yoyChangePct > 0 ? "+" : ""}${result.yoyChangePct}% YoY`}</dd>
+
+                <dt>Seasonality</dt>
+                <dd>${result.seasonalityLabel}</dd>
+
+                <dt>Overdispersion</dt>
+                <dd>${result.dispersionRatio} (variance-to-mean ratio — a value noticeably above 1 indicates overdispersion, which is why negative-binomial, rather than plain Poisson, is the better candidate once real regression is built)</dd>
+
+                <dt>Population rate</dt>
+                <dd>Not available — no population dataset integrated yet</dd>
+
+                <dt>Forecast method</dt>
+                <dd>Descriptive V1 — long-run average, linear trend, recent-year rate, and month-of-year seasonality, with an uncertainty band from this country's own year-to-year variance. Not a fitted Poisson/negative-binomial regression, random forest, or gradient boosting model — those require server-side fitting and validation, not client-side approximation.</dd>
+
+                <dt>Backtesting</dt>
+                <dd>Not yet completed. Forecast validation will remain "Not yet established" until historical forecasts are checked against what actually happened.</dd>
 
                 <dt>Data used</dt>
                 <dd>${result.yearsOfData} year${result.yearsOfData === 1 ? "" : "s"} of data, ${result.totalInWindow} incident${result.totalInWindow === 1 ? "" : "s"} in the window used for this forecast.</dd>
-
-                <dt>Population-adjusted rate</dt>
-                <dd>Not available. NHIRA does not yet store a population dataset — this is listed as a planned contributing factor, not a computed one.</dd>
             </dl>
         </div>
     `;
@@ -1143,6 +1188,19 @@ function countryCentroids() {
     return centroids;
 }
 
+// A small always-visible map control that labels what the colored
+// circles mean, so a viewer can't mistake a model output for a count
+// of actual incidents. Only shown while the forecast overlay is on.
+const forecastLegendControl = L.control({ position: "bottomleft" });
+forecastLegendControl.onAdd = function () {
+    const div = L.DomUtil.create("div", "forecast-map-legend");
+    div.innerHTML = `
+        <p class="forecast-map-legend-title">Historical activity index (model output)</p>
+        <p class="forecast-map-legend-note">Dashed outline = statistical classification, not an observed incident count.</p>
+    `;
+    return div;
+};
+
 function renderForecastMapOverlay() {
     forecastLayer.clearLayers();
     const centroids = countryCentroids();
@@ -1150,14 +1208,20 @@ function renderForecastMapOverlay() {
         const result = computeForecast(country);
         if (!result) return;
         const c = centroids[country];
+        // Dashed border + lower opacity distinguishes this from the
+        // solid, undashed incident markers drawn by addMarker().
         L.circleMarker([c.lat, c.lng], {
-            radius: 14,
+            radius: 16,
             color: "#0E1116",
-            weight: 1,
+            weight: 2,
+            dashArray: "4,3",
             fillColor: RISK_COLORS[result.riskTier],
-            fillOpacity: 0.75
+            fillOpacity: 0.55
         })
-            .bindTooltip(`NHIRA statistical forecast for ${country}: ${RISK_LABELS[result.riskTier]} expected incident activity`, { direction: "top" })
+            .bindTooltip(
+                `NHIRA historical-activity index for ${country}: ${RISK_LABELS[result.riskTier]} (model output, not an incident count)`,
+                { direction: "top" }
+            )
             .addTo(forecastLayer);
     });
 }
@@ -1203,8 +1267,10 @@ if (FORECAST_ELEMENTS_PRESENT) {
         if (fcMapToggle.checked) {
             renderForecastMapOverlay();
             map.addLayer(forecastLayer);
+            forecastLegendControl.addTo(map);
         } else {
             map.removeLayer(forecastLayer);
+            map.removeControl(forecastLegendControl);
         }
     });
 } else {
