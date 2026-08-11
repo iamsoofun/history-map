@@ -503,6 +503,58 @@ body {
 
 #panelContent a { color: #1F6FB2; }
 
+/* ---------- Per-incident Data Quality ---------- */
+
+.dq-section {
+  margin: 16px 0;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.dq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dq-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: .82rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.dq-list li:last-child { border-bottom: 0; }
+
+.dq-field {
+  color: var(--ink-soft);
+}
+
+.dq-status {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font: 600 .66rem/1.6 var(--font-body);
+  letter-spacing: .03em;
+}
+
+.dq-verified { background: #E4F3EA; color: #1F6B45; }
+.dq-reviewed { background: #E4EEF8; color: #1F4E8C; }
+.dq-multiple { background: #E4EEF8; color: #1F4E8C; }
+.dq-unverified { background: #FBF0DC; color: #8A5A00; }
+.dq-disputed { background: #F8E4E3; color: #8C2A24; }
+
+.dq-empty {
+  margin: 0;
+  font-size: .82rem;
+  color: var(--ink-soft);
+}
+
 /* ---------- Research & Statistics panel ---------- */
 
 #statsPanel {
@@ -538,6 +590,10 @@ body {
   font-size: .8rem;
   line-height: 1.4;
   color: var(--ink-soft);
+}
+
+.coverage-subhead {
+  margin-top: -6px;
 }
 
 #closeStats {
@@ -677,6 +733,58 @@ body {
   margin: 2px 0 0;
   color: var(--ink);
 }
+
+/* ---------- Source coverage bar ---------- */
+
+.source-coverage {
+  margin-bottom: 16px;
+}
+
+.coverage-bar {
+  display: flex;
+  width: 100%;
+  height: 14px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--rule);
+  margin-bottom: 8px;
+}
+
+.coverage-seg {
+  height: 100%;
+}
+
+.coverage-cited { background: #2E7D5B; }
+.coverage-partial { background: var(--signal); }
+.coverage-needsreview { background: #B3322B; }
+
+.coverage-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.coverage-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .78rem;
+  color: var(--ink-soft);
+}
+
+.coverage-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.coverage-swatch.coverage-cited { background: #2E7D5B; }
+.coverage-swatch.coverage-partial { background: var(--signal); }
+.coverage-swatch.coverage-needsreview { background: #B3322B; }
 
 .stats-breakdown {
   list-style: none;

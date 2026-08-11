@@ -126,6 +126,15 @@ const rsResultsList = document.getElementById("rsResultsList");
 const rsTopFatalities = document.getElementById("rsTopFatalities");
 const rsTopCountries = document.getElementById("rsTopCountries");
 const rsConcentration = document.getElementById("rsConcentration");
+
+// Dataset Coverage / Source Coverage — describe the WHOLE dataset,
+// not the filtered subset, so they don't move when someone changes
+// filters. See renderDatasetCoverage() / renderSourceCoverage().
+const datasetCoverage = document.getElementById("datasetCoverage");
+const coverageLastUpdated = document.getElementById("coverageLastUpdated");
+const coverageNeedsReview = document.getElementById("coverageNeedsReview");
+const sourceCoverage = document.getElementById("sourceCoverage");
+
 const ANALYSIS_CANVAS_IDS = [
     "chartIncidentsByDecade", "chartIncidentsByCountry", "chartIncidentsByRegion",
     "chartFatalitiesByDecade", "chartInjuriesByDecade",
@@ -174,6 +183,14 @@ function debounce(fn, delay) {
 function toNumber(value) {
     const n = Number(String(value ?? "").replace(/[^0-9.-]/g, ""));
     return Number.isFinite(n) ? n : 0;
+}
+
+function formatLastModified(rawDate) {
+    if (!rawDate) return "Unavailable (host did not report a modification date for history.json)";
+    const parsed = new Date(rawDate);
+    return Number.isNaN(parsed.getTime())
+        ? escapeHtml(rawDate)
+        : parsed.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 }
 
 // ---------------------------------------------------------------------
@@ -268,6 +285,8 @@ fetch("history.json")
 
         applyFilters();
         populateResearchFilters();
+        renderDatasetCoverage();
+        renderSourceCoverage();
     })
     .catch(error => {
         console.error(error);
@@ -322,11 +341,46 @@ function clearMarkers() {
 }
 
 // ---------------------------------------------------------------------
+// Unified filter state
+//
+// Both the map/timeline/search AND the Research & Statistics panel read
+// through this one function. It is the single source of truth for
+// "does this incident match what the user currently has selected" —
+// nothing downstream (map, stats, charts, timeline, rankings, search
+// results) computes its own separate notion of "matches."
+//
+// RESEARCH_ELEMENTS_PRESENT is declared later in this file, before this
+// function is ever called (data doesn't load, and therefore this isn't
+// invoked, until after the whole script has parsed) — see "Data load."
+// ---------------------------------------------------------------------
+
+function matchesActiveResearchFilters(event) {
+    if (!RESEARCH_ELEMENTS_PRESENT) return true;
+
+    if (rsCountry.value && event.country !== rsCountry.value) return false;
+    if (rsCategory.value && event.resolvedType !== rsCategory.value) return false;
+    if (rsRegion.value && getRegion(event.country) !== rsRegion.value) return false;
+    if (event.fatalityCount < (Number(rsMinFatalities.value) || 0)) return false;
+
+    let rsStart = Number(rsStartYear.value);
+    let rsEnd = Number(rsEndYear.value);
+    if (!Number.isFinite(rsStart)) rsStart = MIN_YEAR;
+    if (!Number.isFinite(rsEnd)) rsEnd = MAX_YEAR;
+    if (rsStart > rsEnd) [rsStart, rsEnd] = [rsEnd, rsStart];
+    if (event.year < rsStart || event.year > rsEnd) return false;
+
+    return true;
+}
+
+// ---------------------------------------------------------------------
 // Combined range + search filtering
 //
 // If startYear/endYear are left blank or invalid, this falls back to the
 // old cumulative behavior: everything from MIN_YEAR up through whatever
-// year the timeline slider is sitting on.
+// year the timeline slider is sitting on. Also intersected with whatever
+// is currently set in the Research & Statistics panel, via
+// matchesActiveResearchFilters — so the map can never show incidents the
+// stats panel has filtered out, or vice versa.
 // ---------------------------------------------------------------------
 
 function getMatchedEvents() {
@@ -376,7 +430,7 @@ function getMatchedEvents() {
                     String(field).toLowerCase().includes(text)
                 );
 
-        return withinRange && matchesText;
+        return withinRange && matchesText && matchesActiveResearchFilters(event);
     });
 }
 
@@ -511,10 +565,9 @@ if (rangeSearchBtn && clearRangeBtn && startYearInput && endYearInput && rangeRe
 // ---------------------------------------------------------------------
 // Research & Statistics panel
 //
-// Independent from the map search/filter above — this is a dedicated
-// query tool that computes live aggregate stats (and a matching results
-// list) from whatever's currently in `events`, so it automatically
-// reflects new data added to history.json.
+// Reads through matchesActiveResearchFilters (see above) — the same
+// gate the map applies — so the map and the stats panel can never show
+// two different filtered datasets.
 // ---------------------------------------------------------------------
 
 const RESEARCH_ELEMENTS_PRESENT = statsToggle && statsPanel && closeStats &&
@@ -540,25 +593,83 @@ function populateResearchFilters() {
 }
 
 function getResearchMatches() {
-    let startYear = Number(rsStartYear.value);
-    let endYear = Number(rsEndYear.value);
-    if (!Number.isFinite(startYear)) startYear = MIN_YEAR;
-    if (!Number.isFinite(endYear)) endYear = MAX_YEAR;
-    if (startYear > endYear) [startYear, endYear] = [endYear, startYear];
+    return events.filter(matchesActiveResearchFilters);
+}
 
-    const country = rsCountry.value;
-    const category = rsCategory.value;
-    const region = rsRegion.value;
-    const minFatalities = Number(rsMinFatalities.value) || 0;
+// ---------------------------------------------------------------------
+// Dataset Coverage + Source Coverage
+//
+// These describe the ENTIRE dataset (all of `events`), not the current
+// filtered subset — they're a snapshot of how much of NHIRA's data is
+// sourced and reviewed, so they should stay stable while someone plays
+// with filters elsewhere in the panel. Re-run once, after data loads.
+//
+// Source coverage categories are derived only from fields that already
+// exist on each record — nothing here is a placeholder number:
+//   cited          → has at least one source AND sourceConfidence "high"
+//   partial        → has at least one source, but not high confidence
+//   needsReview    → no sources on file at all
+// ---------------------------------------------------------------------
 
-    return events.filter(event => {
-        if (event.year < startYear || event.year > endYear) return false;
-        if (country && event.country !== country) return false;
-        if (category && event.resolvedType !== category) return false;
-        if (region && getRegion(event.country) !== region) return false;
-        if (event.fatalityCount < minFatalities) return false;
-        return true;
-    });
+function sourceCoverageCategory(event) {
+    const hasSources = Array.isArray(event.sources) && event.sources.length > 0;
+    if (!hasSources) return "needsReview";
+
+    const confidence = String(event.sourceConfidence || "").toLowerCase();
+    return confidence === "high" ? "cited" : "partial";
+}
+
+function renderDatasetCoverage() {
+    if (!datasetCoverage) return;
+
+    const countries = new Set(events.map(e => e.country).filter(Boolean));
+    const years = events.map(e => e.year).filter(Number.isFinite);
+    const earliest = years.length ? Math.min(...years) : null;
+    const latest = years.length ? Math.max(...years) : null;
+
+    const withSources = events.filter(e => Array.isArray(e.sources) && e.sources.length > 0).length;
+    const pctSourced = events.length ? Math.round((withSources / events.length) * 100) : 0;
+    const needsReview = events.filter(e => sourceCoverageCategory(e) === "needsReview").length;
+
+    datasetCoverage.innerHTML = `
+        <div class="stat-card"><b>${events.length.toLocaleString()}</b><span>Records</span></div>
+        <div class="stat-card"><b>${countries.size.toLocaleString()}</b><span>Countries</span></div>
+        <div class="stat-card"><b>${earliest ?? "—"}–${latest ?? "—"}</b><span>Date range</span></div>
+        <div class="stat-card"><b>${pctSourced}%</b><span>Records with sources</span></div>
+    `;
+
+    if (coverageLastUpdated) {
+        coverageLastUpdated.textContent = `Dataset last updated: ${formatLastModified(datasetLastModified)}`;
+    }
+
+    if (coverageNeedsReview) {
+        coverageNeedsReview.textContent = events.length
+            ? `${needsReview.toLocaleString()} of ${events.length.toLocaleString()} record${events.length === 1 ? "" : "s"} currently have no sources on file and need review.`
+            : "No records loaded.";
+    }
+}
+
+function renderSourceCoverage() {
+    if (!sourceCoverage) return;
+
+    const counts = { cited: 0, partial: 0, needsReview: 0 };
+    events.forEach(e => { counts[sourceCoverageCategory(e)]++; });
+
+    const total = events.length || 1;
+    const pct = key => Math.round((counts[key] / total) * 100);
+
+    sourceCoverage.innerHTML = `
+        <div class="coverage-bar">
+            <div class="coverage-seg coverage-cited" style="width:${pct("cited")}%"></div>
+            <div class="coverage-seg coverage-partial" style="width:${pct("partial")}%"></div>
+            <div class="coverage-seg coverage-needsreview" style="width:${pct("needsReview")}%"></div>
+        </div>
+        <ul class="coverage-legend">
+            <li><span class="coverage-swatch coverage-cited"></span>${pct("cited")}% cited — sourced, high confidence</li>
+            <li><span class="coverage-swatch coverage-partial"></span>${pct("partial")}% partially cited — sourced, not yet high confidence</li>
+            <li><span class="coverage-swatch coverage-needsreview"></span>${pct("needsReview")}% needs review — no sources on file</li>
+        </ul>
+    `;
 }
 
 // ---------------------------------------------------------------------
@@ -596,6 +707,7 @@ function topEntries(obj, n) {
 function sortedDecadeLabels(obj) {
     return Object.keys(obj).map(Number).sort((a, b) => a - b).map(String);
 }
+
 // Renders (or re-renders) a Chart.js chart into the given canvas,
 // destroying any previous instance on that canvas first.
 function drawChart(canvasId, config) {
@@ -773,18 +885,10 @@ function renderMethodology(matches) {
     const regionLabel = rsRegion.value || "All regions";
     const minFatalities = Number(rsMinFatalities.value) || 0;
 
-    let lastUpdatedText = "Unavailable (host did not report a modification date for history.json)";
-    if (datasetLastModified) {
-        const parsed = new Date(datasetLastModified);
-        lastUpdatedText = Number.isNaN(parsed.getTime())
-            ? escapeHtml(datasetLastModified)
-            : parsed.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
-    }
-
     methodologyBody.innerHTML = `
         <dl>
             <dt>Records included</dt>
-            <dd>${matches.length.toLocaleString()} of ${events.length.toLocaleString()} total incidents currently in the dataset, matching the filters below.</dd>
+            <dd>${matches.length.toLocaleString()} of ${events.length.toLocaleString()} total incidents currently in the dataset, matching the filters below. This is the same filtered set the map, timeline, and search are currently showing.</dd>
 
             <dt>Date range</dt>
             <dd>${escapeHtml(startYear)}–${escapeHtml(endYear)}</dd>
@@ -805,7 +909,7 @@ function renderMethodology(matches) {
             <dd>Incidents flagged with a "Conflicting" source-confidence badge are still counted using their primary recorded figure. Check that incident's Sources for the full range of reported estimates.</dd>
 
             <dt>Dataset last updated</dt>
-            <dd>${lastUpdatedText}</dd>
+            <dd>${formatLastModified(datasetLastModified)}</dd>
         </dl>
     `;
 }
@@ -885,6 +989,17 @@ function closeStatsPanel() {
     scrim.hidden = true;
 }
 
+// Any change in the Research & Statistics filters re-renders BOTH the
+// stats panel and the map/timeline, since both now read through the
+// same matchesActiveResearchFilters gate. This is what keeps them from
+// ever showing two different filtered datasets. Dataset Coverage and
+// Source Coverage describe the whole dataset and don't need to be
+// re-run here — they only change when the underlying data changes.
+function refreshEverything() {
+    runResearch();
+    applyFilters();
+}
+
 if (RESEARCH_ELEMENTS_PRESENT) {
     statsToggle.addEventListener("click", () => {
         if (statsPanel.classList.contains("open")) {
@@ -903,15 +1018,16 @@ if (RESEARCH_ELEMENTS_PRESENT) {
             methodologyToggle.setAttribute("aria-expanded", String(open));
         });
     }
-    rsGenerateBtn.addEventListener("click", runResearch);
+    rsGenerateBtn.addEventListener("click", refreshEverything);
 
-    // Interactive filters: any change re-runs the analysis automatically.
-    const debouncedRunResearch = debounce(runResearch, 200);
+    // Interactive filters: any change re-runs the analysis AND the map
+    // automatically, so they never drift apart.
+    const debouncedRefresh = debounce(refreshEverything, 200);
     [rsStartYear, rsEndYear, rsMinFatalities].forEach(input => {
-        input.addEventListener("input", debouncedRunResearch);
+        input.addEventListener("input", debouncedRefresh);
     });
     [rsCountry, rsCategory, rsRegion].forEach(select => {
-        select.addEventListener("change", runResearch);
+        select.addEventListener("change", refreshEverything);
     });
 
     rsClearBtn.addEventListener("click", () => {
@@ -921,7 +1037,7 @@ if (RESEARCH_ELEMENTS_PRESENT) {
         rsCategory.value = "";
         rsRegion.value = "";
         rsMinFatalities.value = 0;
-        runResearch();
+        refreshEverything();
     });
 } else {
     console.warn("Research & Statistics controls not found in the DOM — skipping their setup so the rest of the app still loads.");
@@ -1002,15 +1118,28 @@ function closeSheet() {
 // Research Context
 //
 // Computes how a given incident relates to others already in the
-// dataset: geographic proximity, chronological proximity, and — for the
-// same country — what happened in the years afterward. This needs no
-// new data; it's derived from lat/lng and year on existing records.
-// "Who was involved" and "What changed afterward" (narrative) are
-// optional fields you can add per record when you have that research.
+// dataset:
+//   - Nearby             — geographic proximity, tiered by distance
+//   - Same Date           — exact date match (only when both records
+//                           carry a specific `date` field, not just a
+//                           year)
+//   - Same Year            — same calendar year, excluding anything
+//                           already shown under Same Date
+//   - Surrounding Period    — within a few years either side, excluding
+//                           anything already shown above
+//   - Subsequent            — same country, in the years afterward
+//
+// This needs no new data; it's derived from lat/lng/year/date on
+// existing records. "Who was involved" and "Consequences" are optional
+// fields you can add per record when you have that research.
+//
+// Absence of a match is reported as a gap in NHIRA's current dataset,
+// never as evidence that nothing happened — NHIRA only knows what's in
+// its own records.
 // ---------------------------------------------------------------------
 
-const NEARBY_RADIUS_KM = 750;
-const SAME_TIME_WINDOW_YEARS = 5;
+const NEARBY_RADIUS_KM = 1000; // outer edge of the "National" tier — see distanceTier()
+const SURROUNDING_WINDOW_YEARS = 5;
 const SUBSEQUENT_WINDOW_YEARS = 15;
 const CONTEXT_LIST_LIMIT = 5;
 
@@ -1024,6 +1153,15 @@ function haversineKm(lat1, lng1, lat2, lng2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+// Named distance tiers so "nearby" always means something explicit
+// instead of a single vague radius.
+function distanceTier(km) {
+    if (km <= 25) return "Very close";
+    if (km <= 100) return "Regional";
+    if (km <= 250) return "Extended regional";
+    return "National";
+}
+
 function buildResearchContext(event) {
     const others = events.filter(e => e.id !== event.id);
 
@@ -1031,11 +1169,31 @@ function buildResearchContext(event) {
         .map(e => ({ event: e, distanceKm: haversineKm(event.lat, event.lng, e.lat, e.lng) }))
         .filter(x => x.distanceKm <= NEARBY_RADIUS_KM)
         .sort((a, b) => a.distanceKm - b.distanceKm)
-        .slice(0, CONTEXT_LIST_LIMIT);
+        .slice(0, CONTEXT_LIST_LIMIT)
+        .map(x => ({ ...x, tier: distanceTier(x.distanceKm) }));
 
-    const sameTime = others
+    // Same Date only applies when both records carry a specific date
+    // string (not just a year) and those strings match exactly.
+    const sameDate = event.date
+        ? others
+            .filter(e => e.date && e.date === event.date)
+            .slice(0, CONTEXT_LIST_LIMIT)
+        : [];
+    const sameDateIds = new Set(sameDate.map(e => e.id));
+
+    const sameYear = others
+        .filter(e => e.year === event.year && !sameDateIds.has(e.id))
+        .slice(0, CONTEXT_LIST_LIMIT);
+    const sameYearIds = new Set(sameYear.map(e => e.id));
+
+    const surrounding = others
         .map(e => ({ event: e, yearDiff: Math.abs(e.year - event.year) }))
-        .filter(x => x.yearDiff <= SAME_TIME_WINDOW_YEARS)
+        .filter(x =>
+            x.yearDiff > 0 &&
+            x.yearDiff <= SURROUNDING_WINDOW_YEARS &&
+            !sameDateIds.has(x.event.id) &&
+            !sameYearIds.has(x.event.id)
+        )
         .sort((a, b) => a.yearDiff - b.yearDiff)
         .slice(0, CONTEXT_LIST_LIMIT);
 
@@ -1047,7 +1205,7 @@ function buildResearchContext(event) {
         .sort((a, b) => a.year - b.year)
         .slice(0, CONTEXT_LIST_LIMIT);
 
-    return { nearby, sameTime, subsequent };
+    return { nearby, sameDate, sameYear, surrounding, subsequent };
 }
 
 function contextListItem(e, metaText) {
@@ -1059,21 +1217,39 @@ function contextListItem(e, metaText) {
     `;
 }
 
+function locationText(e) {
+    return escapeHtml([e.city, e.country].filter(Boolean).join(", "));
+}
+
 function renderResearchContext(event) {
-    const { nearby, sameTime, subsequent } = buildResearchContext(event);
+    const { nearby, sameDate, sameYear, surrounding, subsequent } = buildResearchContext(event);
 
+    // --- Nearby, with explicit distance + tier on every result ---
     const nearbyHtml = nearby.length
-        ? nearby.map(({ event: e, distanceKm }) =>
-            contextListItem(e, `${Math.round(distanceKm).toLocaleString()} km · ${escapeHtml(e.year)}`)
+        ? nearby.map(({ event: e, distanceKm, tier }) =>
+            contextListItem(e, `${Math.round(distanceKm).toLocaleString()} km away · ${tier} · ${escapeHtml(e.year)}`)
           ).join("")
-        : `<li class="rc-empty">No recorded incidents within ${NEARBY_RADIUS_KM.toLocaleString()} km.</li>`;
+        : `<li class="rc-empty">No matching NHIRA records within ${NEARBY_RADIUS_KM.toLocaleString()} km. This reflects the current dataset, not confirmed evidence that nothing occurred nearby.</li>`;
 
-    const sameTimeHtml = sameTime.length
-        ? sameTime.map(({ event: e, yearDiff }) =>
-            contextListItem(e, `${escapeHtml(e.year)} · ${escapeHtml([e.city, e.country].filter(Boolean).join(", "))}`)
+    // --- Same Date ---
+    const sameDateHtml = sameDate.length
+        ? sameDate.map(e => contextListItem(e, `Same date · ${locationText(e)}`)).join("")
+        : `<li class="rc-empty">No matching NHIRA records on the same date.</li>`;
+
+    // --- Same Year ---
+    const sameYearHtml = sameYear.length
+        ? sameYear.map(e => contextListItem(e, `Same year · ${locationText(e)}`)).join("")
+        : `<li class="rc-empty">No matching NHIRA records in ${escapeHtml(event.year)}.</li>`;
+
+    // --- Surrounding Period ---
+    const surroundingHtml = surrounding.length
+        ? surrounding.map(({ event: e, yearDiff }) =>
+            contextListItem(e, `${yearDiff} year${yearDiff === 1 ? "" : "s"} apart · ${locationText(e)}`)
           ).join("")
-        : `<li class="rc-empty">No recorded incidents within ${SAME_TIME_WINDOW_YEARS} years.</li>`;
+        : `<li class="rc-empty">No matching NHIRA records within ${SURROUNDING_WINDOW_YEARS} years of ${escapeHtml(event.year)}.</li>`;
 
+    // --- Who was involved (structured fields; free text until a
+    //     people/organizations database exists — see NHIRA v0.7) ---
     const people = Array.isArray(event.peopleInvolved) ? event.peopleInvolved : [];
     const orgs = Array.isArray(event.organizationsInvolved) ? event.organizationsInvolved : [];
     const involvedHtml = (people.length || orgs.length)
@@ -1091,7 +1267,7 @@ function renderResearchContext(event) {
         ? subsequent.map(e =>
             contextListItem(e, `${escapeHtml(e.year)} · ${escapeHtml(e.country)}`)
           ).join("")
-        : `<li class="rc-empty">No recorded incidents in ${escapeHtml(event.country || "this country")} in the following ${SUBSEQUENT_WINDOW_YEARS} years.</li>`;
+        : `<li class="rc-empty">No matching NHIRA records found in ${escapeHtml(event.country || "this country")} in the following ${SUBSEQUENT_WINDOW_YEARS} years — this reflects a gap in the current dataset, not confirmed evidence that no incidents occurred.</li>`;
 
     return `
         <h3 class="analysis-heading rc-heading">Research Context</h3>
@@ -1102,8 +1278,18 @@ function renderResearchContext(event) {
         </div>
 
         <div class="rc-section">
-            <p class="chart-title">What was happening at the same time?</p>
-            <ul class="rc-list">${sameTimeHtml}</ul>
+            <p class="chart-title">Same date</p>
+            <ul class="rc-list">${sameDateHtml}</ul>
+        </div>
+
+        <div class="rc-section">
+            <p class="chart-title">Same year</p>
+            <ul class="rc-list">${sameYearHtml}</ul>
+        </div>
+
+        <div class="rc-section">
+            <p class="chart-title">Surrounding period (±${SURROUNDING_WINDOW_YEARS} years)</p>
+            <ul class="rc-list">${surroundingHtml}</ul>
         </div>
 
         <div class="rc-section">
@@ -1117,6 +1303,58 @@ function renderResearchContext(event) {
             <ul class="rc-list">${subsequentHtml}</ul>
         </div>
     `;
+}
+
+// ---------------------------------------------------------------------
+// Per-incident Data Quality
+//
+// Reads an optional `dataQuality` object on the record, e.g.:
+//   "dataQuality": {
+//     "date": "verified",
+//     "location": "verified",
+//     "fatalities": "multiple",
+//     "coordinates": "verified",
+//     "category": "reviewed"
+//   }
+// Only fields actually present are shown — nothing here is invented.
+// A record with no dataQuality object at all just says so plainly,
+// rather than displaying a fabricated "verified" badge.
+// ---------------------------------------------------------------------
+
+const DQ_FIELD_LABELS = [
+    ["date", "Date"],
+    ["location", "Location"],
+    ["fatalities", "Fatalities"],
+    ["coordinates", "Coordinates"],
+    ["category", "Category"]
+];
+
+const DQ_STATUS_LABELS = {
+    verified: "Verified",
+    reviewed: "Reviewed",
+    multiple: "Multiple sources",
+    unverified: "Unverified",
+    disputed: "Disputed"
+};
+
+function renderDataQuality(event) {
+    const dq = event.dataQuality;
+    if (!dq || typeof dq !== "object") {
+        return `<p class="dq-empty">Data quality not yet reviewed for this record.</p>`;
+    }
+
+    const rows = DQ_FIELD_LABELS
+        .filter(([key]) => dq[key])
+        .map(([key, label]) => {
+            const statusKey = String(dq[key]).toLowerCase();
+            const statusLabel = DQ_STATUS_LABELS[statusKey] || dq[key];
+            const statusClass = DQ_STATUS_LABELS[statusKey] ? `dq-${statusKey}` : "dq-unverified";
+            return `<li><span class="dq-field">${label}</span><span class="dq-status ${statusClass}">${escapeHtml(statusLabel)}</span></li>`;
+        });
+
+    return rows.length
+        ? `<ul class="dq-list">${rows.join("")}</ul>`
+        : `<p class="dq-empty">Data quality not yet reviewed for this record.</p>`;
 }
 
 function openPanel(event) {
@@ -1177,6 +1415,11 @@ function openPanel(event) {
 
         <p class="field"><b>Venue</b><br>${escapeHtml(event.venue) || "Not recorded"}</p>
         <p class="field"><b>Sources</b><br>${sourcesHtml}</p>
+
+        <div class="dq-section">
+            <p class="chart-title">Data quality</p>
+            ${renderDataQuality(event)}
+        </div>
 
         ${renderResearchContext(event)}
     `;
