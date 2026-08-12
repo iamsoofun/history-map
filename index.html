@@ -44,12 +44,6 @@
   <main id="stage">
     <div id="map"></div>
 
-    <div id="mapModeControl" class="map-mode-control" role="group" aria-label="Map mode">
-      <button type="button" class="map-mode-btn active" data-mode="observed">Observed</button>
-      <button type="button" class="map-mode-btn" data-mode="context">Context</button>
-      <button type="button" class="map-mode-btn" data-mode="forecast">Forecast</button>
-    </div>
-
     <div id="legend" class="collapsed">
       <button id="legendToggle" aria-expanded="false" aria-controls="legendList">
         <span class="legend-icon" aria-hidden="true">◈</span>
@@ -83,4 +77,151 @@
   <div id="timebar">
     <div class="timebar-row">
       <button id="playBtn" class="transport" aria-label="Play timeline">▶</button>
-      <button id="pauseBtn" class="transport" aria-label="Pause
+      <button id="pauseBtn" class="transport" aria-label="Pause timeline">❚❚</button>
+      <button id="nowBtn" class="transport wide" aria-label="Jump to current year">NOW</button>
+      <output id="yearDisplay" for="timeline">1900</output>
+      <span id="eraTag" class="era">recorded</span>
+    </div>
+    <input id="timeline" type="range" min="1900" max="2100" step="1" value="1900" aria-label="Year">
+    <div class="scale" aria-hidden="true">
+      <span>1900</span><span>1950</span><span>2000</span><span>2050</span><span>2100</span>
+    </div>
+  </div>
+
+  <aside id="sidePanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closePanel" aria-label="Close details">✕</button>
+    <div id="panelContent">
+      <h2>Select an incident</h2>
+      <p>Tap a marker to read the record.</p>
+    </div>
+  </aside>
+
+  <aside id="statsPanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closeStats" aria-label="Close research and statistics">✕</button>
+
+    <h2>Research &amp; Statistics</h2>
+    <p class="meta">Numbers are computed live from your current data — they update automatically as incidents are added.</p>
+
+    <div class="research-filters">
+      <label>
+        From
+        <input id="rsStartYear" type="number" min="1900" max="2100" value="1900">
+      </label>
+      <label>
+        To
+        <input id="rsEndYear" type="number" min="1900" max="2100" value="2100">
+      </label>
+      <label>
+        Country
+        <select id="rsCountry"><option value="">All countries</option></select>
+      </label>
+      <label>
+        Category
+        <select id="rsCategory"><option value="">All categories</option></select>
+      </label>
+      <label>
+        Region
+        <select id="rsRegion"><option value="">All regions</option></select>
+      </label>
+      <label>
+        Min fatalities
+        <input id="rsMinFatalities" type="number" min="0" step="1" value="0">
+      </label>
+    </div>
+
+    <div class="research-actions">
+      <button id="rsGenerateBtn" type="button">Generate</button>
+      <button id="rsClearBtn" type="button">Clear</button>
+    </div>
+
+    <div id="rsSummary" class="stats-summary"></div>
+    <button id="methodologyToggle" class="methodology-toggle" type="button" aria-expanded="false" aria-controls="methodologyBody">
+      How is this calculated?
+    </button>
+    <div id="methodologyBody" class="methodology-body" hidden></div>
+
+    <h3 class="analysis-heading">Dataset Coverage</h3>
+    <p class="meta coverage-subhead">
+      This describes the whole NHIRA dataset, not just the filtered results above — it's a snapshot of what NHIRA currently contains and how well-sourced it is.
+    </p>
+    <div id="datasetCoverage" class="stats-summary"></div>
+    <p id="coverageLastUpdated" class="concentration-note"></p>
+    <p id="coverageNeedsReview" class="concentration-note"></p>
+
+    <p class="chart-title">Source coverage</p>
+    <div id="sourceCoverage" class="source-coverage"></div>
+
+    <ul id="rsBreakdown" class="stats-breakdown"></ul>
+
+    <h3 class="analysis-heading">Incident Analysis</h3>
+    <div class="chart-grid">
+      <div class="chart-box"><p class="chart-title">Incidents by decade</p><canvas id="chartIncidentsByDecade"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Incidents by country (top 10)</p><canvas id="chartIncidentsByCountry"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Incidents by region</p><canvas id="chartIncidentsByRegion"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Fatalities by decade</p><canvas id="chartFatalitiesByDecade"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Injuries by decade</p><canvas id="chartInjuriesByDecade"></canvas></div>
+    </div>
+
+    <div class="ranked-list">
+      <p class="chart-title">Highest-fatality incidents</p>
+      <ol id="rsTopFatalities"></ol>
+    </div>
+
+    <div class="ranked-list">
+      <p class="chart-title">Countries with the most incidents</p>
+      <ol id="rsTopCountries"></ol>
+    </div>
+
+    <h3 class="analysis-heading">Trend Analysis</h3>
+    <div class="chart-grid">
+      <div class="chart-box"><p class="chart-title">Incident frequency over time</p><canvas id="chartFrequencyTrend"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Fatality trend over time</p><canvas id="chartFatalityTrend"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Category mix by decade</p><canvas id="chartCategoryTrend"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Cumulative incidents over time</p><canvas id="chartCumulative"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Severity: fatalities vs. injuries</p><canvas id="chartSeverityScatter"></canvas></div>
+    </div>
+    <div id="rsConcentration" class="concentration-note"></div>
+
+    <div id="rsResultsList" class="research-results"></div>
+  </aside>
+
+  <aside id="forecastPanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closeForecast" aria-label="Close forecast">✕</button>
+
+    <h2>Incident Forecast</h2>
+    <p class="meta">
+      Statistical risk categories derived from NHIRA's current historical dataset for the selected country —
+      not a prediction that an incident will occur. See "How is this forecast calculated?" below before treating any number here as authoritative.
+    </p>
+
+    <div class="research-filters forecast-filters">
+      <label>
+        Country
+        <select id="fcCountry"><option value="">Select a country…</option></select>
+      </label>
+    </div>
+
+    <div class="research-actions">
+      <button id="fcGenerateBtn" type="button">Generate Forecast</button>
+    </div>
+
+    <label class="forecast-map-toggle">
+      <input type="checkbox" id="fcMapToggle">
+      Show forecast risk on map (approximate — plotted at each country's incident centroid, not a true boundary map)
+    </label>
+
+    <div id="fcOutput"></div>
+  </aside>
+
+  <div id="scrim" hidden></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
