@@ -147,11 +147,23 @@ const sourceCoverage = document.getElementById("sourceCoverage");
 // Forecast panel
 const forecastToggle = document.getElementById("forecastToggle");
 const forecastPanel = document.getElementById("forecastPanel");
-const closeForecast = document.getElementById("closeForecast");
-const fcCountry = document.getElementById("fcCountry");
+const closeForecast = document.getElementById("closeForecast");const fcCountry = document.getElementById("fcCountry");
 const fcGenerateBtn = document.getElementById("fcGenerateBtn");
 const fcOutput = document.getElementById("fcOutput");
 const mapModeButtons = document.querySelectorAll(".map-mode-btn");
+
+// Pending Verification review panel
+const reviewToggle = document.getElementById("reviewToggle");
+const reviewPanel = document.getElementById("reviewPanel");
+const closeReview = document.getElementById("closeReview");
+const rvStatusFilter = document.getElementById("rvStatusFilter");
+const rvSummary = document.getElementById("rvSummary");
+const rvList = document.getElementById("rvList");
+const rvExportWrap = document.getElementById("rvExportWrap");
+const rvExport = document.getElementById("rvExport");
+
+const REVIEW_ELEMENTS_PRESENT = reviewToggle && reviewPanel && closeReview &&
+    rvStatusFilter && rvSummary && rvList && rvExport;
 
 const FORECAST_ELEMENTS_PRESENT = forecastToggle && forecastPanel && closeForecast &&
     fcCountry && fcGenerateBtn && fcOutput;
@@ -865,6 +877,7 @@ function openStats() {
     statsPanel.setAttribute("aria-hidden", "false");
     statsToggle.setAttribute("aria-expanded", "true");
     if (FORECAST_ELEMENTS_PRESENT) closeForecastPanel();
+    if (REVIEW_ELEMENTS_PRESENT) closeReviewPanel();
     if (window.innerWidth < DUAL_PANEL_MIN_WIDTH) sidePanel.classList.remove("open");
     if (window.innerWidth < 760) scrim.hidden = false;
     runResearch();
@@ -1282,6 +1295,7 @@ function openForecastPanel() {
     forecastPanel.setAttribute("aria-hidden", "false");
     forecastToggle.setAttribute("aria-expanded", "true");
     if (RESEARCH_ELEMENTS_PRESENT) closeStatsPanel();
+    if (REVIEW_ELEMENTS_PRESENT) closeReviewPanel();
     if (window.innerWidth < DUAL_PANEL_MIN_WIDTH) sidePanel.classList.remove("open");
     if (window.innerWidth < 760) scrim.hidden = false;
 }
@@ -1386,6 +1400,363 @@ mapModeButtons.forEach(btn => {
     btn.addEventListener("click", () => setMapMode(btn.dataset.mode));
 });
 
+// =====================================================================
+// SIGNAL METADATA + PENDING VERIFICATION
+//
+// Every ingested candidate carries the same six-field signal metadata
+// block, shared with any future real-time/RTM layer so the two
+// pipelines speak one vocabulary:
+//
+//   source              where it came from (approved source URL)
+//   timestamp           when NHIRA discovered it
+//   location_precision  exact | city | approximate | unknown
+//   verification_status UNVERIFIED | NEEDS_RESEARCH | VERIFIED
+//                       | REJECTED | EXPIRED
+//   confidence          0–1 extraction confidence (NOT source
+//                       confidence — that's a published-record field)
+//   expiration_time     when an UNREVIEWED candidate goes stale
+//
+// Important: expiration marks a candidate as stale for review triage.
+// It never deletes it. A real unreviewed incident must not silently
+// vanish because nobody got to it in time.
+//
+// The collector does NOT classify. It flags candidates against
+// criteria (flaggedCriteria[]) and a human makes the final call.
+// =====================================================================
+
+const REVIEW_STATUSES = ["UNVERIFIED", "NEEDS_RESEARCH", "VERIFIED", "REJECTED", "EXPIRED"];
+
+const PRECISION_LABELS = {
+    exact: "Exact coordinates",
+    city: "City-level",
+    approximate: "Approximate",
+    unknown: "Unknown"
+};
+
+let pendingCandidates = [];
+
+function effectiveStatus(candidate) {
+    const status = String(candidate?.signal?.verification_status || "UNVERIFIED").toUpperCase();
+    if (!REVIEW_STATUSES.includes(status)) return "UNVERIFIED";
+
+    // Only still-unreviewed candidates can go stale. A decided
+    // candidate (verified/rejected) keeps its decision forever.
+    if (status === "UNVERIFIED" || status === "NEEDS_RESEARCH") {
+        const expiry = candidate?.signal?.expiration_time;
+        if (expiry) {
+            const t = new Date(expiry);
+            if (!Number.isNaN(t.getTime()) && t.getTime() < Date.now()) return "EXPIRED";
+        }
+    }
+    return status;
+}
+
+function confidenceLabel(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return "Not scored";
+    const pct = Math.round(n * 100);
+    const band = n >= 0.75 ? "High" : n >= 0.5 ? "Moderate" : "Low";
+    return `${band} (${pct}%)`;
+}
+
+function formatSignalTimestamp(raw) {
+    if (!raw) return "Not recorded";
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return escapeHtml(raw);
+    return d.toLocaleString(undefined, {
+        year: "numeric", month: "short", day: "numeric",
+        hour: "2-digit", minute: "2-digit"
+    });
+}
+
+// Renders the shared six-field metadata block. Used by the review
+// panel now; reusable by any future real-time signal layer.
+function renderSignalMetadata(signal, status) {
+    if (!signal) return `<p class="dq-empty">No signal metadata recorded.</p>`;
+    return `
+        <dl class="signal-meta">
+            <dt>Source</dt>
+            <dd>${signal.source
+                ? `<a href="${escapeHtml(signal.source)}" target="_blank" rel="noopener noreferrer">${escapeHtml(signal.source)}</a>`
+                : "Not recorded"}</dd>
+
+            <dt>Discovered</dt>
+            <dd>${formatSignalTimestamp(signal.timestamp)}</dd>
+
+            <dt>Location precision</dt>
+            <dd>${PRECISION_LABELS[String(signal.location_precision || "").toLowerCase()] || "Unknown"}</dd>
+
+            <dt>Verification status</dt>
+            <dd><span class="signal-status signal-${status.toLowerCase()}">${status.replace("_", " ")}</span></dd>
+
+            <dt>Extraction confidence</dt>
+            <dd>${confidenceLabel(signal.confidence)}</dd>
+
+            <dt>Review expires</dt>
+            <dd>${formatSignalTimestamp(signal.expiration_time)}${status === "EXPIRED" ? " — stale, still retained for review" : ""}</dd>
+        </dl>
+    `;
+}
+
+function duplicateCheckHtml(dup) {
+    if (!dup) return "";
+    const statusKey = String(dup.status || "unknown").toLowerCase();
+    const label = statusKey === "no-match" ? "No duplicate found"
+        : statusKey === "possible-match" ? "Possible duplicate"
+        : statusKey === "match" ? "Duplicate of existing record"
+        : "Not checked";
+    const cls = statusKey === "no-match" ? "dup-clear" : "dup-flag";
+    return `
+        <p class="review-dup ${cls}">
+            <b>${label}</b>${dup.matchedId ? ` — matches NHIRA record #${escapeHtml(dup.matchedId)}` : ""}
+            ${dup.note ? `<br><span class="review-dup-note">${escapeHtml(dup.note)}</span>` : ""}
+        </p>
+    `;
+}
+
+// Converts an approved candidate into a publishable history.json
+// record. The candidate's own metadata does NOT get copied into the
+// published record wholesale — published records carry sourceConfidence
+// and dataQuality, which are human judgments made at review time, not
+// machine extraction scores.
+function candidateToRecord(candidate) {
+    const e = candidate.extracted || {};
+    return {
+        id: null, // assign on commit — see clean_history.py reassignment logic
+        title: e.title,
+        date: e.date,
+        year: e.year,
+        country: e.country,
+        state: e.state,
+        city: e.city,
+        venue: e.venue,
+        lat: e.lat,
+        lng: e.lng,
+        fatalities: e.fatalities,
+        injuries: e.injuries,
+        description: e.description,
+        sources: candidate.signal?.source ? [candidate.signal.source] : [],
+        sourceConfidence: "medium",
+        provenance: {
+            ingestedVia: "automated-source-check",
+            candidateId: candidate.candidateId,
+            discoveredAt: candidate.signal?.timestamp || null,
+            approvedAt: new Date().toISOString()
+        }
+    };
+}
+
+function refreshExportBox() {
+    if (!rvExportWrap || !rvExport) return;
+    const approved = pendingCandidates.filter(c => effectiveStatus(c) === "VERIFIED");
+    if (!approved.length) {
+        rvExportWrap.hidden = true;
+        rvExport.value = "";
+        return;
+    }
+    rvExportWrap.hidden = false;
+    rvExport.value = JSON.stringify(approved.map(candidateToRecord), null, 2);
+}
+
+function setCandidateStatus(candidateId, newStatus) {
+    const candidate = pendingCandidates.find(c => c.candidateId === candidateId);
+    if (!candidate) return;
+    if (!candidate.signal) candidate.signal = {};
+    candidate.signal.verification_status = newStatus;
+    candidate.signal.reviewedAt = new Date().toISOString();
+
+    // ---- BACKEND HOOK ----------------------------------------------
+    // A static build cannot persist this. To make approvals write
+    // through to the real database, POST the decision here, e.g.:
+    //
+    //   fetch("/api/pending/" + candidateId, {
+    //       method: "PATCH",
+    //       headers: { "Content-Type": "application/json" },
+    //       body: JSON.stringify({ verification_status: newStatus })
+    //   });
+    //
+    // On approval the backend should also insert the record from
+    // candidateToRecord(candidate) into the incident database, then
+    // let everything derived from it (map, stats, charts, forecast,
+    // dataset coverage, last-updated) recalculate from that one write.
+    // ----------------------------------------------------------------
+
+    renderReviewQueue();
+}
+
+function renderReviewQueue() {
+    if (!REVIEW_ELEMENTS_PRESENT) return;
+
+    const counts = {};
+    REVIEW_STATUSES.forEach(s => { counts[s] = 0; });
+    pendingCandidates.forEach(c => { counts[effectiveStatus(c)]++; });
+
+    rvSummary.innerHTML = `
+        <div class="stat-card"><b>${counts.UNVERIFIED}</b><span>Unverified</span></div>
+        <div class="stat-card"><b>${counts.NEEDS_RESEARCH}</b><span>Needs research</span></div>
+        <div class="stat-card"><b>${counts.VERIFIED}</b><span>Verified</span></div>
+        <div class="stat-card"><b>${counts.EXPIRED}</b><span>Expired</span></div>
+    `;
+
+    const filter = rvStatusFilter.value;
+    const shown = pendingCandidates.filter(c => filter === "all" || effectiveStatus(c) === filter);
+
+    if (!shown.length) {
+        rvList.innerHTML = `<p class="dq-empty">No candidates match this filter. An empty queue means nothing has been ingested yet — not that no incidents occurred.</p>`;
+        refreshExportBox();
+        return;
+    }
+
+    rvList.innerHTML = shown.map(c => {
+        const e = c.extracted || {};
+        const status = effectiveStatus(c);
+        const place = [e.city, e.state, e.country].filter(Boolean).map(escapeHtml).join(", ");
+        const decided = status === "VERIFIED" || status === "REJECTED";
+
+        return `
+            <div class="review-card review-card-${status.toLowerCase()}">
+                <div class="review-card-head">
+                    <span class="signal-status signal-${status.toLowerCase()}">${status.replace("_", " ")}</span>
+                    <h3>${escapeHtml(e.title || "Untitled candidate")}</h3>
+                    <p class="review-card-meta">${escapeHtml(e.date || e.year || "Date not extracted")} · ${place || "Location not extracted"}</p>
+                </div>
+
+                <div class="stats">
+                    <div class="stat"><b>${escapeHtml(e.fatalities ?? "—")}</b><span>Fatalities</span></div>
+                    <div class="stat"><b>${escapeHtml(e.injuries ?? "—")}</b><span>Injuries</span></div>
+                </div>
+
+                <p class="review-desc">${escapeHtml(e.description || "No description extracted.")}</p>
+
+                ${duplicateCheckHtml(c.duplicateCheck)}
+
+                ${Array.isArray(c.flaggedCriteria) && c.flaggedCriteria.length ? `
+                    <p class="chart-title">Flagged against criteria</p>
+                    <ul class="review-criteria">
+                        ${c.flaggedCriteria.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
+                    </ul>
+                    <p class="review-criteria-note">
+                        These are automated flags only. NHIRA's final classification is made by the reviewer
+                        after reading the underlying source.
+                    </p>
+                ` : ""}
+
+                <p class="chart-title">Signal metadata</p>
+                ${renderSignalMetadata(c.signal, status)}
+
+                <div class="review-actions">
+                    <button type="button" class="rv-btn rv-approve" data-id="${escapeHtml(c.candidateId)}" data-action="VERIFIED" ${decided ? "disabled" : ""}>Approve</button>
+                    <button type="button" class="rv-btn rv-research" data-id="${escapeHtml(c.candidateId)}" data-action="NEEDS_RESEARCH" ${decided ? "disabled" : ""}>Needs research</button>
+                    <button type="button" class="rv-btn rv-reject" data-id="${escapeHtml(c.candidateId)}" data-action="REJECTED" ${decided ? "disabled" : ""}>Reject</button>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    refreshExportBox();
+}
+
+function openReviewPanel() {
+    reviewPanel.classList.add("open");
+    reviewPanel.setAttribute("aria-hidden", "false");
+    reviewToggle.setAttribute("aria-expanded", "true");
+    if (RESEARCH_ELEMENTS_PRESENT) closeStatsPanel();
+    if (FORECAST_ELEMENTS_PRESENT) closeForecastPanel();
+    if (window.innerWidth < DUAL_PANEL_MIN_WIDTH) sidePanel.classList.remove("open");
+    if (window.innerWidth < 760) scrim.hidden = false;
+    renderReviewQueue();
+}
+
+function closeReviewPanel() {
+    reviewPanel.classList.remove("open");
+    reviewPanel.setAttribute("aria-hidden", "true");
+    reviewToggle.setAttribute("aria-expanded", "false");
+    scrim.hidden = true;
+}
+
+if (REVIEW_ELEMENTS_PRESENT) {
+    fetch("pending.json")
+        .then(r => (r.ok ? r.json() : []))
+        .then(data => {
+            pendingCandidates = Array.isArray(data) ? data : [];
+            renderReviewQueue();
+        })
+        .catch(() => {
+            // No pending.json deployed yet — that's a valid state, not an error.
+            pendingCandidates = [];
+            renderReviewQueue();
+        });
+
+    reviewToggle.addEventListener("click", () => {
+        if (reviewPanel.classList.contains("open")) {
+            closeReviewPanel();
+        } else {
+            openReviewPanel();
+        }
+    });
+
+    closeReview.addEventListener("click", closeReviewPanel);
+    rvStatusFilter.addEventListener("change", renderReviewQueue);
+
+    rvList.addEventListener("click", e => {
+        const btn = e.target.closest(".rv-btn");
+        if (!btn || btn.disabled) return;
+        setCandidateStatus(btn.dataset.id, btn.dataset.action);
+    });
+} else {
+    console.warn("Pending Verification controls not found in the DOM — skipping their setup so the rest of the app still loads.");
+}
+
+// =====================================================================
+// GEOGRAPHIC RESOLUTION GATE
+//
+// HARD RULE: no city- or neighborhood-level model output may be
+// displayed unless it passes minimum-data AND out-of-sample
+// validation. A sparse dataset must never be allowed to render a
+// convincing-looking but meaningless heat map.
+//
+// Out-of-sample validation is not implemented (it needs a backtesting
+// harness), so validationPassed is permanently false in this build —
+// which means city/neighborhood output is gated off by construction,
+// not by a threshold that could accidentally be met.
+// =====================================================================
+
+const GEO_LEVEL_REQUIREMENTS = {
+    country:      { minIncidents: 10, minYears: 5,  requiresValidation: false },
+    state:        { minIncidents: 30, minYears: 10, requiresValidation: false },
+    city:         { minIncidents: 50, minYears: 10, requiresValidation: true },
+    neighborhood: { minIncidents: 200, minYears: 15, requiresValidation: true }
+};
+
+// Flips to true only when a real out-of-sample backtest exists and
+// beats a naive baseline. Nothing in this build can set it.
+const OUT_OF_SAMPLE_VALIDATION_PASSED = false;
+
+function geoLevelAvailability(level, incidentCount, yearSpan) {
+    const req = GEO_LEVEL_REQUIREMENTS[level];
+    if (!req) return { allowed: false, reason: "Unknown geographic level." };
+
+    if (incidentCount < req.minIncidents) {
+        return {
+            allowed: false,
+            reason: `Insufficient data: ${incidentCount} record(s), minimum ${req.minIncidents} required at ${level} level.`
+        };
+    }
+    if (yearSpan < req.minYears) {
+        return {
+            allowed: false,
+            reason: `Insufficient time span: ${yearSpan} year(s), minimum ${req.minYears} required at ${level} level.`
+        };
+    }
+    if (req.requiresValidation && !OUT_OF_SAMPLE_VALIDATION_PASSED) {
+        return {
+            allowed: false,
+            reason: `${level.charAt(0).toUpperCase() + level.slice(1)}-level output requires out-of-sample validation, which has not yet been performed. Display is blocked by design.`
+        };
+    }
+    return { allowed: true, reason: "" };
+}
+
 // ---------------------------------------------------------------------
 // Play / Pause timeline
 // ---------------------------------------------------------------------
@@ -1441,6 +1812,7 @@ function openSheet() {
     sidePanel.setAttribute("aria-hidden", "false");
     if (RESEARCH_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeStatsPanel();
     if (FORECAST_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeForecastPanel();
+    if (REVIEW_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeReviewPanel();
     if (window.innerWidth < 760) scrim.hidden = false;
     setTimeout(() => map.invalidateSize(), 300);
 }
@@ -1450,6 +1822,7 @@ function closeSheet() {
     sidePanel.setAttribute("aria-hidden", "true");
     if (RESEARCH_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeStatsPanel();
     if (FORECAST_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeForecastPanel();
+    if (REVIEW_ELEMENTS_PRESENT && window.innerWidth < DUAL_PANEL_MIN_WIDTH) closeReviewPanel();
     scrim.hidden = true;
     currentOpenEvent = null;
     if (mapMode === "context") renderContextHighlightLayer();

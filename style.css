@@ -958,3 +958,275 @@ html, body {
   line-height: 1.5;
   color: var(--ink-soft);
 }
+
+/* ============================================================
+   Pending Verification review panel + signal metadata
+   ============================================================ */
+
+#reviewPanel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1200;
+  max-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 18px calc(26px + env(safe-area-inset-bottom));
+  background: var(--card);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -6px 28px rgba(14, 17, 22, .3);
+  transform: translateY(101%);
+  transition: transform .26s cubic-bezier(.32, .72, 0, 1);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y !important;
+  overscroll-behavior: contain;
+}
+
+#reviewPanel.open { transform: translateY(0); }
+
+#reviewPanel h2 {
+  margin: 6px 40px 4px 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+#reviewPanel > .meta {
+  margin: 0 0 14px;
+  font-size: .8rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+#closeReview {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  font-size: 1rem;
+  color: var(--ink-soft);
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+#closeReview:active { background: var(--paper); }
+
+.review-filters { margin-bottom: 12px; }
+
+.review-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: 500 .68rem/1 var(--font-body);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.review-filters select {
+  height: 36px;
+  padding: 0 9px;
+  font: 500 .85rem/1 var(--font-mono);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+.review-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.review-summary .stat-card {
+  padding: 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.review-summary .stat-card b {
+  display: block;
+  font: 600 1.6rem/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.review-summary .stat-card span {
+  font: 500 .62rem/1 var(--font-body);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.review-card {
+  margin-bottom: 18px;
+  padding: 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rule);
+  border-radius: 8px;
+}
+
+.review-card-unverified { border-left-color: var(--signal); }
+.review-card-needs_research { border-left-color: #1F6FB2; }
+.review-card-verified { border-left-color: #2E7D5B; }
+.review-card-rejected { border-left-color: #8C2A24; opacity: .72; }
+.review-card-expired { border-left-color: #8A939C; opacity: .72; }
+
+.review-card-head h3 {
+  margin: 6px 0 2px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.review-card-meta {
+  margin: 0 0 10px;
+  font: 400 .72rem/1.4 var(--font-mono);
+  color: var(--ink-soft);
+}
+
+.review-desc { font-size: .85rem; line-height: 1.5; margin: 0 0 10px; }
+
+.review-dup {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+.dup-clear { background: #E4F3EA; color: #1F6B45; border: 1px solid #B7DDC6; }
+.dup-flag { background: #FBF0DC; color: #8A5A00; border: 1px solid #F0D8A0; }
+.review-dup-note { font-weight: 400; }
+
+.review-criteria {
+  margin: 0 0 6px;
+  padding-left: 20px;
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+.review-criteria-note {
+  margin: 0 0 12px;
+  font-size: .75rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.signal-meta {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  font-size: .8rem;
+  line-height: 1.55;
+}
+
+.signal-meta dt {
+  margin-top: 8px;
+  font: 600 .6rem/1 var(--font-body);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.signal-meta dt:first-child { margin-top: 0; }
+.signal-meta dd { margin: 2px 0 0; word-break: break-word; }
+.signal-meta a { color: #1F6FB2; }
+
+.signal-status {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font: 600 .62rem/1.5 var(--font-body);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.signal-unverified { background: #FBF0DC; color: #8A5A00; }
+.signal-needs_research { background: #E4EEF8; color: #1F4E8C; }
+.signal-verified { background: #E4F3EA; color: #1F6B45; }
+.signal-rejected { background: #F8E4E3; color: #8C2A24; }
+.signal-expired { background: #ECEEF0; color: #55606B; }
+
+.review-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.rv-btn {
+  flex: 1 1 auto;
+  min-width: 92px;
+  height: 38px;
+  padding: 0 10px;
+  font: 600 .7rem/1 var(--font-body);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  cursor: pointer;
+  background: var(--card);
+  color: var(--ink);
+}
+
+.rv-btn:disabled { opacity: .45; cursor: default; }
+.rv-approve:not(:disabled) { background: #2E7D5B; color: #fff; border-color: #2E7D5B; }
+.rv-research:not(:disabled) { background: #1F6FB2; color: #fff; border-color: #1F6FB2; }
+.rv-reject:not(:disabled) { background: #B3322B; color: #fff; border-color: #B3322B; }
+
+.review-export {
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.review-export-note {
+  margin: 0 0 8px;
+  font-size: .78rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.review-export textarea {
+  width: 100%;
+  font: 400 .72rem/1.5 var(--font-mono);
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 8px;
+  resize: vertical;
+}
+
+@media (min-width: 760px) {
+  #reviewPanel {
+    top: var(--hdr-h);
+    left: 0;
+    right: auto;
+    bottom: 0;
+    width: 440px;
+    max-height: none;
+    padding: 26px 26px 30px;
+    border-radius: 0;
+    border-right: 1px solid var(--rule);
+    transform: translateX(-101%);
+  }
+
+  #reviewPanel.open { transform: translateX(0); }
+}
+
+@media (min-width: 1400px) {
+  #reviewPanel { width: 500px; }
+}

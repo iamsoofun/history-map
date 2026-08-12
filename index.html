@@ -32,6 +32,10 @@
       <input id="search" type="search" placeholder="Search incidents" autocomplete="off">
     </div>
 
+    <button id="reviewToggle" class="stats-toggle" aria-label="Open pending verification review" aria-expanded="false" aria-controls="reviewPanel">
+      🗂️ <span class="stats-toggle-word">Review</span>
+    </button>
+
     <button id="forecastToggle" class="stats-toggle" aria-label="Open incident forecast" aria-expanded="false" aria-controls="forecastPanel">
       🔮 <span class="stats-toggle-word">Forecast</span>
     </button>
@@ -216,18 +220,4 @@
 
     <p class="forecast-map-note">
       To see this on the map, switch the map to <strong>Forecast</strong> mode using the mode control at the top of the map
-      (approximate — plotted at each country's incident centroid, not a true boundary map, and off by default).
-    </p>
-
-    <div id="fcOutput"></div>
-  </aside>
-
-  <div id="scrim" hidden></div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="script.js"></script>
-</body>
-
-</html>
+      (approximate — plotted at each country's incident centroid, not a true
