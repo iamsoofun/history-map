@@ -6,6 +6,39 @@
 // =====================================================================
 
 // ---------------------------------------------------------------------
+// Dependency guard
+//
+// If a CDN library fails to load, every later line that touches L.*
+// throws and the whole app dies silently — the symptom is a blank
+// map area with no zoom control and no attribution. Rather than fail
+// invisibly, say so on the page.
+// ---------------------------------------------------------------------
+
+(function checkDependencies() {
+    const missing = [];
+    if (typeof L === "undefined") missing.push("Leaflet (map library)");
+    else if (typeof L.markerClusterGroup !== "function") missing.push("Leaflet.markercluster (clustering plugin)");
+    if (typeof Chart === "undefined") missing.push("Chart.js (charts — panels will still work, charts will not)");
+
+    if (!missing.length) return;
+
+    console.error("NHIRA: required libraries failed to load:", missing);
+
+    const mapEl = document.getElementById("map");
+    if (mapEl) {
+        mapEl.innerHTML = `
+            <div style="padding:24px;font:500 .9rem/1.6 system-ui,sans-serif;color:#8C2A24;
+                        background:#F8E4E3;border:1px solid #EFC0BC;border-radius:8px;margin:16px;">
+                <strong>Map libraries failed to load.</strong><br>
+                Missing: ${missing.join(", ")}.<br><br>
+                This is a network/CDN problem, not a data problem — NHIRA's records are fine.
+                Check your connection, or whether a firewall/extension is blocking the CDN, then reload.
+            </div>
+        `;
+    }
+})();
+
+// ---------------------------------------------------------------------
 // Type registry
 // ---------------------------------------------------------------------
 

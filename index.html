@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -220,4 +220,55 @@
 
     <p class="forecast-map-note">
       To see this on the map, switch the map to <strong>Forecast</strong> mode using the mode control at the top of the map
-      (approximate — plotted at each country's incident centroid, not a true
+      (approximate — plotted at each country's incident centroid, not a true boundary map, and off by default).
+    </p>
+
+    <div id="fcOutput"></div>
+  </aside>
+
+  <aside id="reviewPanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closeReview" aria-label="Close pending verification review">✕</button>
+
+    <h2>Pending Verification</h2>
+    <p class="meta">
+      Candidates detected by automated source checks. Nothing here is published to NHIRA until a human
+      approves it — the collector flags candidates against criteria, it does not make the final classification.
+    </p>
+
+    <div class="review-filters">
+      <label>
+        Show
+        <select id="rvStatusFilter">
+          <option value="all">All candidates</option>
+          <option value="UNVERIFIED">Unverified</option>
+          <option value="NEEDS_RESEARCH">Needs research</option>
+          <option value="VERIFIED">Verified</option>
+          <option value="REJECTED">Rejected</option>
+          <option value="EXPIRED">Expired</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="rvSummary" class="review-summary"></div>
+    <div id="rvList" class="review-list"></div>
+
+    <div id="rvExportWrap" class="review-export" hidden>
+      <p class="chart-title">Approved records — copy into history.json</p>
+      <p class="review-export-note">
+        This static build cannot write to the database directly. Copy the JSON below into
+        <code>history.json</code> and redeploy, or connect a backend endpoint where marked in script.js.
+      </p>
+      <textarea id="rvExport" readonly rows="10"></textarea>
+    </div>
+  </aside>
+
+  <div id="scrim" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
