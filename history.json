@@ -4933,6 +4933,1046 @@
   "sources": [
     "https://www.fbi.gov/file-repository/active-shooter-incidents-in-the-us-2019-042820.pdf"
   ]
-}
+},
+
+  {
+    "id": 242,
+    "title": "Multiple Locations in San Fernando Valley Shooting",
+    "date": "2019-07-25",
+    "year": 2019,
+    "country": "United States",
+    "state": "California",
+    "city": "Los Angeles",
+    "venue": "Multiple locations in the San Fernando Valley",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 34.187,
+    "lng": -118.381,
+    "fatalities": 4,
+    "injuries": 2,
+    "description": "A shooting spree began in the San Fernando Valley and involved multiple locations, including an apartment in Canoga Park, a Shell gas station in North Hollywood, and a bus in Van Nuys. Four people were killed and two were wounded.",
+    "sources": [
+      "FBI — Active Shooter Incidents in the United States in 2019"
+    ]
+  },
+  {
+    "id": 243,
+    "title": "Gilroy Garlic Festival Shooting",
+    "date": "2019-07-28",
+    "year": 2019,
+    "country": "United States",
+    "state": "California",
+    "city": "Gilroy",
+    "venue": "Gilroy Garlic Festival",
+    "category": "Festival Shooting",
+    "type": "shooting",
+    "lat": 36.99769,
+    "lng": -121.58547,
+    "fatalities": 3,
+    "injuries": 17,
+    "description": "A shooter opened fire at the Gilroy Garlic Festival in Gilroy, California. Three people were killed and 17 were wounded. The shooter died at the scene during an exchange of gunfire with law enforcement.",
+    "sources": [
+      "FBI — Active Shooter Incidents in the United States in 2019"
+    ]
+  },
+  {
+    "id": 244,
+    "title": "Walmart Supercenter #848 Shooting",
+    "date": "2019-07-30",
+    "year": 2019,
+    "country": "United States",
+    "state": "Mississippi",
+    "city": "Southaven",
+    "venue": "Walmart Supercenter #848",
+    "category": "Workplace Shooting",
+    "type": "shooting",
+    "lat": 34.96023,
+    "lng": -89.99616,
+    "fatalities": 2,
+    "injuries": 1,
+    "description": "A shooter opened fire on co-workers inside Walmart Supercenter #848 in Southaven, Mississippi. Two store managers were killed and one law enforcement officer was wounded. The shooter was shot during an exchange of gunfire and apprehended at the scene.",
+    "sources": [
+      "FBI — Active Shooter Incidents in the United States in 2019"
+    ]
+  },
+  {
+    "id": 245,
+    "title": "Walmart Supercenter #2201 Shooting",
+    "date": "2019-08-03",
+    "year": 2019,
+    "country": "United States",
+    "state": "Texas",
+    "city": "El Paso",
+    "venue": "Cielo Vista Walmart Supercenter #2201",
+    "category": "Retail Shooting",
+    "type": "shooting",
+    "lat": 31.7771,
+    "lng": -106.3843,
+    "fatalities": 23,
+    "injuries": 22,
+    "description": "A shooter opened fire at the Cielo Vista Walmart Supercenter in El Paso, Texas. Twenty-three people were killed and 22 were wounded. The shooter surrendered to law enforcement at the scene.",
+    "sources": [
+      "FBI — Active Shooter Incidents in the United States in 2019"
+    ]
+  },
+  {
+    "id": 246,
+    "title": "Oregon Historic District Shooting",
+    "date": "2019-08-04",
+    "year": 2019,
+    "country": "United States",
+    "state": "Ohio",
+    "city": "Dayton",
+    "venue": "Oregon Historic District",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 39.7556,
+    "lng": -84.1852,
+    "fatalities": 9,
+    "injuries": 27,
+    "description": "A shooter opened fire in the Oregon Historic District in Dayton, Ohio. Nine people were killed and 27 were wounded. The shooter was killed by law enforcement at the scene.",
+    "sources": [
+      "FBI — Active Shooter Incidents in the United States in 2019"
+    ]
+  },
+{
+  "id": 247,
+  "title": "Jesse Brown Veterans Affairs Medical Center Shooting",
+  "date": "2019-08-12",
+  "year": 2019,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Chicago",
+  "venue": "Jesse Brown Veterans Affairs Medical Center",
+  "category": "Healthcare Shooting",
+  "type": "shooting",
+  "lat": 41.87028,
+  "lng": -87.67779,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A shooter began firing outside the Jesse Brown Veterans Affairs Medical Center in Chicago, Illinois, and then entered the building. No one was killed or wounded. The shooter was apprehended at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2019"
+  ]
+},
+{
+  "id": 248,
+  "title": "Multiple Locations in Midland and Odessa Shooting",
+  "date": "2019-08-31",
+  "year": 2019,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Midland and Odessa",
+  "venue": "Multiple locations",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 31.92,
+  "lng": -102.22,
+  "fatalities": 7,
+  "injuries": 21,
+  "description": "A shooter began firing at law enforcement during a traffic stop in Midland and continued shooting at people in vehicles and on the street while traveling toward Odessa. The shooter hijacked a U.S. Postal Service vehicle and continued the attack before being killed by law enforcement.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2019"
+  ]
+},
+{
+  "id": 249,
+  "title": "Chestnut Pointe Apartments and Palmetto Tire and Auto Shooting",
+  "date": "2019-10-21",
+  "year": 2019,
+  "country": "United States",
+  "state": "South Carolina",
+  "city": "Sumter",
+  "venue": "Chestnut Pointe Apartments and Palmetto Tire and Auto",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 33.92044,
+  "lng": -80.34147,
+  "fatalities": 0,
+  "injuries": 4,
+  "description": "A shooter opened fire at residents of the Chestnut Pointe Apartments in Sumter, South Carolina, wounding one person before fleeing to Palmetto Tire and Auto, where additional people were wounded. Four people were wounded in total. The shooter was apprehended at another location.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2019"
+  ]
+},
+{
+  "id": 250,
+  "title": "Saugus High School Shooting",
+  "date": "2019-11-14",
+  "year": 2019,
+  "country": "United States",
+  "state": "California",
+  "city": "Santa Clarita",
+  "venue": "Saugus High School",
+  "category": "School Shooting",
+  "type": "shooting",
+  "lat": 34.44104,
+  "lng": -118.51850,
+  "fatalities": 2,
+  "injuries": 3,
+  "description": "A student opened fire at Saugus High School in Santa Clarita, California. Two students were killed and three students were wounded. The shooter died the following day after a self-inflicted gunshot wound.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2019"
+  ]
+},
+{
+  "id": 251,
+  "title": "Joint Base Pearl Harbor-Hickam Shooting",
+  "date": "2019-12-04",
+  "year": 2019,
+  "country": "United States",
+  "state": "Hawaii",
+  "city": "Honolulu",
+  "venue": "Joint Base Pearl Harbor-Hickam",
+  "category": "Military Shooting",
+  "type": "shooting",
+  "lat": 21.34927,
+  "lng": -157.94397,
+  "fatalities": 2,
+  "injuries": 1,
+  "description": "A shooter opened fire on co-workers at Joint Base Pearl Harbor-Hickam in Hawaii. Two people were killed and one person was wounded. The shooter, an active-duty sailor, died by suicide at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2019"
+  ]
+},
+{
+  "id": 252,
+  "title": "Naval Air Station Pensacola Shooting",
+  "date": "2019-12-06",
+  "year": 2019,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Pensacola",
+  "venue": "Naval Air Station Pensacola",
+  "category": "Military Shooting",
+  "type": "shooting",
+  "lat": 30.35417,
+  "lng": -87.30556,
+  "fatalities": 3,
+  "injuries": 8,
+  "description": "A shooter opened fire inside a training classroom at Naval Air Station Pensacola in Florida. Three people were killed and eight were wounded, including two law enforcement officers. The shooter was killed by law enforcement at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2019"
+  ]
+},
+{
+  "id": 253,
+  "title": "Jersey City Kosher Supermarket and Bayview Cemetery Shooting",
+  "date": "2019-12-10",
+  "year": 2019,
+  "country": "United States",
+  "state": "New Jersey",
+  "city": "Jersey City",
+  "venue": "Bayview Cemetery and JC Kosher Supermarket",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 40.72822,
+  "lng": -74.07764,
+  "fatalities": 4,
+  "injuries": 4,
+  "description": "Two shooters first engaged a law enforcement officer near Bayview Cemetery and then traveled to a kosher supermarket, where additional people were killed. Four people were killed, including a law enforcement officer, and four people were wounded. Both shooters were killed by law enforcement.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2019"
+  ]
+},
+{
+  "id": 254,
+  "title": "West Freeway Church of Christ Shooting",
+  "date": "2019-12-29",
+  "year": 2019,
+  "country": "United States",
+  "state": "Texas",
+  "city": "White Settlement",
+  "venue": "West Freeway Church of Christ",
+  "category": "House of Worship Shooting",
+  "type": "shooting",
+  "lat": 32.74004,
+  "lng": -97.45589,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "A shooter opened fire inside the West Freeway Church of Christ in White Settlement, Texas. Two members of the church's volunteer security team were killed and two people were wounded. The shooter was killed by an armed citizen who was part of the security team.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2019"
+  ]
+},
+{
+  "id": 255,
+  "title": "9ine Ultra Lounge Shooting",
+  "date": "2020-01-19",
+  "year": 2020,
+  "country": "United States",
+  "state": "Missouri",
+  "city": "Kansas City",
+  "venue": "9ine Ultra Lounge",
+  "category": "Nightclub Shooting",
+  "type": "shooting",
+  "lat": 39.03384,
+  "lng": -94.41739,
+  "fatalities": 1,
+  "injuries": 16,
+  "description": "A shooter began firing outside the 9ine Ultra Lounge in Kansas City, Missouri, after an altercation and being refused entry. One person was killed and 16 people were wounded. An armed security guard shot and killed the shooter.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 256,
+  "title": "NYPD 41st Precinct Office Shooting",
+  "date": "2020-02-08",
+  "year": 2020,
+  "country": "United States",
+  "state": "New York",
+  "city": "Bronx",
+  "venue": "NYPD 41st Precinct and nearby locations",
+  "category": "Law Enforcement Shooting",
+  "type": "shooting",
+  "lat": 40.81619,
+  "lng": -73.89563,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooter first opened fire at an NYPD vehicle in the Bronx and later opened fire inside the NYPD 41st Precinct office. Two law enforcement officers were wounded. The shooter surrendered after running out of ammunition.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+  {
+  "id": 257,
+  "title": "Portstewart Senior Apartments Shooting",
+  "date": "2020-02-20",
+  "year": 2020,
+  "country": "United States",
+  "state": "Idaho",
+  "city": "Caldwell",
+  "venue": "Portstewart Senior Apartments",
+  "category": "Residential Shooting",
+  "type": "shooting",
+  "lat": 43.6187,
+  "lng": -116.6874,
+  "fatalities": 1,
+  "injuries": 3,
+  "description": "A shooter opened fire inside the Portstewart Senior Apartments in Caldwell, Idaho. One person was killed and three people were wounded. The shooter died by suicide at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 258,
+  "title": "Molson Coors Building Shooting",
+  "date": "2020-02-26",
+  "year": 2020,
+  "country": "United States",
+  "state": "Wisconsin",
+  "city": "Milwaukee",
+  "venue": "Molson Coors Building",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 43.0444,
+  "lng": -87.9588,
+  "fatalities": 5,
+  "injuries": 0,
+  "description": "A shooter opened fire inside the Molson Coors building in Milwaukee, Wisconsin. Five employees were killed. The shooter died by suicide at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 259,
+  "title": "Kum & Go Gas Station Shooting",
+  "date": "2020-03-15",
+  "year": 2020,
+  "country": "United States",
+  "state": "Missouri",
+  "city": "Springfield",
+  "venue": "Kum & Go Gas Station",
+  "category": "Gas Station Shooting",
+  "type": "shooting",
+  "lat": 37.2584,
+  "lng": -93.2288,
+  "fatalities": 4,
+  "injuries": 2,
+  "description": "A shooter opened fire at a Kum & Go gas station in Springfield, Missouri. Four people were killed, including a law enforcement officer and an employee, and two people were wounded, including a law enforcement officer. The shooter died by suicide after law enforcement arrived.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 260,
+  "title": "Unspecified Shopping Center Shooting",
+  "date": "2020-03-27",
+  "year": 2020,
+  "country": "United States",
+  "state": "Oklahoma",
+  "city": "Tulsa",
+  "venue": "Shopping Center",
+  "category": "Shopping Center Shooting",
+  "type": "shooting",
+  "lat": 36.1540,
+  "lng": -95.9928,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A shooter opened fire at people standing outside a shopping center in Tulsa, Oklahoma. No casualties were reported. An armed security guard killed the shooter at the scene before law enforcement arrived.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 261,
+  "title": "McDonald's Restaurant Shooting",
+  "date": "2020-05-06",
+  "year": 2020,
+  "country": "United States",
+  "state": "Oklahoma",
+  "city": "Oklahoma City",
+  "venue": "McDonald's Restaurant",
+  "category": "Restaurant Shooting",
+  "type": "shooting",
+  "lat": 35.4676,
+  "lng": -97.5164,
+  "fatalities": 0,
+  "injuries": 4,
+  "description": "A shooter opened fire inside a McDonald's restaurant in Oklahoma City, Oklahoma. Four employees were wounded. The shooter was located several blocks away and arrested by law enforcement.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020",
+    "Oklahoma City Police Department"
+  ]
+},
+{
+  "id": 262,
+  "title": "Super 8 Hotel Shooting",
+  "date": "2020-05-17",
+  "year": 2020,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Rockford",
+  "venue": "Super 8 Hotel",
+  "category": "Hotel Shooting",
+  "type": "shooting",
+  "lat": 42.2692,
+  "lng": -89.0176,
+  "fatalities": 1,
+  "injuries": 2,
+  "description": "A shooter opened fire inside the Super 8 hotel in Rockford, Illinois. One person was killed and two people were wounded. Following an exchange of gunfire with law enforcement, the shooter died by suicide at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020",
+    "Rockford Police Department"
+  ]
+},
+{
+  "id": 263,
+  "title": "Westgate Entertainment District Shooting",
+  "date": "2020-05-20",
+  "year": 2020,
+  "country": "United States",
+  "state": "Arizona",
+  "city": "Glendale",
+  "venue": "Westgate Entertainment District",
+  "category": "Entertainment District Shooting",
+  "type": "shooting",
+  "lat": 33.5350,
+  "lng": -112.2620,
+  "fatalities": 0,
+  "injuries": 3,
+  "description": "A shooter opened fire inside the Westgate Entertainment District in Glendale, Arizona. Three people were wounded. The shooter was apprehended by law enforcement at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 264,
+  "title": "Naval Air Station Corpus Christi Shooting",
+  "date": "2020-05-21",
+  "year": 2020,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Corpus Christi",
+  "venue": "Naval Air Station Corpus Christi",
+  "category": "Military Shooting",
+  "type": "shooting",
+  "lat": 27.6925,
+  "lng": -97.2911,
+  "fatalities": 0,
+  "injuries": 1,
+  "description": "A shooter drove toward the gate of Naval Air Station Corpus Christi and opened fire at security force guards. One security force guard was wounded. The shooter was killed by security force guards at the scene following an exchange of gunfire.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 265,
+  "title": "Centennial Bridge Shooting",
+  "date": "2020-05-27",
+  "year": 2020,
+  "country": "United States",
+  "state": "Kansas",
+  "city": "Leavenworth",
+  "venue": "Centennial Bridge",
+  "category": "Highway Shooting",
+  "type": "shooting",
+  "lat": 39.3298,
+  "lng": -94.9087,
+  "fatalities": 0,
+  "injuries": 1,
+  "description": "A shooter randomly fired at vehicles on Centennial Bridge between Kansas and Missouri. One person was wounded. An active-duty soldier intervened by striking the shooter with his vehicle, ending the encounter, and the shooter was then apprehended by law enforcement.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 266,
+  "title": "Indoor Comfort and Heating Shooting",
+  "date": "2020-06-01",
+  "year": 2020,
+  "country": "United States",
+  "state": "Tennessee",
+  "city": "Paris Landing",
+  "venue": "Indoor Comfort and Heating",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 36.3220,
+  "lng": -88.3267,
+  "fatalities": 2,
+  "injuries": 0,
+  "description": "A shooter opened fire inside the Indoor Comfort and Heating business in Paris Landing, Tennessee. Two people were killed. The shooter died by suicide at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 267,
+  "title": "Next Generation All Gas Protest/Block Party Shooting",
+  "date": "2020-09-05",
+  "year": 2020,
+  "country": "United States",
+  "state": "Florida",
+  "city": "Williston",
+  "venue": "Next Generation All Gas Protest/Block Party",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 29.3866,
+  "lng": -82.4476,
+  "fatalities": 0,
+  "injuries": 6,
+  "description": "An unidentified individual began shooting at a protest and block party in Williston, Florida. Six people were wounded. The shooter remained at large according to the FBI report.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 268,
+  "title": "East Market & Restaurant Shooting",
+  "date": "2020-10-03",
+  "year": 2020,
+  "country": "United States",
+  "state": "California",
+  "city": "Sacramento",
+  "venue": "East Market & Restaurant",
+  "category": "Restaurant Shooting",
+  "type": "shooting",
+  "lat": 38.5816,
+  "lng": -121.4944,
+  "fatalities": 2,
+  "injuries": 1,
+  "description": "A shooter opened fire inside East Market & Restaurant in Sacramento, California. Two people were killed and one person was wounded. The shooter died by suicide at the scene before law enforcement arrived.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 269,
+  "title": "Infinity Lounge Shooting",
+  "date": "2020-10-10",
+  "year": 2020,
+  "country": "United States",
+  "state": "South Carolina",
+  "city": "Kingstree",
+  "venue": "Infinity Lounge",
+  "category": "Nightclub Shooting",
+  "type": "shooting",
+  "lat": 33.6643,
+  "lng": -79.8306,
+  "fatalities": 0,
+  "injuries": 8,
+  "description": "A shooter opened fire at the Infinity Lounge in Kingstree, South Carolina, after being removed from the club following an altercation. Eight people were wounded. The shooter fled and was later apprehended by law enforcement.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 270,
+  "title": "Sahara Theater Shooting",
+  "date": "2020-10-31",
+  "year": 2020,
+  "country": "United States",
+  "state": "California",
+  "city": "Anaheim",
+  "venue": "Sahara Theater",
+  "category": "Entertainment Venue Shooting",
+  "type": "shooting",
+  "lat": 33.8267,
+  "lng": -117.9154,
+  "fatalities": 0,
+  "injuries": 5,
+  "description": "A shooter opened fire outside the Sahara Theater in Anaheim, California. Five people were wounded. The shooter was apprehended by law enforcement 47 days later.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 271,
+  "title": "Sports Unlimited Bar and Lounge Shooting",
+  "date": "2020-11-07",
+  "year": 2020,
+  "country": "United States",
+  "state": "South Carolina",
+  "city": "Rock Hill",
+  "venue": "Sports Unlimited Bar and Lounge",
+  "category": "Bar and Lounge Shooting",
+  "type": "shooting",
+  "lat": 34.9249,
+  "lng": -81.0251,
+  "fatalities": 1,
+  "injuries": 3,
+  "description": "A shooter opened fire inside the Sports Unlimited Bar and Lounge in Rock Hill, South Carolina. One person was killed and three people were wounded. The shooter was apprehended four days later.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 272,
+  "title": "Mayfair Mall Shooting",
+  "date": "2020-11-20",
+  "year": 2020,
+  "country": "United States",
+  "state": "Wisconsin",
+  "city": "Wauwatosa",
+  "venue": "Mayfair Mall",
+  "category": "Shopping Mall Shooting",
+  "type": "shooting",
+  "lat": 43.0356,
+  "lng": -88.0470,
+  "fatalities": 0,
+  "injuries": 8,
+  "description": "A shooter opened fire inside Mayfair Mall in Wauwatosa, Wisconsin. Eight people were wounded. The shooter was apprehended by law enforcement the following day.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 273,
+  "title": "Sonic Restaurant Shooting",
+  "date": "2020-11-21",
+  "year": 2020,
+  "country": "United States",
+  "state": "Nebraska",
+  "city": "Bellevue",
+  "venue": "Sonic Restaurant",
+  "category": "Restaurant Shooting",
+  "type": "shooting",
+  "lat": 41.1544,
+  "lng": -95.9146,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "A shooter opened fire inside the Sonic restaurant in Bellevue, Nebraska. Two people were killed and two people were wounded. The shooter was apprehended at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 274,
+  "title": "Multiple Locations in Henderson and Parker Shooting",
+  "date": "2020-11-26",
+  "year": 2020,
+  "country": "United States",
+  "state": "Nevada",
+  "city": "Henderson",
+  "venue": "7-Eleven and multiple locations in Henderson, Nevada and Parker, Arizona",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 36.0397,
+  "lng": -114.9817,
+  "fatalities": 1,
+  "injuries": 4,
+  "description": "Three shooters began firing inside and outside a 7-Eleven convenience store in Henderson, Nevada, and reportedly drove around shooting at citizens in Parker, Arizona. One person was killed and four people were wounded. The shooters were later apprehended.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 275,
+  "title": "West Garfield Park Shooting",
+  "date": "2020-12-04",
+  "year": 2020,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Chicago",
+  "venue": "West Garfield Park",
+  "category": "Open Space Shooting",
+  "type": "shooting",
+  "lat": 41.8795,
+  "lng": -87.7292,
+  "fatalities": 0,
+  "injuries": 4,
+  "description": "An unidentified individual fired shots from the street at a group of people standing in West Garfield Park in Chicago, Illinois. Four people were wounded. The shooter remained at large according to the FBI report.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 276,
+  "title": "La Vaquita Deli Shooting",
+  "date": "2020-12-12",
+  "year": 2020,
+  "country": "United States",
+  "state": "New York",
+  "city": "Copiague",
+  "venue": "La Vaquita Deli",
+  "category": "Deli Shooting",
+  "type": "shooting",
+  "lat": 40.6815,
+  "lng": -73.3987,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "A shooter opened fire inside La Vaquita Deli in Copiague, New York. Two people were killed and two people were wounded. The shooter was apprehended by law enforcement at another location.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2020"
+  ]
+},
+{
+  "id": 277,
+  "title": "Various Locations in Chicago and Evanston Shooting",
+  "date": "2021-01-09",
+  "year": 2021,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Chicago and Evanston",
+  "venue": "Various locations",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 41.8781,
+  "lng": -87.6298,
+  "fatalities": 5,
+  "injuries": 2,
+  "description": "A shooter carried out a shooting spree from Chicago to Evanston, Illinois. Five people were killed, including a security guard, and two people were wounded. The shooter was killed by law enforcement in Evanston.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 278,
+  "title": "Various Locations Columbus Shooting",
+  "date": "2021-01-25",
+  "year": 2021,
+  "country": "United States",
+  "state": "Ohio",
+  "city": "Columbus",
+  "venue": "Various locations",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 39.9612,
+  "lng": -82.9988,
+  "fatalities": 0,
+  "injuries": 0,
+  "description": "A shooter fired at several people at various locations throughout the Columbus, Ohio area before leading police on a vehicle chase and crashing. No casualties were reported. The shooter died in the crash.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 279,
+  "title": "Various Locations Houston Shooting",
+  "date": "2021-01-25",
+  "year": 2021,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Houston",
+  "venue": "Residential neighborhood and nearby convenience store",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 29.7604,
+  "lng": -95.3698,
+  "fatalities": 1,
+  "injuries": 0,
+  "description": "A shooter opened fire in a Houston neighborhood, then went to a nearby convenience store and fired at bystanders before continuing through the neighborhood. One person was killed. The shooter was apprehended by law enforcement.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 280,
+  "title": "Allina Health Clinic Shooting",
+  "date": "2021-02-09",
+  "year": 2021,
+  "country": "United States",
+  "state": "Minnesota",
+  "city": "Buffalo",
+  "venue": "Allina Health Clinic",
+  "category": "Healthcare Shooting",
+  "type": "shooting",
+  "lat": 45.16626,
+  "lng": -93.88489,
+  "fatalities": 1,
+  "injuries": 4,
+  "description": "A shooter opened fire inside the Allina Health Clinic in Buffalo, Minnesota. Four explosive devices were also planted at the scene; two detonated and two were rendered safe. One person was killed and four people were wounded. The shooter was apprehended at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 281,
+  "title": "Jefferson Gun Outlet Shooting",
+  "date": "2021-02-20",
+  "year": 2021,
+  "country": "United States",
+  "state": "Louisiana",
+  "city": "Metairie",
+  "venue": "Jefferson Gun Outlet",
+  "category": "Retail Shooting",
+  "type": "shooting",
+  "lat": 29.97834,
+  "lng": -90.20824,
+  "fatalities": 2,
+  "injuries": 2,
+  "description": "A shooter opened fire inside Jefferson Gun Outlet in Metairie, Louisiana. Two people were killed and two people were wounded. Armed employees exchanged gunfire with the shooter and killed him at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 282,
+  "title": "Atlanta Area Spa Shootings",
+  "date": "2021-03-16",
+  "year": 2021,
+  "country": "United States",
+  "state": "Georgia",
+  "city": "Acworth and Atlanta",
+  "venue": "Young's Asian Massage, Gold Spa and Aromatherapy Spa",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 34.08863,
+  "lng": -84.58141,
+  "fatalities": 8,
+  "injuries": 1,
+  "description": "A shooter attacked multiple spa locations in Acworth and Atlanta, Georgia. Eight people were killed and one person was wounded. The shooter was apprehended at another location.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 283,
+  "title": "Various Locations Austin Shooting",
+  "date": "2021-03-20",
+  "year": 2021,
+  "country": "United States",
+  "state": "Illinois",
+  "city": "Austin",
+  "venue": "Various locations",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 41.8878,
+  "lng": -87.7690,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooter fired at people at various locations in Austin, Illinois. Two people were wounded, including a law enforcement officer. The shooter was apprehended at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 284,
+  "title": "King Soopers Grocery Store Shooting",
+  "date": "2021-03-22",
+  "year": 2021,
+  "country": "United States",
+  "state": "Colorado",
+  "city": "Boulder",
+  "venue": "King Soopers Grocery Store",
+  "category": "Grocery Store Shooting",
+  "type": "shooting",
+  "lat": 39.98346,
+  "lng": -105.25164,
+  "fatalities": 10,
+  "injuries": 0,
+  "description": "A shooter opened fire inside and outside the King Soopers Grocery Store in Boulder, Colorado. Ten people were killed, including a law enforcement officer. The shooter was apprehended at the scene following an exchange of gunfire.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 285,
+  "title": "Various Locations Baltimore County Shooting",
+  "date": "2021-03-28",
+  "year": 2021,
+  "country": "United States",
+  "state": "Maryland",
+  "city": "Baldwin and Essex",
+  "venue": "Residence and Royal Farms Store",
+  "category": "Multiple Location Shooting",
+  "type": "shooting",
+  "lat": 39.5045,
+  "lng": -76.5020,
+  "fatalities": 4,
+  "injuries": 1,
+  "description": "A shooter opened fire inside a residence in Baldwin, Maryland, then traveled to a Royal Farms Store in Essex and continued shooting inside and outside the store. Four people were killed and one employee was wounded. The shooter returned home, set fire to his apartment, and died by suicide.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 286,
+  "title": "Unspecified Commercial Office Complex Shooting",
+  "date": "2021-03-31",
+  "year": 2021,
+  "country": "United States",
+  "state": "California",
+  "city": "Orange",
+  "venue": "Commercial office complex",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 33.7879,
+  "lng": -117.8531,
+  "fatalities": 4,
+  "injuries": 1,
+  "description": "A shooter opened fire inside an unspecified commercial office complex in Orange, California. Four people were killed and one person was wounded. The shooter was apprehended at the scene following an exchange of gunfire.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 287,
+  "title": "Riverside Tech Park/Fort Detrick Shooting",
+  "date": "2021-04-06",
+  "year": 2021,
+  "country": "United States",
+  "state": "Maryland",
+  "city": "Frederick",
+  "venue": "Riverside Tech Park and Fort Detrick",
+  "category": "Government Shooting",
+  "type": "shooting",
+  "lat": 39.4143,
+  "lng": -77.4105,
+  "fatalities": 0,
+  "injuries": 2,
+  "description": "A shooter opened fire outside a business in Riverside Tech Park in Frederick, Maryland, and then fled to nearby Fort Detrick. Two people were wounded. The shooter was killed by Fort Detrick security guards at the scene.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 288,
+  "title": "Kent Moore Cabinets Corporate Shooting",
+  "date": "2021-04-08",
+  "year": 2021,
+  "country": "United States",
+  "state": "Texas",
+  "city": "Bryan",
+  "venue": "Kent Moore Cabinets Corporate",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 30.65641,
+  "lng": -96.34887,
+  "fatalities": 1,
+  "injuries": 6,
+  "description": "A shooter opened fire inside Kent Moore Cabinets Corporate in Bryan, Texas. One employee was killed and six people were wounded, including five employees and one law enforcement officer. The shooter was apprehended by law enforcement at another location.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 289,
+  "title": "Snappy Mart Convenience Store Shooting",
+  "date": "2021-04-10",
+  "year": 2021,
+  "country": "United States",
+  "state": "Missouri",
+  "city": "Koshkonong",
+  "venue": "Snappy Mart Convenience Store",
+  "category": "Convenience Store Shooting",
+  "type": "shooting",
+  "lat": 36.6028,
+  "lng": -91.5576,
+  "fatalities": 1,
+  "injuries": 3,
+  "description": "A shooter opened fire inside and outside the Snappy Mart Convenience Store in Koshkonong, Missouri. One person was killed and three people were wounded. The shooter was apprehended by law enforcement at another location.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 290,
+  "title": "241 Main Street Shooting",
+  "date": "2021-04-13",
+  "year": 2021,
+  "country": "United States",
+  "state": "Connecticut",
+  "city": "Branford",
+  "venue": "241 Main Street",
+  "category": "Commercial District Shooting",
+  "type": "shooting",
+  "lat": 41.2795,
+  "lng": -72.8150,
+  "fatalities": 0,
+  "injuries": 1,
+  "description": "A shooter opened fire outside 241 Main Street in a commercial district in Branford, Connecticut. One person was wounded. The shooter died by suicide at the scene when confronted by law enforcement.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 291,
+  "title": "San Antonio International Airport Shooting",
+  "date": "2021-04-15",
+  "year": 2021,
+  "country": "United States",
+  "state": "Texas",
+  "city": "San Antonio",
+  "venue": "San Antonio International Airport, Terminal B",
+  "category": "Airport Shooting",
+  "type": "shooting",
+  "lat": 29.533701,
+  "lng": -98.469803,
+  "fatalities": 0,
+  "injuries": 1,
+  "description": "A shooter opened fire outside the arrivals area of Terminal B at San Antonio International Airport. One person was wounded. The shooter died by suicide at the scene during an exchange of gunfire with law enforcement.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 292,
+  "title": "FedEx Ground Plainfield Operations Center Shooting",
+  "date": "2021-04-15",
+  "year": 2021,
+  "country": "United States",
+  "state": "Indiana",
+  "city": "Indianapolis",
+  "venue": "FedEx Ground Plainfield Operations Center",
+  "category": "Workplace Shooting",
+  "type": "shooting",
+  "lat": 39.6942,
+  "lng": -86.3653,
+  "fatalities": 8,
+  "injuries": 7,
+  "description": "A shooter opened fire inside and outside the FedEx Ground Plainfield Operations Center in Indianapolis, Indiana. Eight employees were killed and seven employees were wounded. The shooter died by suicide at the scene as law enforcement arrived.",
+  "sources": [
+    "FBI — Active Shooter Incidents in the United States in 2021"
+  ]
+},
+{
+  "id": 293,
+  "title": "Stop & Shop Store Shooting",
+  "date": "2021-04-20",
+  "year": 2021,
+  "country": "United States",
+  "state": "New York",
+  "city": "West Hempstead",
+  "venue": "Stop & Shop Store",
+  "category": "Grocery Store Shooting",
+  "type": "shooting",
+  "lat": 40.7048,
+  "lng": -73.6501,
+  "fatalities": 1,
+  "injuries": 2
+
+ }
 
   ]
