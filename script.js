@@ -1747,3 +1747,10 @@ window.addEventListener("resize", () => map.invalidateSize());
 
 buildLegend();
 updateYearReadout(slider.value);
+
+// Defensive re-check: if the map container's size wasn't final at the
+// moment Leaflet initialized (a common cause of a blank map with no
+// tiles/zoom control), this forces Leaflet to re-measure and repaint.
+setTimeout(() => map.invalidateSize(), 100);
+setTimeout(() => map.invalidateSize(), 500);
+window.addEventListener("load", () => map.invalidateSize());
