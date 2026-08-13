@@ -56,6 +56,20 @@ const INCIDENT_TYPES = {
 const HOTZONE_THRESHOLD = 25;
 const HOTZONE_COLOR = "#7A3E9D";
 
+// Shared vocabulary for location_precision, used by both published
+// incident records (exact | approximate | city_centroid |
+// multi_location) and pending candidates (which also allow the
+// legacy "city" key). One label map so the two contexts stay
+// consistent instead of drifting into different wording.
+const PRECISION_LABELS = {
+    exact: "Exact coordinates",
+    approximate: "Approximate",
+    city_centroid: "City centroid (representative point)",
+    multi_location: "Multi-location incident (representative point)",
+    city: "City-level", // legacy pending-candidate key
+    unknown: "Unknown"
+};
+
 const REGION_MAP = {
     "United States": "North America", "Canada": "North America", "Mexico": "North America",
     "Brazil": "South America", "Argentina": "South America", "Chile": "South America",
@@ -1134,6 +1148,158 @@ function computeForecast(country) {
     };
 }
 
+// =====================================================================
+// FORECAST BACKTESTING
+//
+// Rolling-origin validation: train on years up to Y, forecast Y+1,
+// compare to what actually happened, repeat forward through the
+// dataset. This is the objective test of whether the model has real
+// predictive value — not just plausible-looking numbers — per the
+// locked spec: "Forecast validation" stays "Not yet established"
+// until this has actually been run for a given country.
+//
+// Deliberately uses a SEPARATE, simpler annual-forecast function
+// (computeAnnualForecastAsOf) rather than reusing computeForecast()
+// directly: the live forecast targets a 3-month window with monthly
+// seasonality, which isn't the right shape to compare against a full
+// year's actual count. Backtesting a full-year prediction needs a
+// full-year prediction model, not a repurposed short-window one.
+// =====================================================================
+
+const MIN_BACKTEST_TRAIN_YEARS = 5;
+
+// Cache keyed by country so re-opening a forecast in the same session
+// doesn't lose a backtest you already ran, and so the "Forecast
+// validation" field can reflect it immediately.
+let backtestCache = {};
+
+function computeAnnualForecastAsOf(country, asOfYear) {
+    const countryEvents = events.filter(e => e.country === country && e.year <= asOfYear);
+    if (countryEvents.length === 0) return null;
+
+    const yearlyCounts = countBy(countryEvents, e => e.year);
+    const allYears = Object.keys(yearlyCounts).map(Number).sort((a, b) => a - b);
+    if (allYears.length === 0) return null;
+
+    const windowYears = allYears.filter(y => y > asOfYear - FORECAST_WINDOW_YEARS);
+    const usableYears = windowYears.length >= 2 ? windowYears : allYears;
+
+    const counts = usableYears.map(y => yearlyCounts[y] || 0);
+    const mean = counts.reduce((a, b) => a + b, 0) / counts.length;
+    const variance = counts.reduce((a, b) => a + (b - mean) ** 2, 0) / counts.length;
+
+    const trendPoints = usableYears.map((y, i) => [i, yearlyCounts[y] || 0]);
+    const slope = linearTrendSlope(trendPoints);
+
+    const last2 = usableYears.slice(-2).map(y => yearlyCounts[y] || 0);
+    const recentRate = last2.length ? last2.reduce((a, b) => a + b, 0) / last2.length : mean;
+
+    const allCounts = allYears.map(y => yearlyCounts[y] || 0);
+    const longRunRate = allCounts.reduce((a, b) => a + b, 0) / allCounts.length;
+
+    // No seasonality term: this predicts a full calendar year, where
+    // month-of-year seasonality nets out, not a 3-month window.
+    const rawEstimate = longRunRate + slope + (recentRate - longRunRate);
+    const modelEstimate = Math.max(0, Math.round(rawEstimate * 10) / 10);
+    const margin = Math.max(1, Math.round(Math.sqrt(Math.max(variance, modelEstimate))));
+
+    return {
+        modelEstimate,
+        estimateLow: Math.max(0, Math.round(modelEstimate - margin)),
+        estimateHigh: Math.round(modelEstimate + margin),
+        yearsOfData: usableYears.length
+    };
+}
+
+function computeBacktest(country) {
+    const countryEvents = events.filter(e => e.country === country && e.year <= THIS_YEAR);
+    const yearlyCounts = countBy(countryEvents, e => e.year);
+    const allYears = Object.keys(yearlyCounts).map(Number).sort((a, b) => a - b);
+
+    if (allYears.length < MIN_BACKTEST_TRAIN_YEARS + 2) {
+        return { insufficientData: true, yearsAvailable: allYears.length };
+    }
+
+    const minYear = allYears[0];
+    const maxYear = allYears[allYears.length - 1];
+    const results = [];
+
+    for (let y = minYear + MIN_BACKTEST_TRAIN_YEARS; y < maxYear; y++) {
+        const forecast = computeAnnualForecastAsOf(country, y);
+        if (!forecast) continue;
+
+        const actual = yearlyCounts[y + 1] || 0; // 0 is a valid, real actual — no incidents that year
+        const naiveBaseline = yearlyCounts[y] || 0; // naive: predict = last known year's count
+        const hit = actual >= forecast.estimateLow && actual <= forecast.estimateHigh;
+
+        results.push({
+            trainThrough: y,
+            forecastYear: y + 1,
+            predictedLow: forecast.estimateLow,
+            predictedCentral: forecast.modelEstimate,
+            predictedHigh: forecast.estimateHigh,
+            actual, hit, naiveBaseline,
+            modelError: Math.abs(forecast.modelEstimate - actual),
+            naiveError: Math.abs(naiveBaseline - actual)
+        });
+    }
+
+    if (!results.length) return { insufficientData: true, yearsAvailable: allYears.length };
+
+    const hitRate = results.filter(r => r.hit).length / results.length;
+    const modelMAE = results.reduce((s, r) => s + r.modelError, 0) / results.length;
+    const naiveMAE = results.reduce((s, r) => s + r.naiveError, 0) / results.length;
+
+    return {
+        results,
+        hitRate: Math.round(hitRate * 1000) / 10, // percent, 1 decimal
+        modelMAE: Math.round(modelMAE * 100) / 100,
+        naiveMAE: Math.round(naiveMAE * 100) / 100,
+        beatsNaive: modelMAE < naiveMAE,
+        yearsTested: results.length
+    };
+}
+
+function forecastValidationSummary(backtest) {
+    if (!backtest) return "Not yet established — run a backtest below";
+    if (backtest.insufficientData) return `Not yet possible — only ${backtest.yearsAvailable} year(s) of data (need at least ${MIN_BACKTEST_TRAIN_YEARS + 2})`;
+    return `${backtest.hitRate}% hit rate over ${backtest.yearsTested} year${backtest.yearsTested === 1 ? "" : "s"} — model MAE ${backtest.modelMAE} vs. naive MAE ${backtest.naiveMAE} (${backtest.beatsNaive ? "beats" : "does not beat"} the naive baseline)`;
+}
+
+function renderBacktestTable(backtest) {
+    if (backtest.insufficientData) {
+        return `<p class="dq-empty">Not enough historical years to backtest yet — ${backtest.yearsAvailable} year(s) available, need at least ${MIN_BACKTEST_TRAIN_YEARS + 2}.</p>`;
+    }
+
+    const rows = backtest.results.map(r => `
+        <tr class="${r.hit ? "backtest-hit" : "backtest-miss"}">
+            <td>${r.forecastYear}</td>
+            <td>${r.predictedLow}–${r.predictedHigh}</td>
+            <td>${r.actual}</td>
+            <td>${r.hit ? "Hit" : "Miss"}</td>
+            <td>${r.naiveBaseline}</td>
+        </tr>
+    `).join("");
+
+    return `
+        <p class="backtest-summary">
+            <b>${backtest.hitRate}%</b> of years fell within the predicted range, across ${backtest.yearsTested} tested year${backtest.yearsTested === 1 ? "" : "s"}.
+            Model mean absolute error: <b>${backtest.modelMAE}</b>. Naive baseline (predict same as prior year) mean absolute error: <b>${backtest.naiveMAE}</b>.
+            The model <b>${backtest.beatsNaive ? "beats" : "does not beat"}</b> the naive baseline on this country's data.
+        </p>
+        <table class="backtest-table">
+            <thead>
+                <tr><th>Year</th><th>Predicted range</th><th>Actual</th><th>Result</th><th>Naive baseline</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>
+        <p class="review-criteria-note">
+            "Hit" means the actual count fell inside the model's uncertainty range for that year, using only data
+            available before that year — the model was never shown the year it was predicting.
+        </p>
+    `;
+}
+
 function renderForecast(country) {
     if (!fcOutput) return;
 
@@ -1183,7 +1349,7 @@ function renderForecast(country) {
 
         <dl class="forecast-fields">
             <dt>Data confidence</dt><dd>${result.dataConfidence}</dd>
-            <dt>Forecast validation</dt><dd>${result.forecastValidation}</dd>
+            <dt>Forecast validation</dt><dd id="fcValidationValue">${forecastValidationSummary(backtestCache[country])}</dd>
             <dt>Data coverage</dt><dd>${result.dataCoverage}</dd>
         </dl>
 
@@ -1242,13 +1408,35 @@ function renderForecast(country) {
                 <dd>Descriptive V1 — baseline + trend adjustment + recent-rate adjustment + seasonality adjustment = central estimate, with an uncertainty band from this country's own year-to-year variance. Not a fitted Poisson/negative-binomial regression, random forest, or gradient boosting model — those require server-side fitting and validation, not client-side approximation.</dd>
 
                 <dt>Backtesting</dt>
-                <dd>Not yet completed. Forecast validation will remain "Not yet established" until historical forecasts are checked against what actually happened.</dd>
+                <dd>${backtestCache[country] ? forecastValidationSummary(backtestCache[country]) : 'Not yet completed for this country. Forecast validation stays "Not yet established" until run — see the Backtest section below.'}</dd>
 
                 <dt>Data used</dt>
                 <dd>${result.yearsOfData} year${result.yearsOfData === 1 ? "" : "s"} of data, ${result.totalInWindow} incident${result.totalInWindow === 1 ? "" : "s"} in the window used for this forecast.</dd>
             </dl>
         </div>
+
+        <h3 class="analysis-heading">Backtest this model</h3>
+        <p class="meta">
+            Rolling-origin validation: for each past year, the model is trained ONLY on data before that year, then
+            checked against what actually happened. This is the objective test of whether the forecast has real
+            predictive value, not just plausible-looking numbers.
+        </p>
+        <button id="fcBacktestBtn" type="button" class="backtest-run-btn">Run backtest for ${escapeHtml(country)}</button>
+        <div id="fcBacktestOutput">${backtestCache[country] ? renderBacktestTable(backtestCache[country]) : ""}</div>
     `;
+
+    const fcBacktestBtn = document.getElementById("fcBacktestBtn");
+    const fcBacktestOutput = document.getElementById("fcBacktestOutput");
+    if (fcBacktestBtn && fcBacktestOutput) {
+        fcBacktestBtn.addEventListener("click", () => {
+            const backtest = computeBacktest(country);
+            backtestCache[country] = backtest;
+            fcBacktestOutput.innerHTML = renderBacktestTable(backtest);
+
+            const validationCell = document.getElementById("fcValidationValue");
+            if (validationCell) validationCell.textContent = forecastValidationSummary(backtest);
+        });
+    }
 
     const fcMethodologyToggle = document.getElementById("fcMethodologyToggle");
     const fcMethodologyBody = document.getElementById("fcMethodologyBody");
@@ -1475,13 +1663,6 @@ mapModeButtons.forEach(btn => {
 
 const REVIEW_STATUSES = ["UNVERIFIED", "NEEDS_RESEARCH", "VERIFIED", "REJECTED", "EXPIRED"];
 
-const PRECISION_LABELS = {
-    exact: "Exact coordinates",
-    city: "City-level",
-    approximate: "Approximate",
-    unknown: "Unknown"
-};
-
 let pendingCandidates = [];
 let currentReviewerName = "";
 
@@ -1532,11 +1713,38 @@ function duplicateCheckHtml(dup) {
         : statusKey === "match" ? "Duplicate of existing record"
         : "Not checked";
     const cls = statusKey === "no-match" ? "dup-clear" : "dup-flag";
+    const scoreHtml = Number.isFinite(dup.score)
+        ? ` <span class="triage-score">duplicate_score: ${dup.score.toFixed(2)}</span>`
+        : "";
     return `
         <p class="review-dup ${cls}">
-            <b>${label}</b>${dup.matchedId ? ` — matches NHIRA record #${escapeHtml(dup.matchedId)}` : ""}
+            <b>${label}</b>${scoreHtml}${dup.matchedId ? ` — matches NHIRA record #${escapeHtml(dup.matchedId)}` : ""}
             ${dup.note ? `<br><span class="review-dup-note">${escapeHtml(dup.note)}</span>` : ""}
         </p>
+    `;
+}
+
+// A compact, glanceable triage line — the two numeric scores a
+// reviewer needs to decide "does this deserve my attention right
+// now" without reading the full record first.
+function renderTriageScores(c) {
+    const dupScore = Number(c.duplicateMatch?.score);
+    const srcConf = Number(c.sourceConfidence);
+    if (!Number.isFinite(dupScore) && !Number.isFinite(srcConf)) return "";
+
+    function band(n, highIsBad) {
+        // For duplicate_score, high = more likely a duplicate = needs attention.
+        // For source_confidence, high = more trustworthy = good.
+        const bad = highIsBad ? n >= 0.75 : n < 0.5;
+        const warn = highIsBad ? (n >= 0.45 && n < 0.75) : (n >= 0.5 && n < 0.75);
+        return bad ? "triage-bad" : warn ? "triage-warn" : "triage-good";
+    }
+
+    return `
+        <div class="triage-bar">
+            ${Number.isFinite(dupScore) ? `<span class="triage-chip ${band(dupScore, true)}">duplicate_score: ${dupScore.toFixed(2)}</span>` : ""}
+            ${Number.isFinite(srcConf) ? `<span class="triage-chip ${band(srcConf, false)}">source_confidence: ${srcConf.toFixed(2)}</span>` : ""}
+        </div>
     `;
 }
 
@@ -1566,8 +1774,14 @@ function renderCandidateFields(c, status) {
             <dt>Candidate category</dt>
             <dd>${c.category ? escapeHtml(c.category) : "Not classified"}</dd>
 
-            <dt>Confidence</dt>
+            <dt>Extraction confidence</dt>
             <dd>${confidenceLabel(c.confidence)}</dd>
+
+            <dt>Source confidence</dt>
+            <dd>${Number.isFinite(Number(c.sourceConfidence)) ? `${confidenceLabel(c.sourceConfidence)} — how reliable this outlet has historically been, not how complete this extraction is` : "Not scored"}</dd>
+
+            <dt>Duplicate score</dt>
+            <dd>${Number.isFinite(Number(c.duplicateMatch?.score)) ? Number(c.duplicateMatch.score).toFixed(2) : "Not scored"} (0 = clearly unique, 1 = near-certain duplicate)</dd>
 
             <dt>Verification status</dt>
             <dd><span class="signal-status signal-${status.toLowerCase()}">${status.replace("_", " ")}</span></dd>
@@ -1588,10 +1802,16 @@ function renderCandidateFields(c, status) {
 }
 
 // Converts an approved candidate into a publishable history.json
-// record. sourceConfidence and dataQuality are NOT copied from the
-// candidate's extraction confidence — those are human judgments made
-// at review time, not machine-scored.
+// record, using the full provenance shape (not a flat URL string) so
+// this source's specific fatality/injury figures and verification
+// status are preserved as attributed facts rather than collapsed into
+// the headline number. sourceConfidence here is derived from the
+// collector's numeric score, not hardcoded — a genuinely low-confidence
+// candidate should surface as needing review, not get a fake "medium".
 function candidateToRecord(candidate) {
+    const numericConf = Number(candidate.sourceConfidence);
+    const sourceConfidence = numericConf >= 0.75 ? "high" : numericConf >= 0.5 ? "medium" : undefined;
+
     return {
         id: null, // assign on commit — see clean_history.py reassignment logic
         title: candidate.title,
@@ -1607,13 +1827,27 @@ function candidateToRecord(candidate) {
         injuries: candidate.injuries,
         description: candidate.description,
         category: candidate.category,
-        sources: candidate.sourceUrl ? [candidate.sourceUrl] : [],
-        sourceConfidence: "medium",
+        location_precision: candidate.locationPrecision || "unknown",
+        sources: candidate.sourceUrl ? [{
+            source: candidate.source || null,
+            source_url: candidate.sourceUrl,
+            source_date: candidate.detectedDate ? String(candidate.detectedDate).slice(0, 10) : null,
+            source_type: candidate.sourceType || null,
+            source_specific_fatalities: candidate.fatalities ?? null,
+            source_specific_injuries: candidate.injuries ?? null,
+            verification_status: "VERIFIED", // this source entry was human-approved to reach this point
+            verified_date: candidate.reviewedDate || null
+        }] : [],
+        ...(sourceConfidence ? { sourceConfidence } : {}),
+        sourceClassifications: candidate.sourceClassification
+            ? [{ source: candidate.source || "Collector source", classification: candidate.sourceClassification }]
+            : [],
         provenance: {
             ingestedVia: "automated-source-check",
             candidateId: candidate.candidateId,
             collectorSource: candidate.source || null,
             detectedDate: candidate.detectedDate || null,
+            duplicateScore: Number.isFinite(Number(candidate.duplicateMatch?.score)) ? candidate.duplicateMatch.score : null,
             reviewedBy: candidate.reviewedBy || null,
             reviewedDate: candidate.reviewedDate || null
         }
@@ -1699,6 +1933,7 @@ function renderReviewQueue() {
                     ${c.category ? `<span class="review-category-badge">${escapeHtml(c.category)}</span>` : ""}
                     <h3>${escapeHtml(c.title || "Untitled candidate")}</h3>
                     <p class="review-card-meta">${formatDateOnly(c.incidentDate)} · ${place || "Location not extracted"}</p>
+                    ${renderTriageScores(c)}
                 </div>
 
                 <div class="stats">
@@ -2115,6 +2350,129 @@ function renderDataQuality(event) {
         : `<p class="dq-empty">Data quality not yet reviewed for this record.</p>`;
 }
 
+// =====================================================================
+// PROVENANCE LAYER
+//
+// event.sources supports two shapes:
+//   legacy:     ["https://...", "https://..."]  (plain URL strings)
+//   provenance: [{ source, source_url, source_date, source_type,
+//                  source_specific_fatalities, source_specific_injuries,
+//                  verification_status, verified_date }, ...]
+//
+// The legacy shape still renders exactly as before — nothing in the
+// existing dataset breaks. New records can use the provenance shape,
+// which is what lets NHIRA hold "FBI said 12, local reporting later
+// said 13" as two distinct, attributed facts instead of overwriting
+// one with the other.
+// =====================================================================
+
+function isProvenanceSources(sources) {
+    return Array.isArray(sources) && sources.length > 0 &&
+        typeof sources[0] === "object" && sources[0] !== null;
+}
+
+function renderProvenance(event) {
+    const sources = Array.isArray(event.sources) ? event.sources : [];
+
+    if (!sources.length) {
+        return `<p class="field"><b>Sources</b><br>No sources on file</p>`;
+    }
+
+    if (!isProvenanceSources(sources)) {
+        // Legacy plain-URL format — render exactly as before.
+        const html = sources
+            .map(s => `<a href="${escapeHtml(s)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s)}</a>`)
+            .join("<br>");
+        return `<p class="field"><b>Sources</b><br>${html}</p>`;
+    }
+
+    const fatalityValues = sources.map(s => s.source_specific_fatalities).filter(v => v !== undefined && v !== null);
+    const injuryValues = sources.map(s => s.source_specific_injuries).filter(v => v !== undefined && v !== null);
+    const fatalitiesDiffer = new Set(fatalityValues).size > 1;
+    const injuriesDiffer = new Set(injuryValues).size > 1;
+
+    const disagreementNote = (fatalitiesDiffer || injuriesDiffer)
+        ? `<p class="prov-disagreement">Sources report different ${
+            fatalitiesDiffer && injuriesDiffer ? "fatality and injury counts" : fatalitiesDiffer ? "fatality counts" : "injury counts"
+          } for this incident. The headline figures above use NHIRA's primary recorded value — check each source below for what it specifically reported.</p>`
+        : "";
+
+    const cards = sources.map(s => `
+        <div class="prov-card">
+            <p class="prov-card-head">
+                <b>${escapeHtml(s.source || "Unknown source")}</b>
+                ${s.source_type ? `<span class="prov-type">${escapeHtml(s.source_type)}</span>` : ""}
+            </p>
+            <dl class="prov-fields">
+                <dt>Source URL</dt>
+                <dd>${s.source_url
+                    ? `<a href="${escapeHtml(s.source_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.source_url)}</a>`
+                    : "Not recorded"}</dd>
+
+                <dt>Source date</dt>
+                <dd>${s.source_date ? escapeHtml(s.source_date) : "Not recorded"}</dd>
+
+                <dt>Fatalities (this source)</dt>
+                <dd>${s.source_specific_fatalities ?? "Not stated"}</dd>
+
+                <dt>Injuries (this source)</dt>
+                <dd>${s.source_specific_injuries ?? "Not stated"}</dd>
+
+                <dt>Verification status</dt>
+                <dd>${s.verification_status
+                    ? `<span class="signal-status signal-${String(s.verification_status).toLowerCase()}">${escapeHtml(s.verification_status).replace("_", " ")}</span>`
+                    : "Not recorded"}</dd>
+
+                <dt>Verified date</dt>
+                <dd>${s.verified_date ? escapeHtml(s.verified_date) : "Not verified"}</dd>
+            </dl>
+        </div>
+    `).join("");
+
+    return `
+        <div class="prov-section">
+            <p class="field"><b>Sources &amp; Provenance</b></p>
+            ${disagreementNote}
+            ${cards}
+        </div>
+    `;
+}
+
+// NHIRA's own category (event.resolvedType, driven by event.type) is
+// never overwritten by an external classification. sourceClassifications
+// is stored and displayed alongside it, never merged into it, so NHIRA
+// can eventually compare how FBI/GVA/Violence Project/local police each
+// classified the same incident.
+function renderSourceClassifications(event) {
+    if (!Array.isArray(event.sourceClassifications) || !event.sourceClassifications.length) return "";
+    return `
+        <div class="prov-section">
+            <p class="field"><b>Source classifications</b></p>
+            <ul class="source-class-list">
+                ${event.sourceClassifications.map(c =>
+                    `<li><b>${escapeHtml(c.source)}:</b> ${escapeHtml(c.classification)}</li>`
+                ).join("")}
+            </ul>
+            <p class="review-criteria-note">
+                These are the originating sources' own classifications, kept separate from NHIRA's category above —
+                one is never overwritten by the other.
+            </p>
+        </div>
+    `;
+}
+
+function renderPrecisionBadge(event) {
+    const key = String(event.location_precision || "").toLowerCase();
+    if (!PRECISION_LABELS[key]) return "";
+    const warn = key === "city_centroid" || key === "multi_location" || key === "approximate";
+    return `
+        <div class="precision-badge ${warn ? "precision-warn" : ""}">
+            Location precision: ${PRECISION_LABELS[key]}
+            ${warn ? " — treat as a representative point, not an exact target location" : ""}
+        </div>
+    `;
+}
+
 function openPanel(event) {
     currentOpenEvent = event;
     if (mapMode === "context") renderContextHighlightLayer();
@@ -2126,12 +2484,6 @@ function openPanel(event) {
         .filter(Boolean)
         .map(escapeHtml)
         .join(", ");
-
-    const sourcesHtml = Array.isArray(event.sources) && event.sources.length
-        ? event.sources
-              .map(s => `<a href="${escapeHtml(s)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s)}</a>`)
-              .join("<br>")
-        : "No sources on file";
 
     const CONFIDENCE_LABELS = { high: "High", medium: "Medium", conflicting: "Conflicting" };
     const confidenceKey = String(event.sourceConfidence || "").toLowerCase();
@@ -2161,6 +2513,7 @@ function openPanel(event) {
         <p class="meta">${place} &middot; ${escapeHtml(event.date || event.year)}</p>
 
         ${confidenceHtml}
+        ${renderPrecisionBadge(event)}
 
         <div class="stats">
             ${statBlock(event.fatalities, event.fatalitiesEstimateRange, "Fatalities")}
@@ -2172,7 +2525,8 @@ function openPanel(event) {
         <hr>
 
         <p class="field"><b>Venue</b><br>${escapeHtml(event.venue) || "Not recorded"}</p>
-        <p class="field"><b>Sources</b><br>${sourcesHtml}</p>
+        ${renderProvenance(event)}
+        ${renderSourceClassifications(event)}
 
         <div class="dq-section">
             <p class="chart-title">Data quality</p>

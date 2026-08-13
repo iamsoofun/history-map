@@ -1260,3 +1260,171 @@ html, body {
   text-transform: uppercase;
   color: var(--ink-soft);
 }
+
+/* ---------- Provenance layer ---------- */
+
+.prov-section { margin: 16px 0; }
+
+.prov-disagreement {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: #F8E4E3;
+  border: 1px solid #EFC0BC;
+  border-radius: 8px;
+  font-size: .8rem;
+  line-height: 1.5;
+  color: #8C2A24;
+}
+
+.prov-card {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.prov-card-head {
+  margin: 0 0 6px;
+  font-size: .85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prov-type {
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  font: 600 .6rem/1.4 var(--font-body);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.prov-fields {
+  margin: 0;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+.prov-fields dt {
+  margin-top: 6px;
+  font: 600 .58rem/1 var(--font-body);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.prov-fields dt:first-child { margin-top: 0; }
+.prov-fields dd { margin: 1px 0 0; word-break: break-word; }
+
+.source-class-list {
+  margin: 0 0 6px;
+  padding-left: 20px;
+  font-size: .85rem;
+  line-height: 1.6;
+}
+
+.precision-badge {
+  display: inline-block;
+  margin: 0 0 14px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  font: 500 .72rem/1.4 var(--font-body);
+  color: var(--ink-soft);
+}
+
+.precision-warn {
+  background: #FBF0DC;
+  border-color: #F0D8A0;
+  color: #8A5A00;
+}
+
+/* ---------- Triage scores (Pending Verification) ---------- */
+
+.triage-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.triage-chip {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font: 600 .66rem/1.6 var(--font-mono);
+  letter-spacing: .01em;
+}
+
+.triage-good { background: #E4F3EA; color: #1F6B45; }
+.triage-warn { background: #FBF0DC; color: #8A5A00; }
+.triage-bad { background: #F8E4E3; color: #8C2A24; }
+
+.triage-score {
+  font: 600 .72rem/1 var(--font-mono);
+  color: var(--ink-soft);
+}
+
+/* ---------- Backtest ---------- */
+
+.backtest-run-btn {
+  display: block;
+  width: 100%;
+  height: 42px;
+  margin-bottom: 12px;
+  font: 600 .78rem/1 var(--font-body);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.backtest-run-btn:active { background: var(--signal); color: var(--ink); }
+
+.backtest-summary {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  font-size: .82rem;
+  line-height: 1.55;
+}
+
+.backtest-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 8px;
+  font: 500 .78rem/1.5 var(--font-mono);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.backtest-table th {
+  padding: 6px 8px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  font: 600 .62rem/1.5 var(--font-body);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: left;
+}
+
+.backtest-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.backtest-table tr:last-child td { border-bottom: 0; }
+.backtest-hit td:nth-child(4) { color: #1F6B45; font-weight: 700; }
+.backtest-miss td:nth-child(4) { color: #8C2A24; font-weight: 700; }

@@ -96,43 +96,93 @@ function computeConfidence(extracted) {
 // ---------------------------------------------------------------------
 // Duplicate detection
 //
-// Same normalized title+date matching used in clean_history.py, so
-// the two tools agree on what counts as "probably the same incident."
-// This is intentionally conservative: it flags candidates for human
-// review, it never auto-rejects as a duplicate.
+// Produces a graded duplicate_score (0-1), not just a binary match.
+// Score = 0.7 * title token-overlap similarity + 0.3 * date proximity
+// (within 14 days). This is intentionally conservative and disclosed:
+// it flags candidates for human review at two thresholds, it never
+// auto-rejects as a duplicate no matter how high the score.
 // ---------------------------------------------------------------------
 
-function normalizeTitleDateKey(title, date) {
-    const normTitle = String(title || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-    return `${normTitle}|${date || ""}`;
+function tokenize(title) {
+    return new Set(
+        String(title || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean)
+    );
+}
+
+function titleSimilarity(a, b) {
+    const setA = tokenize(a), setB = tokenize(b);
+    if (setA.size === 0 || setB.size === 0) return 0;
+    let intersection = 0;
+    for (const t of setA) if (setB.has(t)) intersection++;
+    const union = setA.size + setB.size - intersection;
+    return union === 0 ? 0 : intersection / union;
+}
+
+function dateSimilarity(dateA, dateB) {
+    if (!dateA || !dateB) return 0;
+    const a = new Date(dateA), b = new Date(dateB);
+    if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return 0;
+    const dayDiff = Math.abs(a.getTime() - b.getTime()) / (1000 * 60 * 60 * 24);
+    return Math.max(0, 1 - dayDiff / 14); // similarity decays to 0 over a 14-day window
+}
+
+function computeDuplicateScore(extracted, candidateRecord) {
+    const titleSim = titleSimilarity(extracted.title, candidateRecord.title);
+    const dateSim = dateSimilarity(extracted.incidentDate, candidateRecord.date || candidateRecord.incidentDate);
+    return Math.round((0.7 * titleSim + 0.3 * dateSim) * 100) / 100;
 }
 
 async function checkDuplicate(extracted, existingHistory, existingPending) {
-    const key = normalizeTitleDateKey(extracted.title, extracted.incidentDate);
+    let best = { score: 0, from: null, record: null };
 
-    const historyMatch = existingHistory.find(
-        h => normalizeTitleDateKey(h.title, h.date) === key
-    );
-    if (historyMatch) {
-        return {
-            status: "possible-match",
-            matchedId: historyMatch.id ?? null,
-            note: `Title and date closely match existing NHIRA record${historyMatch.id ? ` #${historyMatch.id}` : ""}.`
-        };
+    for (const h of existingHistory) {
+        const score = computeDuplicateScore(extracted, h);
+        if (score > best.score) best = { score, from: "history", record: h };
+    }
+    for (const p of existingPending) {
+        const score = computeDuplicateScore(extracted, p);
+        if (score > best.score) best = { score, from: "pending", record: p };
     }
 
-    const pendingMatch = existingPending.find(
-        p => normalizeTitleDateKey(p.title, p.incidentDate) === key
-    );
-    if (pendingMatch) {
+    if (best.score >= 0.85) {
         return {
             status: "possible-match",
-            matchedId: null,
-            note: `Matches an existing pending candidate (${pendingMatch.candidateId}) already awaiting review.`
+            score: best.score,
+            matchedId: best.from === "history" ? (best.record.id ?? null) : null,
+            note: best.from === "history"
+                ? `High title/date similarity (${best.score}) with existing NHIRA record${best.record.id ? ` #${best.record.id}` : ""}.`
+                : `High title/date similarity (${best.score}) with pending candidate ${best.record.candidateId}, already awaiting review.`
         };
     }
+    if (best.score >= 0.5) {
+        return {
+            status: "possible-match",
+            score: best.score,
+            matchedId: best.from === "history" ? (best.record.id ?? null) : null,
+            note: `Moderate similarity (${best.score}) — worth a manual duplicate check before approving.`
+        };
+    }
+    return { status: "no-match", score: best.score, matchedId: null, note: "No existing record scored above the duplicate threshold." };
+}
 
-    return { status: "no-match", matchedId: null, note: "No existing NHIRA record or pending candidate with matching title+date." };
+// ---------------------------------------------------------------------
+// Source confidence — an editorial reliability judgment about the
+// OUTLET, kept distinct from `confidence` (how completely this
+// specific item was extracted). This is NOT inferred from the data;
+// it's a lookup you maintain as you approve sources. Unknown sources
+// default to a moderate 0.6 so an unrated outlet doesn't silently
+// read as either highly trustworthy or highly suspect.
+// ---------------------------------------------------------------------
+
+const SOURCE_RELIABILITY = {
+    // Fill in as you add real approved sources, e.g.:
+    // "Associated Press": 0.92,
+    // "Local Newspaper X": 0.75,
+};
+const DEFAULT_SOURCE_RELIABILITY = 0.6;
+
+function getSourceConfidence(sourceName) {
+    return SOURCE_RELIABILITY[sourceName] ?? DEFAULT_SOURCE_RELIABILITY;
 }
 
 // ---------------------------------------------------------------------
@@ -173,6 +223,9 @@ function buildCandidate({ source, sourceUrl, extracted, duplicateMatch, idSeed }
 
         source: source,
         sourceUrl: sourceUrl,
+        sourceType: extracted.sourceType || null,
+        sourceClassification: extracted.sourceClassification || null,
+        sourceConfidence: getSourceConfidence(source),
         detectedDate: now.toISOString(),
         incidentDate: extracted.incidentDate || null,
         country: extracted.country || null,
