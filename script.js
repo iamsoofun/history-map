@@ -190,6 +190,7 @@ const reviewToggle = document.getElementById("reviewToggle");
 const reviewPanel = document.getElementById("reviewPanel");
 const closeReview = document.getElementById("closeReview");
 const rvStatusFilter = document.getElementById("rvStatusFilter");
+const rvReviewerName = document.getElementById("rvReviewerName");
 const rvSummary = document.getElementById("rvSummary");
 const rvList = document.getElementById("rvList");
 const rvExportWrap = document.getElementById("rvExportWrap");
@@ -1434,27 +1435,42 @@ mapModeButtons.forEach(btn => {
 });
 
 // =====================================================================
-// SIGNAL METADATA + PENDING VERIFICATION
+// PENDING VERIFICATION
 //
-// Every ingested candidate carries the same six-field signal metadata
-// block, shared with any future real-time/RTM layer so the two
-// pipelines speak one vocabulary:
+// Full pipeline: Source -> automatic detection -> candidate record ->
+// Pending Verification -> human review -> history.json ->
+// map/statistics/forecast. The collector (see collector.js) produces
+// candidates in this exact schema and writes them to pending.json (or
+// a backend the collector posts to) — nothing it produces is ever
+// auto-published. A human must Approve before anything reaches
+// history.json.
 //
-//   source              where it came from (approved source URL)
-//   timestamp           when NHIRA discovered it
-//   location_precision  exact | city | approximate | unknown
-//   verification_status UNVERIFIED | NEEDS_RESEARCH | VERIFIED
-//                       | REJECTED | EXPIRED
-//   confidence          0–1 extraction confidence (NOT source
-//                       confidence — that's a published-record field)
-//   expiration_time     when an UNREVIEWED candidate goes stale
+// Each candidate carries these fields (spec, in order):
+//   source            outlet/feed name
+//   sourceUrl         link to the original report
+//   detectedDate      when NHIRA's collector found it
+//   incidentDate      when the incident itself occurred
+//   country, state, city
+//   title             candidate incident title
+//   category          candidate category (Mass Shooting, etc.)
+//   fatalities, injuries
+//   confidence        0-1 extraction confidence (NOT source confidence
+//                      — that is a human judgment made at approval time)
+//   duplicateMatch    { status, matchedId, note }
+//   verificationStatus UNVERIFIED | NEEDS_RESEARCH | VERIFIED
+//                      | REJECTED | EXPIRED
+//   reviewedBy, reviewedDate
 //
-// Important: expiration marks a candidate as stale for review triage.
-// It never deletes it. A real unreviewed incident must not silently
-// vanish because nobody got to it in time.
+// Plus operational extras a usable incident record still needs but
+// weren't in the field spec: venue, lat, lng, description,
+// locationPrecision, expirationTime. These aren't optional in
+// practice — a record with no coordinates can't be mapped — so the
+// collector still captures them; they just aren't primary review
+// fields.
 //
-// The collector does NOT classify. It flags candidates against
-// criteria (flaggedCriteria[]) and a human makes the final call.
+// Only UNVERIFIED / NEEDS_RESEARCH candidates can go stale.
+// verificationStatus of VERIFIED or REJECTED is a permanent human
+// decision and is never overwritten by expiration.
 // =====================================================================
 
 const REVIEW_STATUSES = ["UNVERIFIED", "NEEDS_RESEARCH", "VERIFIED", "REJECTED", "EXPIRED"];
@@ -1467,15 +1483,14 @@ const PRECISION_LABELS = {
 };
 
 let pendingCandidates = [];
+let currentReviewerName = "";
 
 function effectiveStatus(candidate) {
-    const status = String(candidate?.signal?.verification_status || "UNVERIFIED").toUpperCase();
+    const status = String(candidate?.verificationStatus || "UNVERIFIED").toUpperCase();
     if (!REVIEW_STATUSES.includes(status)) return "UNVERIFIED";
 
-    // Only still-unreviewed candidates can go stale. A decided
-    // candidate (verified/rejected) keeps its decision forever.
     if (status === "UNVERIFIED" || status === "NEEDS_RESEARCH") {
-        const expiry = candidate?.signal?.expiration_time;
+        const expiry = candidate?.expirationTime;
         if (expiry) {
             const t = new Date(expiry);
             if (!Number.isNaN(t.getTime()) && t.getTime() < Date.now()) return "EXPIRED";
@@ -1492,7 +1507,7 @@ function confidenceLabel(value) {
     return `${band} (${pct}%)`;
 }
 
-function formatSignalTimestamp(raw) {
+function formatTimestamp(raw) {
     if (!raw) return "Not recorded";
     const d = new Date(raw);
     if (Number.isNaN(d.getTime())) return escapeHtml(raw);
@@ -1502,37 +1517,15 @@ function formatSignalTimestamp(raw) {
     });
 }
 
-// Renders the shared six-field metadata block. Used by the review
-// panel now; reusable by any future real-time signal layer.
-function renderSignalMetadata(signal, status) {
-    if (!signal) return `<p class="dq-empty">No signal metadata recorded.</p>`;
-    return `
-        <dl class="signal-meta">
-            <dt>Source</dt>
-            <dd>${signal.source
-                ? `<a href="${escapeHtml(signal.source)}" target="_blank" rel="noopener noreferrer">${escapeHtml(signal.source)}</a>`
-                : "Not recorded"}</dd>
-
-            <dt>Discovered</dt>
-            <dd>${formatSignalTimestamp(signal.timestamp)}</dd>
-
-            <dt>Location precision</dt>
-            <dd>${PRECISION_LABELS[String(signal.location_precision || "").toLowerCase()] || "Unknown"}</dd>
-
-            <dt>Verification status</dt>
-            <dd><span class="signal-status signal-${status.toLowerCase()}">${status.replace("_", " ")}</span></dd>
-
-            <dt>Extraction confidence</dt>
-            <dd>${confidenceLabel(signal.confidence)}</dd>
-
-            <dt>Review expires</dt>
-            <dd>${formatSignalTimestamp(signal.expiration_time)}${status === "EXPIRED" ? " — stale, still retained for review" : ""}</dd>
-        </dl>
-    `;
+function formatDateOnly(raw) {
+    if (!raw) return "Not recorded";
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return escapeHtml(raw);
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
 function duplicateCheckHtml(dup) {
-    if (!dup) return "";
+    if (!dup) return `<p class="review-dup dup-flag">Not checked</p>`;
     const statusKey = String(dup.status || "unknown").toLowerCase();
     const label = statusKey === "no-match" ? "No duplicate found"
         : statusKey === "possible-match" ? "Possible duplicate"
@@ -1547,34 +1540,82 @@ function duplicateCheckHtml(dup) {
     `;
 }
 
+// Renders all candidate fields as a labeled grid — this is the
+// reviewer-facing record of what the collector found and how it was
+// evaluated, spec fields first, operational extras after.
+function renderCandidateFields(c, status) {
+    return `
+        <dl class="signal-meta">
+            <dt>Source</dt>
+            <dd>${c.source ? escapeHtml(c.source) : "Not recorded"}</dd>
+
+            <dt>Source URL</dt>
+            <dd>${c.sourceUrl
+                ? `<a href="${escapeHtml(c.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.sourceUrl)}</a>`
+                : "Not recorded"}</dd>
+
+            <dt>Detected date</dt>
+            <dd>${formatTimestamp(c.detectedDate)}</dd>
+
+            <dt>Incident date</dt>
+            <dd>${formatDateOnly(c.incidentDate)}</dd>
+
+            <dt>Country / State / City</dt>
+            <dd>${[c.country, c.state, c.city].filter(Boolean).map(escapeHtml).join(" · ") || "Not extracted"}</dd>
+
+            <dt>Candidate category</dt>
+            <dd>${c.category ? escapeHtml(c.category) : "Not classified"}</dd>
+
+            <dt>Confidence</dt>
+            <dd>${confidenceLabel(c.confidence)}</dd>
+
+            <dt>Verification status</dt>
+            <dd><span class="signal-status signal-${status.toLowerCase()}">${status.replace("_", " ")}</span></dd>
+
+            <dt>Reviewed by</dt>
+            <dd>${c.reviewedBy ? escapeHtml(c.reviewedBy) : "Not yet reviewed"}</dd>
+
+            <dt>Reviewed date</dt>
+            <dd>${c.reviewedDate ? formatTimestamp(c.reviewedDate) : "Not yet reviewed"}</dd>
+
+            <dt>Location precision</dt>
+            <dd>${PRECISION_LABELS[String(c.locationPrecision || "").toLowerCase()] || "Unknown"}</dd>
+
+            <dt>Review expires</dt>
+            <dd>${formatTimestamp(c.expirationTime)}${status === "EXPIRED" ? " — stale, still retained for review" : ""}</dd>
+        </dl>
+    `;
+}
+
 // Converts an approved candidate into a publishable history.json
-// record. The candidate's own metadata does NOT get copied into the
-// published record wholesale — published records carry sourceConfidence
-// and dataQuality, which are human judgments made at review time, not
-// machine extraction scores.
+// record. sourceConfidence and dataQuality are NOT copied from the
+// candidate's extraction confidence — those are human judgments made
+// at review time, not machine-scored.
 function candidateToRecord(candidate) {
-    const e = candidate.extracted || {};
     return {
         id: null, // assign on commit — see clean_history.py reassignment logic
-        title: e.title,
-        date: e.date,
-        year: e.year,
-        country: e.country,
-        state: e.state,
-        city: e.city,
-        venue: e.venue,
-        lat: e.lat,
-        lng: e.lng,
-        fatalities: e.fatalities,
-        injuries: e.injuries,
-        description: e.description,
-        sources: candidate.signal?.source ? [candidate.signal.source] : [],
+        title: candidate.title,
+        date: candidate.incidentDate,
+        year: candidate.incidentDate ? Number(String(candidate.incidentDate).slice(0, 4)) : candidate.year,
+        country: candidate.country,
+        state: candidate.state,
+        city: candidate.city,
+        venue: candidate.venue,
+        lat: candidate.lat,
+        lng: candidate.lng,
+        fatalities: candidate.fatalities,
+        injuries: candidate.injuries,
+        description: candidate.description,
+        category: candidate.category,
+        sources: candidate.sourceUrl ? [candidate.sourceUrl] : [],
         sourceConfidence: "medium",
         provenance: {
             ingestedVia: "automated-source-check",
             candidateId: candidate.candidateId,
-            discoveredAt: candidate.signal?.timestamp || null,
-            approvedAt: new Date().toISOString()
+            collectorSource: candidate.source || null,
+            detectedDate: candidate.detectedDate || null,
+            reviewedBy: candidate.reviewedBy || null,
+            reviewedDate: candidate.reviewedDate || null
         }
     };
 }
@@ -1594,24 +1635,30 @@ function refreshExportBox() {
 function setCandidateStatus(candidateId, newStatus) {
     const candidate = pendingCandidates.find(c => c.candidateId === candidateId);
     if (!candidate) return;
-    if (!candidate.signal) candidate.signal = {};
-    candidate.signal.verification_status = newStatus;
-    candidate.signal.reviewedAt = new Date().toISOString();
+
+    candidate.verificationStatus = newStatus;
+    candidate.reviewedBy = currentReviewerName.trim() || "Unspecified reviewer";
+    candidate.reviewedDate = new Date().toISOString();
 
     // ---- BACKEND HOOK ----------------------------------------------
-    // A static build cannot persist this. To make approvals write
-    // through to the real database, POST the decision here, e.g.:
+    // A static build cannot persist this. To make review decisions
+    // write through to the real queue/database, PATCH here, e.g.:
     //
     //   fetch("/api/pending/" + candidateId, {
     //       method: "PATCH",
     //       headers: { "Content-Type": "application/json" },
-    //       body: JSON.stringify({ verification_status: newStatus })
+    //       body: JSON.stringify({
+    //           verificationStatus: newStatus,
+    //           reviewedBy: candidate.reviewedBy,
+    //           reviewedDate: candidate.reviewedDate
+    //       })
     //   });
     //
-    // On approval the backend should also insert the record from
+    // On VERIFIED, the backend should also insert
     // candidateToRecord(candidate) into the incident database, then
     // let everything derived from it (map, stats, charts, forecast,
     // dataset coverage, last-updated) recalculate from that one write.
+    // See collector.js for the matching write-side of this pipeline.
     // ----------------------------------------------------------------
 
     renderReviewQueue();
@@ -1641,27 +1688,27 @@ function renderReviewQueue() {
     }
 
     rvList.innerHTML = shown.map(c => {
-        const e = c.extracted || {};
         const status = effectiveStatus(c);
-        const place = [e.city, e.state, e.country].filter(Boolean).map(escapeHtml).join(", ");
+        const place = [c.city, c.state, c.country].filter(Boolean).map(escapeHtml).join(", ");
         const decided = status === "VERIFIED" || status === "REJECTED";
 
         return `
             <div class="review-card review-card-${status.toLowerCase()}">
                 <div class="review-card-head">
                     <span class="signal-status signal-${status.toLowerCase()}">${status.replace("_", " ")}</span>
-                    <h3>${escapeHtml(e.title || "Untitled candidate")}</h3>
-                    <p class="review-card-meta">${escapeHtml(e.date || e.year || "Date not extracted")} · ${place || "Location not extracted"}</p>
+                    ${c.category ? `<span class="review-category-badge">${escapeHtml(c.category)}</span>` : ""}
+                    <h3>${escapeHtml(c.title || "Untitled candidate")}</h3>
+                    <p class="review-card-meta">${formatDateOnly(c.incidentDate)} · ${place || "Location not extracted"}</p>
                 </div>
 
                 <div class="stats">
-                    <div class="stat"><b>${escapeHtml(e.fatalities ?? "—")}</b><span>Fatalities</span></div>
-                    <div class="stat"><b>${escapeHtml(e.injuries ?? "—")}</b><span>Injuries</span></div>
+                    <div class="stat"><b>${escapeHtml(c.fatalities ?? "—")}</b><span>Fatalities</span></div>
+                    <div class="stat"><b>${escapeHtml(c.injuries ?? "—")}</b><span>Injuries</span></div>
                 </div>
 
-                <p class="review-desc">${escapeHtml(e.description || "No description extracted.")}</p>
+                <p class="review-desc">${escapeHtml(c.description || "No description extracted.")}</p>
 
-                ${duplicateCheckHtml(c.duplicateCheck)}
+                ${duplicateCheckHtml(c.duplicateMatch)}
 
                 ${Array.isArray(c.flaggedCriteria) && c.flaggedCriteria.length ? `
                     <p class="chart-title">Flagged against criteria</p>
@@ -1674,8 +1721,8 @@ function renderReviewQueue() {
                     </p>
                 ` : ""}
 
-                <p class="chart-title">Signal metadata</p>
-                ${renderSignalMetadata(c.signal, status)}
+                <p class="chart-title">Candidate record</p>
+                ${renderCandidateFields(c, status)}
 
                 <div class="review-actions">
                     <button type="button" class="rv-btn rv-approve" data-id="${escapeHtml(c.candidateId)}" data-action="VERIFIED" ${decided ? "disabled" : ""}>Approve</button>
@@ -1715,7 +1762,8 @@ if (REVIEW_ELEMENTS_PRESENT) {
             renderReviewQueue();
         })
         .catch(() => {
-            // No pending.json deployed yet — that's a valid state, not an error.
+            // No pending.json deployed yet, or the collector hasn't run —
+            // that's a valid state, not an error.
             pendingCandidates = [];
             renderReviewQueue();
         });
@@ -1731,6 +1779,12 @@ if (REVIEW_ELEMENTS_PRESENT) {
     closeReview.addEventListener("click", closeReviewPanel);
     rvStatusFilter.addEventListener("change", renderReviewQueue);
 
+    if (rvReviewerName) {
+        rvReviewerName.addEventListener("input", () => {
+            currentReviewerName = rvReviewerName.value;
+        });
+    }
+
     rvList.addEventListener("click", e => {
         const btn = e.target.closest(".rv-btn");
         if (!btn || btn.disabled) return;
@@ -1739,6 +1793,7 @@ if (REVIEW_ELEMENTS_PRESENT) {
 } else {
     console.warn("Pending Verification controls not found in the DOM — skipping their setup so the rest of the app still loads.");
 }
+
 
 // =====================================================================
 // GEOGRAPHIC RESOLUTION GATE

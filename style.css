@@ -1018,7 +1018,12 @@ html, body {
 
 #closeReview:active { background: var(--paper); }
 
-.review-filters { margin-bottom: 12px; }
+.review-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
 
 .review-filters label {
   display: flex;
@@ -1229,4 +1234,29 @@ html, body {
 
 @media (min-width: 1400px) {
   #reviewPanel { width: 500px; }
+}
+
+/* ---------- Reviewer name input + category badge ---------- */
+
+.review-filters input[type="text"] {
+  height: 36px;
+  padding: 0 9px;
+  font: 500 .85rem/1 var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+.review-category-badge {
+  display: inline-block;
+  margin: 6px 6px 0 0;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  font: 600 .62rem/1.5 var(--font-body);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
 }
