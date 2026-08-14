@@ -191,6 +191,8 @@ const datasetCoverage = document.getElementById("datasetCoverage");
 const coverageLastUpdated = document.getElementById("coverageLastUpdated");
 const coverageNeedsReview = document.getElementById("coverageNeedsReview");
 const sourceCoverage = document.getElementById("sourceCoverage");
+const dataSourcesToggle = document.getElementById("dataSourcesToggle");
+const dataSourcesBody = document.getElementById("dataSourcesBody");
 
 // Forecast panel
 const forecastToggle = document.getElementById("forecastToggle");
@@ -1018,6 +1020,19 @@ if (RESEARCH_ELEMENTS_PRESENT) {
             methodologyToggle.setAttribute("aria-expanded", String(open));
         });
     }
+
+    if (dataSourcesToggle && dataSourcesBody) {
+        dataSourcesToggle.addEventListener("click", () => {
+            const open = dataSourcesBody.hidden;
+            if (open && !dataSourcesBody.dataset.rendered) {
+                dataSourcesBody.innerHTML = renderDataSourcesDefinitions();
+                dataSourcesBody.dataset.rendered = "true";
+            }
+            dataSourcesBody.hidden = !open;
+            dataSourcesToggle.setAttribute("aria-expanded", String(open));
+        });
+    }
+
     rsGenerateBtn.addEventListener("click", refreshEverything);
 
     const debouncedRefresh = debounce(refreshEverything, 200);
@@ -3017,20 +3032,184 @@ function renderPrecisionBadge(event) {
 }
 
 // =====================================================================
-// SOURCE DEFINITION CONSISTENCY
+// DATA SOURCES & DEFINITIONS REGISTRY
 //
 // Different sources count "incidents" under different definitions —
-// e.g. the FBI's Active Shooter definition, a Canadian Mass-Casualty
-// Shooting standard, or a general Police-reported Shooting count are
-// NOT the same inclusion criteria. Mixing them within one country's
-// records (or comparing across countries) can make the model see a
-// definitional change as a real change in risk. This never blocks
-// anything — it surfaces the risk so a researcher can judge it.
+// e.g. the FBI's Active Shooter definition, Statistics Canada's
+// police-reported mass-casualty-event standard, and a generic
+// police-reported shooting count are NOT the same inclusion criteria.
+// Mixing them within one country's records (or comparing across
+// countries) can make the model see a definitional change as a real
+// change in risk. This registry never blocks anything — it surfaces
+// what's actually being measured so a researcher can judge it.
+//
+// Every entry states plainly what is and isn't confirmed. Where a
+// convention (e.g. whether the perpetrator is counted as a victim)
+// isn't documented in the publicly available summary of a source,
+// this says so as `null` rather than guessing — an unconfirmed "false"
+// is a false claim of knowledge NHIRA doesn't have.
 // =====================================================================
+
+const SOURCE_DEFINITIONS = {
+    "FBI Active Shooter": {
+        issuingBody: "Federal Bureau of Investigation",
+        scope: "United States",
+        inclusionThreshold: "One or more individuals actively engaged in killing or attempting to kill people in a populated area, per the FBI's Active Shooter Incidents program.",
+        perpetratorExcluded: null,
+        fatalityConventionNote: "Whether a perpetrator's own death is counted in the reported fatality total is not standardized across FBI Active Shooter reports and should be checked per-record against the cited report.",
+        citation: "FBI Active Shooter Incidents in the United States (annual reports)",
+        citationUrl: null
+    },
+    "Statistics Canada Mass Casualty Event": {
+        issuingBody: "Statistics Canada (Canadian Centre for Justice and Community Safety Statistics)",
+        scope: "Canada",
+        inclusionThreshold: "A police-reported violent incident (excluding criminal negligence causing bodily harm or death) where four or more victims sustained physical injury — minor or major — or died.",
+        perpetratorExcluded: null,
+        fatalityConventionNote: "Counts victims who were INJURED (minor or major) as well as those who died — a lower and broader threshold than a fatalities-only definition. Not confirmed whether a perpetrator killed during the incident is counted among the victims.",
+        citation: "Savage, L. & Conroy, S. (2026). \"Police-reported mass casualty events in Canada, 2010 to 2024.\" Juristat. Statistics Canada Catalogue no. 85-002-X.",
+        citationUrl: "https://www150.statcan.gc.ca/n1/pub/85-002-x/2026001/article/00010-eng.htm",
+        scopeWarning: "This definition is substantially BROADER than \"mass shooting\": it covers any violent-crime method (stabbings, vehicle-ramming, shootings, etc. — StatCan reports only 64% of these events even involved a weapon of any kind), and counts injuries as well as deaths. Do not compare StatCan mass-casualty-event totals directly against a shooting-specific count without first filtering by method."
+    },
+    "Gun Violence Archive": {
+        issuingBody: "Gun Violence Archive (nonprofit research group)",
+        scope: "United States",
+        inclusionThreshold: "Four or more people shot in one incident, excluding the perpetrator(s), at one location at roughly the same time.",
+        perpetratorExcluded: true,
+        fatalityConventionNote: "Victim-only by definition — the perpetrator is explicitly excluded from the shot/killed count.",
+        citation: "Gun Violence Archive mass shooting definition",
+        citationUrl: null
+    },
+    "Police-reported Shooting": {
+        issuingBody: "Varies — local or regional police service",
+        scope: "Varies by jurisdiction",
+        inclusionThreshold: "Any shooting incident reported to police. Victim-count thresholds for what counts as \"mass\" are not standardized across jurisdictions.",
+        perpetratorExcluded: null,
+        fatalityConventionNote: "Varies by jurisdiction and individual report — check the specific source cited on the record.",
+        citation: "Varies — see individual record's source_url",
+        citationUrl: null
+    },
+    "Historical Incident Source": {
+        issuingBody: "NHIRA compilation from historical/secondary sources",
+        scope: "Varies",
+        inclusionThreshold: "Compiled from news reporting and secondary historical sources; no single standardized threshold across the whole category.",
+        perpetratorExcluded: null,
+        fatalityConventionNote: "Varies by original source and not centrally standardized — this is exactly the category of record that benefits most from the per-source provenance layer.",
+        citation: "Varies — see individual record's provenance",
+        citationUrl: null
+    }
+};
+
+// Real, cited aggregate reference figures — NOT fabricated per-year
+// splits. Only the actual published totals are stored here; anything
+// not confirmed by the citation is left out rather than estimated.
+const REFERENCE_DATASETS = {
+    Canada: {
+        "Statistics Canada Mass Casualty Event": {
+            period: "2010–2024",
+            totalEvents: 5475,
+            totalVictims: 26634,
+            totalAccused: 7402,
+            citation: SOURCE_DEFINITIONS["Statistics Canada Mass Casualty Event"].citation,
+            citationUrl: SOURCE_DEFINITIONS["Statistics Canada Mass Casualty Event"].citationUrl,
+            scopeWarning: SOURCE_DEFINITIONS["Statistics Canada Mass Casualty Event"].scopeWarning
+        }
+    }
+};
+
+function renderDefinitionRegistryEntry(name, def) {
+    return `
+        <div class="prov-card">
+            <p class="prov-card-head"><b>${escapeHtml(name)}</b></p>
+            <dl class="prov-fields">
+                <dt>Issuing body</dt><dd>${escapeHtml(def.issuingBody)}</dd>
+                <dt>Scope</dt><dd>${escapeHtml(def.scope)}</dd>
+                <dt>Inclusion threshold</dt><dd>${escapeHtml(def.inclusionThreshold)}</dd>
+                <dt>Perpetrator excluded from casualties?</dt>
+                <dd>${def.perpetratorExcluded === true ? "Yes, by definition" : def.perpetratorExcluded === false ? "No" : "Not confirmed from the public documentation — do not assume either way"}</dd>
+                <dt>Fatality/casualty convention</dt><dd>${escapeHtml(def.fatalityConventionNote)}</dd>
+                <dt>Citation</dt>
+                <dd>${def.citationUrl
+                    ? `<a href="${escapeHtml(def.citationUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(def.citation)}</a>`
+                    : escapeHtml(def.citation)}</dd>
+            </dl>
+            ${def.scopeWarning ? `<p class="definition-note definition-warn">${escapeHtml(def.scopeWarning)}</p>` : ""}
+        </div>
+    `;
+}
+
+// The honest cross-check: compares NHIRA's own Canada record count
+// against the real StatCan aggregate, WITH the scope mismatch stated
+// up front. This deliberately does NOT produce a "discrepancy alert" —
+// a naive alert here would be actively misleading, since the two
+// figures aren't measuring the same thing.
+function renderCanadaCrossCheck() {
+    const ref = REFERENCE_DATASETS.Canada?.["Statistics Canada Mass Casualty Event"];
+    if (!ref) return "";
+
+    const nhiraCanadaEvents = events.filter(e => e.country === "Canada");
+    const nhiraTotalFatalities = nhiraCanadaEvents.reduce((s, e) => s + toNumber(e.fatalities), 0);
+
+    return `
+        <h3 class="analysis-heading">Canada cross-check</h3>
+        <div class="prov-card">
+            <p class="prov-card-head"><b>Statistics Canada reference (${escapeHtml(ref.period)})</b></p>
+            <dl class="prov-fields">
+                <dt>Mass casualty events (StatCan, all methods)</dt><dd>${ref.totalEvents.toLocaleString()}</dd>
+                <dt>Total victims (StatCan, injured + killed)</dt><dd>${ref.totalVictims.toLocaleString()}</dd>
+                <dt>Total accused (StatCan)</dt><dd>${ref.totalAccused.toLocaleString()}</dd>
+                <dt>Source</dt><dd><a href="${escapeHtml(ref.citationUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(ref.citation)}</a></dd>
+            </dl>
+            <p class="definition-note definition-warn">${escapeHtml(ref.scopeWarning)}</p>
+        </div>
+        <div class="prov-card">
+            <p class="prov-card-head"><b>NHIRA's current Canada records</b></p>
+            <dl class="prov-fields">
+                <dt>Records on file</dt><dd>${nhiraCanadaEvents.length.toLocaleString()}</dd>
+                <dt>Total fatalities recorded</dt><dd>${nhiraTotalFatalities.toLocaleString()}</dd>
+            </dl>
+        </div>
+        <p class="review-criteria-note">
+            NHIRA's ${nhiraCanadaEvents.length.toLocaleString()} Canada record(s) are not directly comparable to StatCan's
+            ${ref.totalEvents.toLocaleString()} figure above — NHIRA's Canada records are (as far as documented) individually
+            notable shooting/mass-violence incidents, while StatCan's figure counts every police-reported violent incident
+            meeting a 4-victim injury-or-death threshold across ALL methods nationwide. A valid cross-check would require either
+            a shooting-specific subset from StatCan or explicit scoping of what NHIRA intends to track for Canada — this section
+            exists to make that gap visible, not to paper over it with a number that looks like a discrepancy check but isn't one.
+        </p>
+    `;
+}
+
+function renderDataSourcesDefinitions() {
+    const inUse = new Set(events.map(e => e.sourceDefinition).filter(Boolean));
+    const registryEntries = Object.entries(SOURCE_DEFINITIONS);
+
+    return `
+        <h3 class="analysis-heading">Data Sources &amp; Definitions</h3>
+        <p class="meta">
+            Every counting standard NHIRA knows about, and what it actually measures. ${inUse.size
+                ? `Currently in use in this dataset: ${[...inUse].map(escapeHtml).join(", ")}.`
+                : "No records currently carry a recorded source definition."}
+        </p>
+        ${registryEntries.map(([name, def]) => renderDefinitionRegistryEntry(name, def)).join("")}
+        ${renderCanadaCrossCheck()}
+    `;
+}
 
 function renderDefinitionBadge(event) {
     if (!event.sourceDefinition) return "";
-    return `<div class="precision-badge">Source definition: ${escapeHtml(event.sourceDefinition)}</div>`;
+    const def = SOURCE_DEFINITIONS[event.sourceDefinition];
+    if (!def) return `<div class="precision-badge">Source definition: ${escapeHtml(event.sourceDefinition)}</div>`;
+
+    const perpetratorNote = def.perpetratorExcluded === true ? "perpetrator excluded from casualty count"
+        : def.perpetratorExcluded === false ? "perpetrator included in casualty count"
+        : "perpetrator-inclusion convention not confirmed";
+
+    return `
+        <div class="precision-badge ${def.scopeWarning ? "precision-warn" : ""}">
+            Source definition: ${escapeHtml(event.sourceDefinition)} (${escapeHtml(def.issuingBody)}) — ${escapeHtml(perpetratorNote)}
+            ${def.scopeWarning ? `<br><span>${escapeHtml(def.scopeWarning)}</span>` : ""}
+        </div>
+    `;
 }
 
 function checkDefinitionConsistency(countryEvents) {
