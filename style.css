@@ -1495,3 +1495,59 @@ html, body {
 }
 
 .overview-validation-value { font-size: 1.05rem !important; }
+
+/* ---------- Model A/B status badges ---------- */
+
+.model-status-badge {
+  margin: 0 0 16px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid;
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+.model-status-badge p { margin: 4px 0 0; }
+
+.model-status-label {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font: 700 .68rem/1.6 var(--font-body);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.model-status-green { background: #E4F3EA; border-color: #2E7D5B; color: #1F6B45; }
+.model-status-green .model-status-label { background: #2E7D5B; color: #fff; }
+
+.model-status-yellow { background: #FBF0DC; border-color: var(--signal); color: #8A5A00; }
+.model-status-yellow .model-status-label { background: var(--signal); color: #3D2900; }
+
+.model-status-red { background: #F8E4E3; border-color: #B3322B; color: #8C2A24; }
+.model-status-red .model-status-label { background: #B3322B; color: #fff; }
+
+.model-status-gray { background: var(--paper); border-color: var(--rule); color: var(--ink-soft); }
+.model-status-gray .model-status-label { background: var(--ink-soft); color: #fff; }
+
+.model-status-text-green { color: #1F6B45; }
+.model-status-text-yellow { color: #8A5A00; }
+.model-status-text-red { color: #8C2A24; }
+.model-status-text-gray { color: var(--ink-soft); }
+
+/* ---------- Prediction interval note ---------- */
+
+.prediction-interval-note {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  font-size: .8rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* ---------- Blend tuning table ---------- */
+
+.blend-chosen { background: rgba(46, 125, 91, .1); font-weight: 700; }

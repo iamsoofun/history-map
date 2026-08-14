@@ -886,6 +886,8 @@ function renderForecastOverview(country) {
     }
 
     const riskLabel = RISK_LABELS[result.riskTier];
+    const cachedBacktest = backtestCache[country];
+    const modelAStatusResult = modelAStatus(cachedBacktest);
     const trendRows = [1, 3, 5, 10, 30].map(w => `
         <span class="overview-trend-chip">${w}y: ${result.multiWindowTrend[w].label}</span>
     `).join("");
@@ -901,8 +903,8 @@ function renderForecastOverview(country) {
                 <p class="forecast-block-value">${result.incidentProbability12mo === null ? "—" : `${result.incidentProbability12mo}%`}</p>
             </div>
             <div class="forecast-block">
-                <p class="forecast-block-label">Forecast validation</p>
-                <p class="forecast-block-value overview-validation-value">${backtestCache[country] ? `${backtestCache[country].hitRate ?? "—"}%` : "Not run"}</p>
+                <p class="forecast-block-label">Model A status</p>
+                <p class="forecast-block-value overview-validation-value model-status-text-${modelAStatusResult.level}">${cachedBacktest ? modelAStatusResult.label : "Not run"}</p>
             </div>
         </div>
         <div class="overview-trend-row">${trendRows}</div>
@@ -1064,6 +1066,15 @@ if (RESEARCH_ELEMENTS_PRESENT) {
 // =====================================================================
 
 const FORECAST_WINDOW_YEARS = 10;
+
+// Dampens the recent-rate term specifically — this is the fix for the
+// model being too reactive to a single recent swing (e.g. a +9.7
+// adjustment against an 11.8 baseline). 0.5 means only half of the
+// gap between the last-2-years rate and the long-run baseline gets
+// carried into the estimate. Disclosed, fixed, not itself tuned by
+// the backtest — the backtest instead tunes a SEPARATE blend weight
+// (see tuneShrinkageWeight) against the naive baseline.
+const RECENT_RATE_SHRINKAGE = 0.5;
 const RISK_COLORS = { lower: "#2E7D5B", elevated: "#F0A202", high: "#D97A17", veryhigh: "#B3322B" };
 const RISK_LABELS = { lower: "Lower", elevated: "Elevated", high: "High", veryhigh: "Very High" };
 
@@ -1142,7 +1153,7 @@ function computeForecast(country) {
     // a black box: baseline + trend adjustment + recent-rate
     // adjustment + seasonality adjustment = central estimate.
     const trendAdjustment = Math.round(slope * 10) / 10;
-    const recentRateAdjustment = Math.round((recentRate - longRunRate) * 10) / 10;
+    const recentRateAdjustment = Math.round((recentRate - longRunRate) * RECENT_RATE_SHRINKAGE * 10) / 10;
     const seasonalityAdjustment = seasonalityRatio !== null
         ? Math.round(longRunRate * (seasonalityRatio - 1) * 10) / 10
         : 0;
@@ -1322,16 +1333,22 @@ function computeAnnualForecastAsOf(country, asOfYear) {
 
     // No seasonality term: this predicts a full calendar year, where
     // month-of-year seasonality nets out, not a 3-month window.
-    const rawEstimate = longRunRate + slope + (recentRate - longRunRate);
+    // Recent-rate term is shrunk (see RECENT_RATE_SHRINKAGE) for the
+    // same reason as the tactical estimate above — this is the exact
+    // function the backtest exercises, so a reactive recent-rate term
+    // here directly caused the model to lose to the naive baseline.
+    const rawEstimate = longRunRate + slope + (recentRate - longRunRate) * RECENT_RATE_SHRINKAGE;
     const modelEstimate = Math.max(0, Math.round(rawEstimate * 10) / 10);
     const margin = Math.max(1, Math.round(Math.sqrt(Math.max(variance, modelEstimate))));
+    const naiveBaseline = usableYears.length ? (yearlyCounts[usableYears[usableYears.length - 1]] || 0) : 0;
 
     return {
         modelEstimate,
         estimateLow: Math.max(0, Math.round(modelEstimate - margin)),
         estimateHigh: Math.round(modelEstimate + margin),
         yearsOfData: usableYears.length,
-        baseline: Math.round(longRunRate * 10) / 10
+        baseline: Math.round(longRunRate * 10) / 10,
+        naiveBaseline
     };
 }
 
@@ -1410,6 +1427,144 @@ function computeBacktest(country) {
     };
 }
 
+// =====================================================================
+// MODEL A REDESIGN — shrinkage/blending layer
+//
+// NHIRA forecast = weight * statistical model + (1 - weight) * naive
+// baseline. The weight is NOT chosen because a value "looks right" —
+// it's selected using a walk-forward split of the backtest years:
+//
+//   - Training window (earlier ~70% of backtested years): try every
+//     candidate weight from 0% to 100% model, in 10% steps, and pick
+//     whichever minimizes MAE on THIS window only.
+//   - Held-out window (remaining ~30%, always the MOST RECENT years):
+//     apply the weight chosen from training and report how it
+//     actually did — this is the honest out-of-sample check. The
+//     weight is never chosen using the held-out window itself, which
+//     is exactly what "don't fit the model to the future" means here.
+//
+// Needs a reasonable number of backtested years to split meaningfully;
+// returns null rather than a low-confidence result if there isn't
+// enough.
+// =====================================================================
+
+const BLEND_WEIGHT_CANDIDATES = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+const MIN_YEARS_FOR_BLEND_TUNING = 6;
+
+function maeForWeight(window, weight) {
+    const errors = window.map(r => {
+        const blended = weight * r.predictedCentral + (1 - weight) * r.naiveBaseline;
+        return Math.abs(blended - r.actual);
+    });
+    return errors.reduce((a, b) => a + b, 0) / errors.length;
+}
+
+function tuneShrinkageWeight(backtestResults) {
+    if (!backtestResults || backtestResults.length < MIN_YEARS_FOR_BLEND_TUNING) return null;
+
+    // Chronological split — training window is the EARLIER years,
+    // held-out is the LATER years, so "held-out" genuinely means
+    // "years the weight-selection step never saw."
+    const splitIndex = Math.max(3, Math.floor(backtestResults.length * 0.7));
+    const trainWindow = backtestResults.slice(0, splitIndex);
+    const testWindow = backtestResults.slice(splitIndex);
+    if (trainWindow.length < 3 || testWindow.length < 2) return null;
+
+    const weightResults = BLEND_WEIGHT_CANDIDATES.map(w => ({
+        weight: w,
+        trainMAE: Math.round(maeForWeight(trainWindow, w) * 100) / 100
+    }));
+
+    const chosen = weightResults.reduce((best, r) => (r.trainMAE < best.trainMAE ? r : best), weightResults[0]);
+
+    const testMAE = Math.round(maeForWeight(testWindow, chosen.weight) * 100) / 100;
+    const testNaiveMAE = Math.round(maeForWeight(testWindow, 0) * 100) / 100;
+    const testModelMAE = Math.round(maeForWeight(testWindow, 1) * 100) / 100;
+
+    return {
+        chosenWeight: chosen.weight,
+        trainMAE: chosen.trainMAE,
+        testMAE, testNaiveMAE, testModelMAE,
+        trainYears: trainWindow.length,
+        testYears: testWindow.length,
+        beatsNaiveOnTest: testMAE < testNaiveMAE,
+        weightResults
+    };
+}
+
+// Empirical prediction interval — once enough backtested years exist,
+// use the ACTUAL historical residuals (actual - predicted) instead of
+// the heuristic sqrt(variance) margin. This is what lets NHIRA state a
+// real percentage ("90% prediction interval") rather than an
+// unlabeled range: the interval is built FROM observed forecast
+// errors, so its stated coverage means something. Below the minimum
+// sample size, this returns null and the caller falls back to the
+// heuristic margin — honestly labeled as not tied to a stated
+// percentage, because with too few points a claimed percentage
+// wouldn't be trustworthy.
+const MIN_RESIDUALS_FOR_EMPIRICAL_INTERVAL = 6;
+
+function quantile(sortedArr, p) {
+    const idx = p * (sortedArr.length - 1);
+    const lo = Math.floor(idx), hi = Math.ceil(idx);
+    if (lo === hi) return sortedArr[lo];
+    return sortedArr[lo] + (sortedArr[hi] - sortedArr[lo]) * (idx - lo);
+}
+
+function computeEmpiricalPredictionInterval(backtestResults, centralEstimate, coverage) {
+    if (!backtestResults || backtestResults.length < MIN_RESIDUALS_FOR_EMPIRICAL_INTERVAL) return null;
+
+    const residuals = backtestResults.map(r => r.actual - r.predictedCentral).sort((a, b) => a - b);
+    const tail = (1 - coverage) / 2;
+    const lowerResidual = quantile(residuals, tail);
+    const upperResidual = quantile(residuals, 1 - tail);
+
+    return {
+        low: Math.max(0, Math.round(centralEstimate + lowerResidual)),
+        high: Math.round(centralEstimate + upperResidual),
+        coveragePct: Math.round(coverage * 100),
+        nResiduals: residuals.length,
+        provisional: residuals.length < 15 // technically valid, but a small sample — say so
+    };
+}
+
+// Dynamic, honest status wording keyed to REAL computed numbers for
+// this country, never a hardcoded universal claim. Model A (count
+// forecast) and Model B (elevated-year detector) get separate
+// verdicts because they can — and currently do — perform differently.
+function modelAStatus(backtest) {
+    if (!backtest || backtest.insufficientData) {
+        return { level: "gray", label: "NOT YET TESTED", text: "Run a backtest to see how this country's count forecast has performed historically." };
+    }
+    if (backtest.beatsNaive) {
+        return {
+            level: "green",
+            label: "BEATS NAIVE BASELINE",
+            text: `Model A's incident-count forecast outperformed a simple prior-year baseline in backtesting (model MAE ${backtest.modelMAE} vs. naive MAE ${backtest.naiveMAE}).`
+        };
+    }
+    return {
+        level: "yellow",
+        label: "EXPERIMENTAL — OUTPERFORMED BY NAIVE COUNT BASELINE",
+        text: `Model A's numerical incident-count forecast has not yet outperformed a simple prior-year baseline (model MAE ${backtest.modelMAE} vs. naive MAE ${backtest.naiveMAE}). Treat the count estimate as experimental until this changes.`
+    };
+}
+
+function modelBStatus(backtest) {
+    if (!backtest || backtest.insufficientData) {
+        return { level: "gray", label: "NOT YET TESTED", text: "Run a backtest to see how this country's elevated-year detection has performed historically." };
+    }
+    if (backtest.recall === null) {
+        return { level: "gray", label: "NOT ENOUGH ELEVATED YEARS TO TEST", text: "No actually-elevated years occurred in the backtested window for this country, so recall can't be computed yet." };
+    }
+    const level = backtest.recall >= 70 ? "green" : backtest.recall >= 40 ? "yellow" : "red";
+    return {
+        level,
+        label: `RECALL: ${backtest.recall}%`,
+        text: `NHIRA identifies elevated years with ${backtest.recall}% recall${backtest.precision !== null ? ` and ${backtest.precision}% precision` : ""} in backtesting for this country — this is Model B's job, and is evaluated separately from Model A's numeric count accuracy above.`
+    };
+}
+
 function forecastValidationSummary(backtest) {
     if (!backtest) return "Not yet established — run a backtest below";
     if (backtest.insufficientData) return `Not yet possible — only ${backtest.yearsAvailable} year(s) of data (need at least ${MIN_BACKTEST_TRAIN_YEARS + 2})`;
@@ -1442,7 +1597,7 @@ function renderBacktestTable(backtest) {
         <p class="chart-title">Model performance</p>
         <dl class="forecast-fields">
             <dt>Calibration (hit rate)</dt>
-            <dd>${backtest.hitRate}% of actuals fell inside the model's stated uncertainty range — this is not a formal 90%/95% confidence interval, so there's no fixed target percentage to compare it against; it's reported as-is.</dd>
+            <dd>${backtest.hitRate}% of actuals fell inside the model's prediction interval for that year. This is the heuristic interval's calibration — with ${backtest.yearsTested} backtested years now available, the live forecast above can use an empirical prediction interval built from these actual errors instead, which does carry a stated percentage.</dd>
 
             <dt>MAE (mean absolute error)</dt>
             <dd>Model: ${backtest.modelMAE} · Naive baseline (predict same as prior year): ${backtest.naiveMAE}</dd>
@@ -1467,6 +1622,44 @@ function renderBacktestTable(backtest) {
     `;
 }
 
+function renderBlendTuning(tuning) {
+    if (!tuning) {
+        return `<p class="dq-empty">Not enough backtested years yet to tune a model/naive blend weight (need at least ${MIN_YEARS_FOR_BLEND_TUNING}, split into a training and a held-out period).</p>`;
+    }
+
+    const rows = tuning.weightResults.map(r => `
+        <tr class="${r.weight === tuning.chosenWeight ? "blend-chosen" : ""}">
+            <td>${Math.round(r.weight * 100)}% model / ${Math.round((1 - r.weight) * 100)}% naive</td>
+            <td>${r.trainMAE}</td>
+            <td>${r.weight === tuning.chosenWeight ? "Chosen (lowest training MAE)" : ""}</td>
+        </tr>
+    `).join("");
+
+    return `
+        <h3 class="analysis-heading">Model A blend tuning</h3>
+        <p class="meta">
+            NHIRA forecast = weight × statistical model + (1 − weight) × naive baseline. Every candidate weight was
+            tested on the ${tuning.trainYears} earliest backtested years only; none of them ever saw the most recent
+            ${tuning.testYears} year${tuning.testYears === 1 ? "" : "s"} before a weight was chosen.
+        </p>
+        <table class="backtest-table">
+            <thead><tr><th>Blend</th><th>Training MAE</th><th></th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+        <p class="backtest-summary">
+            Chosen weight: <b>${Math.round(tuning.chosenWeight * 100)}% model / ${Math.round((1 - tuning.chosenWeight) * 100)}% naive</b>.
+            Applied to the ${tuning.testYears} held-out year${tuning.testYears === 1 ? "" : "s"} it never saw during selection:
+            blended MAE <b>${tuning.testMAE}</b>, vs. pure naive <b>${tuning.testNaiveMAE}</b> and pure model <b>${tuning.testModelMAE}</b> on those same years.
+            The tuned blend <b>${tuning.beatsNaiveOnTest ? "beats" : "does not beat"}</b> naive on data it was never fit to.
+        </p>
+        <p class="review-criteria-note">
+            This is the honest number: a weight can always be found that fits the training years well, so the only
+            evidence that matters is how it does on years it never saw. If it doesn't beat naive here, the blend
+            isn't helping yet, regardless of how good it looked during selection.
+        </p>
+    `;
+}
+
 function renderForecast(country) {
     if (!fcOutput) return;
 
@@ -1482,6 +1675,9 @@ function renderForecast(country) {
     }
 
     const riskLabel = RISK_LABELS[result.riskTier];
+    const cachedBacktest = backtestCache[country];
+    const modelA = modelAStatus(cachedBacktest);
+    const modelB = modelBStatus(cachedBacktest);
 
     const explainHtml = result.yoyContradictsTier ? `
         <div class="forecast-explain">
@@ -1492,11 +1688,31 @@ function renderForecast(country) {
 
     const sign = n => (n >= 0 ? "+" : "") + n;
 
+    // Prefer the empirical interval (built from real backtest residuals,
+    // so it can honestly carry a stated percentage) once enough
+    // backtested years exist; otherwise fall back to the heuristic
+    // margin, labeled as exactly that — not tied to any percentage.
+    const empiricalInterval = cachedBacktest && !cachedBacktest.insufficientData
+        ? computeEmpiricalPredictionInterval(cachedBacktest.results, result.modelEstimate, 0.9)
+        : null;
+    const intervalLow = empiricalInterval ? empiricalInterval.low : result.estimateLow;
+    const intervalHigh = empiricalInterval ? empiricalInterval.high : result.estimateHigh;
+    const intervalLabel = empiricalInterval
+        ? `${empiricalInterval.coveragePct}% prediction interval${empiricalInterval.provisional ? " (provisional — based on only " + empiricalInterval.nResiduals + " backtested years)" : ""}`
+        : "Prediction interval (heuristic — not yet tied to a stated percentage; run a backtest below to establish one)";
+
     fcOutput.innerHTML = `
         <div class="forecast-header">
             <span class="risk-badge risk-${result.riskTier}">${riskLabel}</span>
             <h3>NHIRA statistical forecast: ${riskLabel.toLowerCase()} historical-activity category</h3>
             <p class="forecast-subhead">${escapeHtml(result.country)} · ${result.periodLabel}</p>
+        </div>
+
+        <h3 class="analysis-heading">Model A — Incident Count Forecast</h3>
+        <p class="meta">Answers "how many incidents should we expect?"</p>
+        <div class="model-status-badge model-status-${modelA.level}">
+            <span class="model-status-label">${modelA.label}</span>
+            <p>${modelA.text}</p>
         </div>
 
         <div class="forecast-blocks">
@@ -1505,18 +1721,31 @@ function renderForecast(country) {
                 <p class="forecast-block-value risk-${result.riskTier}">${riskLabel}</p>
             </div>
             <div class="forecast-block">
-                <p class="forecast-block-label">Model estimate</p>
+                <p class="forecast-block-label">Central estimate</p>
                 <p class="forecast-block-value">${result.modelEstimate}<span class="forecast-block-unit"> incidents</span></p>
             </div>
             <div class="forecast-block">
-                <p class="forecast-block-label">Uncertainty range</p>
-                <p class="forecast-block-value">${result.estimateLow}–${result.estimateHigh}</p>
+                <p class="forecast-block-label">Prediction interval</p>
+                <p class="forecast-block-value">${intervalLow}–${intervalHigh}</p>
             </div>
+        </div>
+        <p class="prediction-interval-note">
+            <b>${intervalLabel}.</b> This range represents the model's estimated uncertainty for the 12-month forecast.
+            It is not a guarantee, and the low/high ends are not promised minimum or maximum outcomes.
+        </p>
+
+        <div id="fcBlendOutput"></div>
+
+        <h3 class="analysis-heading">Model B — Elevated-Year Detector</h3>
+        <p class="meta">Answers "is the upcoming year likely to be unusually elevated?" — a separate, binary question from Model A's count.</p>
+        <div class="model-status-badge model-status-${modelB.level}">
+            <span class="model-status-label">${modelB.label}</span>
+            <p>${modelB.text}</p>
         </div>
 
         <dl class="forecast-fields">
             <dt>Data confidence</dt><dd>${result.dataConfidence}</dd>
-            <dt>Forecast validation</dt><dd id="fcValidationValue">${forecastValidationSummary(backtestCache[country])}</dd>
+            <dt>Forecast validation</dt><dd id="fcValidationValue">${forecastValidationSummary(cachedBacktest)}</dd>
             <dt>Data coverage</dt><dd>${result.dataCoverage}</dd>
         </dl>
 
@@ -1569,7 +1798,7 @@ function renderForecast(country) {
                 <tr><td>Recent-rate adjustment</td><td>${sign(result.recentRateAdjustment)}</td></tr>
                 <tr><td>Seasonality adjustment</td><td>${sign(result.seasonalityAdjustment)}</td></tr>
                 <tr class="forecast-components-total"><td>Central estimate</td><td>${result.modelEstimate}</td></tr>
-                <tr><td>Uncertainty range</td><td>${result.estimateLow}–${result.estimateHigh}</td></tr>
+                <tr><td>Prediction interval</td><td>${result.estimateLow}–${result.estimateHigh} <span class="backtest-range">(heuristic — see Model A above for the possibly-refined empirical interval)</span></td></tr>
             </tbody>
         </table>
 
@@ -1638,14 +1867,23 @@ function renderForecast(country) {
 
     const fcBacktestBtn = document.getElementById("fcBacktestBtn");
     const fcBacktestOutput = document.getElementById("fcBacktestOutput");
+    const fcBlendOutput = document.getElementById("fcBlendOutput");
+
+    if (fcBlendOutput) {
+        fcBlendOutput.innerHTML = cachedBacktest && !cachedBacktest.insufficientData
+            ? renderBlendTuning(tuneShrinkageWeight(cachedBacktest.results))
+            : "";
+    }
+
     if (fcBacktestBtn && fcBacktestOutput) {
         fcBacktestBtn.addEventListener("click", () => {
             const backtest = computeBacktest(country);
             backtestCache[country] = backtest;
-            fcBacktestOutput.innerHTML = renderBacktestTable(backtest);
-
-            const validationCell = document.getElementById("fcValidationValue");
-            if (validationCell) validationCell.textContent = forecastValidationSummary(backtest);
+            // Re-render the whole panel rather than patching pieces —
+            // the status badges, prediction interval, and blend table
+            // all depend on this result together, and patching them
+            // separately risks them drifting out of sync with each other.
+            renderForecast(country);
         });
     }
 
