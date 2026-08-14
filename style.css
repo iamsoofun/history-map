@@ -1551,3 +1551,32 @@ html, body {
 /* ---------- Blend tuning table ---------- */
 
 .blend-chosen { background: rgba(46, 125, 91, .1); font-weight: 700; }
+
+/* ---------- NHIRA Risk Score ---------- */
+
+.risk-score-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 10px;
+  padding: 14px;
+  background: var(--paper);
+  border: 2px solid var(--rule);
+  border-radius: 10px;
+}
+
+.risk-score-icon { font-size: 2.4rem; line-height: 1; }
+
+.risk-score-value {
+  margin: 0;
+  font: 700 1.8rem/1 var(--font-mono);
+  color: var(--ink);
+}
+
+.risk-score-tier {
+  margin: 2px 0 0;
+  font: 600 .78rem/1 var(--font-body);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
