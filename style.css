@@ -1428,3 +1428,70 @@ html, body {
 .backtest-table tr:last-child td { border-bottom: 0; }
 .backtest-hit td:nth-child(4) { color: #1F6B45; font-weight: 700; }
 .backtest-miss td:nth-child(4) { color: #8C2A24; font-weight: 700; }
+
+/* ---------- Source definition consistency ---------- */
+
+.definition-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+
+.definition-ok { background: #E4F3EA; color: #1F6B45; border: 1px solid #B7DDC6; }
+.definition-warn { background: #FBF0DC; color: #8A5A00; border: 1px solid #F0D8A0; }
+
+/* ---------- Data Quality composite score ---------- */
+
+.dq-score-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.dq-score-label {
+  font: 600 .68rem/1 var(--font-body);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.dq-score-value {
+  font: 700 1.4rem/1 var(--font-mono);
+  color: var(--ink);
+}
+
+.dq-score-breakdown { margin-bottom: 4px; }
+
+/* ---------- Backtest table extras ---------- */
+
+.backtest-range {
+  font: 400 .68rem/1 var(--font-mono);
+  color: var(--ink-soft);
+}
+
+/* ---------- Forecasting overview (Stats panel) ---------- */
+
+.overview-trend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+
+.overview-trend-chip {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  font: 500 .68rem/1.4 var(--font-mono);
+  color: var(--ink-soft);
+}
+
+.overview-validation-value { font-size: 1.05rem !important; }
