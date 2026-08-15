@@ -1867,11 +1867,40 @@ const RISK_FACTOR_LABELS = {
     acceleration: "Acceleration / trend",
     geographicClustering: "Geographic clustering",
     casualtySeverity: "Casualty severity",
-    temporalSeasonal: "Temporal / seasonal pattern"
+    temporalSeasonal: "Temporal / seasonal pattern",
+    populationAdjusted: "Population-adjusted rate (historical)"
 };
 
+// =====================================================================
+// LIVE VALIDATION STATUS — the fix for the exact gap flagged: the
+// public forecast and the backtest-validated model must be the SAME
+// model, not two separately-maintained calculations that can drift
+// apart. This reads whatever backtest has already been run and
+// cached for this country THIS SESSION (never triggers a fresh
+// backtest on page load — that stays an explicit "Run backtest"
+// action) and checks the exact same mechanical validated flag the
+// C.3→C.4→C.5 comparison table uses. If it's true, the live Risk
+// Score uses historical-population mode; if a backtest hasn't been
+// run yet, or it isn't validated, the live score stays on the
+// honest 6-factor version — never silently assumes validation.
+// =====================================================================
+
+function getLivePopulationMode(country) {
+    const cached = backtestCache[country];
+    if (!cached || cached.insufficientData) return { mode: undefined, status: "not_run" };
+    if (!POPULATION_DATA[country] || !HISTORICAL_POPULATION_SERIES[country]) return { mode: undefined, status: "no_data" };
+
+    const popTest = computePopulationFactorTest(country, cached);
+    if (!popTest || !popTest.deltasC5) return { mode: undefined, status: "not_run" };
+
+    return popTest.validated
+        ? { mode: "historical", status: "validated", popTest }
+        : { mode: undefined, status: "not_validated", popTest };
+}
+
 function renderRiskScore(country) {
-    const result = computeRiskScoreFactors(country, THIS_YEAR);
+    const liveMode = getLivePopulationMode(country);
+    const result = computeRiskScoreFactors(country, THIS_YEAR, undefined, liveMode.mode);
     if (!result) return `<p class="dq-empty">Not enough historical NHIRA records for ${escapeHtml(country)} to compute a risk score.</p>`;
 
     if (result.compositeScore === null) {
@@ -1886,11 +1915,12 @@ function renderRiskScore(country) {
         `;
     }
 
+    const activeWeights = liveMode.mode ? RISK_SCORE_WEIGHTS_WITH_POPULATION : RISK_SCORE_WEIGHTS;
     const factorRows = Object.entries(RISK_FACTOR_LABELS).map(([key, label]) => {
         const f = result.factors[key];
         return `
             <tr>
-                <td>${label} <span class="backtest-range">(${RISK_SCORE_WEIGHTS[key]}% weight)</span></td>
+                <td>${label} <span class="backtest-range">(${activeWeights[key] === undefined ? "0" : activeWeights[key]}% weight)</span></td>
                 <td>${f ? `${f.score}/100` : "Not available"}</td>
                 <td>${f ? escapeHtml(f.detail) : "Insufficient data — excluded, remaining weights rescaled"}</td>
             </tr>
@@ -1912,6 +1942,18 @@ function renderRiskScore(country) {
         </p>
 
         <p class="chart-title">What's contributing to this score</p>
+        ${(() => {
+            if (liveMode.status === "validated") {
+                return `<p class="definition-note definition-ok">Population-adjusted rate (historical, C.5-validated) is ACTIVE in this score — the same methodology the backtest confirmed, not a separate calculation.</p>`;
+            }
+            if (liveMode.status === "not_validated") {
+                return `<p class="definition-note definition-warn">A backtest has been run for ${escapeHtml(country)}, but historical population adjustment did not validate (see the C.3→C.4→C.5 comparison below) — this score uses the standard 6-factor version without it.</p>`;
+            }
+            if (liveMode.status === "no_data") {
+                return `<p class="definition-note definition-warn">No population data on file for ${escapeHtml(country)} — this score uses the standard 6-factor version.</p>`;
+            }
+            return `<p class="definition-note definition-warn">Population data exists for ${escapeHtml(country)} but hasn't been validated for live use yet — run a backtest below to check whether historical-population adjustment should be active in this score.</p>`;
+        })()}
         <table class="backtest-table">
             <thead><tr><th>Factor</th><th>Score</th><th>Why</th></tr></thead>
             <tbody>${factorRows}</tbody>
@@ -3456,7 +3498,8 @@ function renderForecast(country) {
         <h3 class="analysis-heading">NHIRA Research Risk Score</h3>
         <p class="meta">
             Current geographic risk relative to ${escapeHtml(country)}'s own historical baseline — a single explainable
-            0–100 composite of the six weighted factors below, back-tested the same way as Models A and B.
+            0–100 composite, back-tested the same way as Models A and B. Uses six weighted factors, or seven when
+            historical-population adjustment has validated for this country (see below).
         </p>
         ${renderRiskScore(country)}
 
@@ -3493,9 +3536,9 @@ function renderForecast(country) {
         </p>
 
         <dl class="forecast-fields">
-            <dt>Population-adjusted rate</dt>
+            <dt>Population-adjusted rate (current snapshot, Model A context)</dt>
             <dd>${result.populationAdjustedRate
-                ? `${result.populationAdjustedRate.per100k} per 100,000 people · ${result.populationAdjustedRate.perMillion} per million (population ${result.populationAdjustedRate.population.toLocaleString()}, ${escapeHtml(result.populationAdjustedRate.asOf)}) — <a href="${escapeHtml(result.populationAdjustedRate.citationUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(result.populationAdjustedRate.citation)}</a>. Displayed as context only — not yet a weighted input to Model C, pending the ablation results above.`
+                ? `${result.populationAdjustedRate.per100k} per 100,000 people · ${result.populationAdjustedRate.perMillion} per million (population ${result.populationAdjustedRate.population.toLocaleString()}, ${escapeHtml(result.populationAdjustedRate.asOf)}) — <a href="${escapeHtml(result.populationAdjustedRate.citationUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(result.populationAdjustedRate.citation)}</a>. This is today's snapshot shown as context for Model A's count estimate — the Risk Score above uses year-specific historical population instead, once validated (see status noted there).`
                 : "Not available — no cited population figure integrated for this country yet"}</dd>
 
             <dt>Regime</dt>
@@ -3583,7 +3626,13 @@ function renderForecast(country) {
             <li>Recent incident frequency${result.yoyChangePct === null ? "" : ` (${result.yoyChangePct > 0 ? "+" : ""}${result.yoyChangePct}% year-over-year)`}</li>
             <li>Seasonal pattern (${result.seasonalityLabel.toLowerCase()})</li>
             <li>Regional historical rate (${result.baseline} incidents/year long-run average)</li>
-            <li>Population-adjusted rate — not available (no population dataset integrated yet)</li>
+            <li>${(() => {
+                const liveMode = getLivePopulationMode(country);
+                if (liveMode.status === "validated") return "Population-adjusted rate (historical, C.5-validated) — active in the Risk Score above";
+                if (liveMode.status === "not_validated") return "Population-adjusted rate — data available, but historical-population adjustment did not validate for this country (see backtest below)";
+                if (liveMode.status === "no_data") return "Population-adjusted rate — not available (no population dataset integrated for this country)";
+                return "Population-adjusted rate — data available; run a backtest below to check whether it validates for live use";
+            })()}</li>
         </ul>
 
         ${explainHtml}
