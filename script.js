@@ -1139,6 +1139,14 @@ function computeForecast(country) {
 
     // Seasonality needs real dates, not just years — skip gracefully
     // if there isn't enough dated data to say anything meaningful.
+    // IMPORTANT: this is reported as CONTEXT only — it is deliberately
+    // NOT folded into modelEstimate below. Baking a seasonal nudge
+    // into the number was exactly how NHIRA ended up showing two
+    // different annual rates in the same panel (the seasonally-adjusted
+    // "central estimate" vs. the unadjusted "annual rate" used for the
+    // 12-month probability). Now there is exactly one model-adjusted
+    // number, computed once, and seasonality is a labeled note next to
+    // it rather than a silent second formula.
     const datedEvents = countryEvents.filter(e => /^\d{4}-\d{2}-\d{2}$/.test(String(e.date || "")));
     let seasonalityLabel = "Insufficient dated records";
     let seasonalityRatio = null;
@@ -1162,23 +1170,21 @@ function computeForecast(country) {
     });
     const periodLabel = `${periodMonths[0].name}–${periodMonths[2].name} ${periodMonths[2].year}`;
 
-    // ---- Forecast components ----
-    // The central estimate is built additively from four visible
-    // terms, each reported to the user, so the final number is never
-    // a black box: baseline + trend adjustment + recent-rate
-    // adjustment + seasonality adjustment = central estimate.
-    const trendAdjustment = Math.round(slope * 10) / 10;
-    const recentRateAdjustment = Math.round((recentRate - longRunRate) * RECENT_RATE_SHRINKAGE * 10) / 10;
-    const seasonalityAdjustment = seasonalityRatio !== null
-        ? Math.round(longRunRate * (seasonalityRatio - 1) * 10) / 10
-        : 0;
+    // ---- The ONE model-adjusted estimate ----
+    // Everywhere NHIRA shows an annual rate — the live central
+    // estimate, the forecast components table, the 12-month
+    // probability, and the backtest — now traces back to this single
+    // call. There is no second formula anymore.
+    const annual = computeAnnualForecastAsOf(country, THIS_YEAR);
+    if (!annual) return null;
 
-    const rawEstimate = longRunRate + trendAdjustment + recentRateAdjustment + seasonalityAdjustment;
-    const modelEstimate = Math.max(0, Math.round(rawEstimate * 10) / 10);
-
-    const margin = Math.max(1, Math.round(Math.sqrt(Math.max(variance, modelEstimate))));
-    const estimateLow = Math.max(0, Math.round(modelEstimate - margin));
-    const estimateHigh = Math.round(modelEstimate + margin);
+    const historicalAnnualRate = annual.baseline;      // unadjusted long-run average
+    const modelAdjustedRate = annual.modelEstimate;     // baseline + trend + shrunk recent-rate
+    const modelEstimate = modelAdjustedRate;            // forecast central estimate — SAME number, not a third formula
+    const estimateLow = annual.estimateLow;
+    const estimateHigh = annual.estimateHigh;
+    const trendAdjustment = annual.trendAdjustment;
+    const recentRateAdjustment = annual.recentRateAdjustment;
 
     const ratio = longRunRate > 0 ? recentRate / longRunRate : (recentRate > 0 ? 2 : 0);
     let riskTier;
@@ -1268,31 +1274,29 @@ function computeForecast(country) {
         ? { label: topStateEntry[0], sharePct: Math.round((topStateEntry[1] / countryEvents.length) * 1000) / 10 }
         : null;
 
-    // 12-month incident probability — a Poisson approximation from the
-    // dedicated ANNUAL estimate (same function used for backtesting,
-    // computeAnnualForecastAsOf, not the 3-month tactical estimate
-    // above, so the units genuinely match a 12-month claim).
-    // P(at least one incident) = 1 - e^(-lambda). This is NOT a
-    // calibrated machine-learned probability — it's read directly off
-    // the modeled annual rate, and its own calibration has not been
-    // backtested (that would mean checking, across many past years,
-    // whether "X% probability" years saw incidents roughly X% of the
-    // time — a different exercise from the count-based backtest below).
-    const annualForecast = computeAnnualForecastAsOf(country, THIS_YEAR);
-    const incidentProbability12mo = annualForecast
-        ? Math.round((1 - Math.exp(-annualForecast.modelEstimate)) * 1000) / 10
-        : null;
+    // 12-month incident probability — a Poisson approximation from
+    // EXACTLY the same modelAdjustedRate used as the central estimate
+    // above (previously this called computeAnnualForecastAsOf a SECOND
+    // time and could, in principle, drift from the displayed central
+    // estimate if the two call sites ever diverged — now there is only
+    // one call, reused here). P(at least one incident) = 1 - e^(-lambda).
+    // This is NOT a calibrated machine-learned probability — it's read
+    // directly off the modeled annual rate, and its own calibration has
+    // not itself been backtested (that would mean checking, across many
+    // past years, whether "X% probability" years actually saw an
+    // incident about X% of the time — a different exercise from the
+    // count-based and interval-based backtests below).
+    const incidentProbability12mo = Math.round((1 - Math.exp(-modelAdjustedRate)) * 1000) / 10;
 
     return {
         country, periodLabel, riskTier, estimateLow, estimateHigh,
-        modelEstimate,
-        baseline: Math.round(longRunRate * 10) / 10,
-        trendAdjustment, recentRateAdjustment, seasonalityAdjustment,
-        trendLabel, seasonalityLabel, dataConfidence, forecastValidation, dataCoverage,
+        modelEstimate, historicalAnnualRate, modelAdjustedRate,
+        baseline: historicalAnnualRate,
+        trendAdjustment, recentRateAdjustment,
+        trendLabel, seasonalityLabel, seasonalityRatio, dataConfidence, forecastValidation, dataCoverage,
         dispersionRatio, yoyChangePct, yoyContradictsTier,
         yearsOfData: usableYears.length, totalInWindow,
         multiWindowTrend, acceleration, timeSinceLastIncidentDays, geographicConcentration,
-        annualModelEstimate: annualForecast ? annualForecast.modelEstimate : null,
         incidentProbability12mo
     };
 }
@@ -1321,6 +1325,263 @@ const MIN_BACKTEST_TRAIN_YEARS = 5;
 // doesn't lose a backtest you already ran, and so the "Forecast
 // validation" field can reflect it immediately.
 let backtestCache = {};
+
+// =====================================================================
+// NHIRA RISK SCORE
+//
+// A single explainable 0-100 composite, NOT a claim that any specific
+// incident is predictable:
+//
+//   25% Recent incident activity   (last-2-years rate vs. long-run rate)
+//   20% Historical baseline        (this country's long-run rate,
+//                                   ranked against other countries)
+//   20% Acceleration / trend       (direction + change in trend slope)
+//   15% Geographic clustering      (share of incidents in the top state)
+//   10% Casualty severity          (avg fatalities+injuries per incident)
+//   10% Temporal / seasonal        (whether the upcoming months are
+//                                   historically elevated for this country)
+//
+// Every factor that can't be reliably computed is reported as "Not
+// available" and EXCLUDED from the composite (the remaining weights
+// are rescaled to sum to 100%, not silently padded with a guess). If
+// fewer than 3 of 6 factors are available, the whole score is "Not
+// available" rather than built on a thin, unreliable base.
+//
+// The research question this answers: "does this country currently
+// show a statistically elevated incident pattern relative to its own
+// baseline" — never "will an incident happen here." See
+// computeRiskScoreBacktest for whether the score has any track record
+// of flagging genuinely elevated years in advance.
+// =====================================================================
+
+const RISK_SCORE_WEIGHTS = {
+    recentActivity: 25,
+    historicalBaseline: 20,
+    acceleration: 20,
+    geographicClustering: 15,
+    casualtySeverity: 10,
+    temporalSeasonal: 10
+};
+
+const RISK_SCORE_MIN_FACTORS = 3;
+
+// Smooth ratio-to-baseline mapping shared by any factor expressed as
+// "this value relative to a baseline value" — 50 at parity, roughly
+// linear either side, clamped to [0, 100].
+function ratioToScore(ratio) {
+    if (!Number.isFinite(ratio)) return null;
+    return Math.max(0, Math.min(100, Math.round(50 + (ratio - 1) * 50)));
+}
+
+// Cross-country ranking data, computed once per session and cached —
+// needed for the two factors that are only meaningful RELATIVE to
+// other countries (historical baseline, casualty severity), so a
+// country isn't scored against itself for those.
+let crossCountryStatsCache = null;
+
+function computeCrossCountryStats() {
+    if (crossCountryStatsCache) return crossCountryStatsCache;
+
+    const countries = [...new Set(events.map(e => e.country).filter(Boolean))];
+    const stats = countries.map(country => {
+        const countryEvents = events.filter(e => e.country === country && e.year <= THIS_YEAR);
+        if (countryEvents.length < 3) return null;
+        const yearlyCounts = countBy(countryEvents, e => e.year);
+        const years = Object.keys(yearlyCounts).map(Number);
+        if (years.length < 2) return null;
+        const longRunRate = countryEvents.length / years.length;
+        const avgSeverity = countryEvents.reduce((s, e) => s + e.fatalityCount + toNumber(e.injuries), 0) / countryEvents.length;
+        return { country, longRunRate, avgSeverity };
+    }).filter(Boolean);
+
+    crossCountryStatsCache = stats;
+    return stats;
+}
+
+function percentileRank(value, allValues) {
+    if (allValues.length < 3) return null; // too few countries to rank meaningfully
+    const below = allValues.filter(v => v < value).length;
+    return Math.round((below / allValues.length) * 100);
+}
+
+// Hard floor on OVERALL data volume — independent of how many
+// individual factor categories happen to return a value. Three thin
+// factors computed from 2 total incidents can technically clear
+// RISK_SCORE_MIN_FACTORS below without this; a country needs a
+// genuine evidentiary base before ANY composite is shown, matching
+// the same floor used for "Moderate" data confidence elsewhere.
+const RISK_SCORE_MIN_TOTAL_INCIDENTS = 6;
+const RISK_SCORE_MIN_TOTAL_YEARS = 4;
+
+function computeRiskScoreFactors(country, asOfYear) {
+    const cutoff = asOfYear ?? THIS_YEAR;
+    const countryEvents = events.filter(e => e.country === country && e.year <= cutoff);
+    if (countryEvents.length === 0) return null;
+
+    const yearlyCounts = countBy(countryEvents, e => e.year);
+    const allYears = Object.keys(yearlyCounts).map(Number).sort((a, b) => a - b);
+    if (allYears.length === 0) return null;
+
+    const insufficientOverall = countryEvents.length < RISK_SCORE_MIN_TOTAL_INCIDENTS
+        || allYears.length < RISK_SCORE_MIN_TOTAL_YEARS;
+
+    const windowYears = allYears.filter(y => y > cutoff - FORECAST_WINDOW_YEARS);
+    const usableYears = windowYears.length >= 2 ? windowYears : allYears;
+    const longRunRate = countryEvents.length / allYears.length;
+
+    const factors = {};
+
+    // 1. Recent incident activity (25%)
+    const last2 = usableYears.slice(-2).map(y => yearlyCounts[y] || 0);
+    const recentRate = last2.length ? last2.reduce((a, b) => a + b, 0) / last2.length : null;
+    factors.recentActivity = (recentRate !== null && longRunRate > 0)
+        ? { score: ratioToScore(recentRate / longRunRate), detail: `${Math.round(recentRate * 10) / 10}/yr vs. ${Math.round(longRunRate * 10) / 10}/yr baseline` }
+        : null;
+
+    // 2. Historical baseline (20%) — ranked against other countries
+    const crossStats = computeCrossCountryStats();
+    const baselineRank = percentileRank(longRunRate, crossStats.map(s => s.longRunRate));
+    factors.historicalBaseline = baselineRank !== null
+        ? { score: baselineRank, detail: `Higher long-run rate than ${baselineRank}% of ranked countries` }
+        : null;
+
+    // 3. Acceleration / trend (20%)
+    let accelScore = null, accelDetail = null;
+    if (usableYears.length >= 2) {
+        const trendPoints = usableYears.map((y, i) => [i, yearlyCounts[y] || 0]);
+        const slope = linearTrendSlope(trendPoints);
+        const trendBase = slope > 0.15 ? 75 : slope < -0.15 ? 25 : 50;
+        let delta = 0;
+        if (usableYears.length >= 4) {
+            const mid = Math.floor(usableYears.length / 2);
+            const earlySlope = linearTrendSlope(usableYears.slice(0, mid).map((y, i) => [i, yearlyCounts[y] || 0]));
+            const lateSlope = linearTrendSlope(usableYears.slice(mid).map((y, i) => [i, yearlyCounts[y] || 0]));
+            delta = lateSlope - earlySlope;
+        }
+        accelScore = Math.max(0, Math.min(100, Math.round(trendBase + delta * 25)));
+        accelDetail = `Trend ${slope > 0.15 ? "increasing" : slope < -0.15 ? "decreasing" : "stable"}${Math.abs(delta) > 0.2 ? (delta > 0 ? ", accelerating" : ", decelerating") : ""}`;
+    }
+    factors.acceleration = accelScore !== null ? { score: accelScore, detail: accelDetail } : null;
+
+    // 4. Geographic clustering (15%)
+    const byState = countBy(countryEvents, e => e.state);
+    const topStateEntry = topEntries(byState, 1)[0];
+    factors.geographicClustering = topStateEntry
+        ? { score: Math.round((topStateEntry[1] / countryEvents.length) * 100), detail: `${Math.round((topStateEntry[1] / countryEvents.length) * 100)}% concentrated in ${topStateEntry[0]}` }
+        : null;
+
+    // 5. Casualty severity (10%) — ranked against other countries
+    const avgSeverity = countryEvents.reduce((s, e) => s + e.fatalityCount + toNumber(e.injuries), 0) / countryEvents.length;
+    const severityRank = percentileRank(avgSeverity, crossStats.map(s => s.avgSeverity));
+    factors.casualtySeverity = severityRank !== null
+        ? { score: severityRank, detail: `${Math.round(avgSeverity * 10) / 10} avg. casualties/incident — higher than ${severityRank}% of ranked countries` }
+        : null;
+
+    // 6. Temporal / seasonal pattern (10%)
+    const datedEvents = countryEvents.filter(e => /^\d{4}-\d{2}-\d{2}$/.test(String(e.date || "")));
+    let seasonalScore = null, seasonalDetail = null;
+    if (datedEvents.length >= 20) {
+        const byMonth = new Array(12).fill(0);
+        datedEvents.forEach(e => { byMonth[new Date(e.date).getMonth()]++; });
+        const overallAvg = datedEvents.length / 12;
+        const now = new Date();
+        const targetMonths = [1, 2, 3].map(offset => (now.getMonth() + offset) % 12);
+        const targetAvg = targetMonths.reduce((sum, m) => sum + byMonth[m], 0) / targetMonths.length;
+        const ratio = overallAvg > 0 ? targetAvg / overallAvg : 1;
+        seasonalScore = ratioToScore(ratio);
+        seasonalDetail = `Upcoming months are historically ${ratio > 1.15 ? "elevated" : ratio < 0.85 ? "reduced" : "typical"} for this country`;
+    }
+    factors.temporalSeasonal = seasonalScore !== null ? { score: seasonalScore, detail: seasonalDetail } : null;
+
+    // Composite: weighted average of AVAILABLE factors only, reweighted
+    // so the used weights sum to 100% — never padded with a guess.
+    const availableKeys = Object.keys(factors).filter(k => factors[k] !== null);
+    if (insufficientOverall || availableKeys.length < RISK_SCORE_MIN_FACTORS) {
+        return {
+            factors, compositeScore: null, tier: null,
+            availableCount: availableKeys.length,
+            insufficientOverall,
+            totalIncidents: countryEvents.length,
+            totalYears: allYears.length
+        };
+    }
+
+    const usedWeightSum = availableKeys.reduce((s, k) => s + RISK_SCORE_WEIGHTS[k], 0);
+    const compositeScore = Math.round(
+        availableKeys.reduce((s, k) => s + factors[k].score * (RISK_SCORE_WEIGHTS[k] / usedWeightSum), 0)
+    );
+
+    const tier = compositeScore >= 80 ? "veryhigh" : compositeScore >= 60 ? "high" : compositeScore >= 40 ? "elevated" : "lower";
+
+    return { factors, compositeScore, tier, availableCount: availableKeys.length, usedWeightSum };
+}
+
+const RISK_TIER_ICONS = { lower: "🟢", elevated: "🟡", high: "🟠", veryhigh: "🔴" };
+const RISK_TIER_NAMES = { lower: "Baseline", elevated: "Elevated", high: "High", veryhigh: "Very High" };
+
+const RISK_FACTOR_LABELS = {
+    recentActivity: "Recent incident activity",
+    historicalBaseline: "Historical baseline",
+    acceleration: "Acceleration / trend",
+    geographicClustering: "Geographic clustering",
+    casualtySeverity: "Casualty severity",
+    temporalSeasonal: "Temporal / seasonal pattern"
+};
+
+function renderRiskScore(country) {
+    const result = computeRiskScoreFactors(country, THIS_YEAR);
+    if (!result) return `<p class="dq-empty">Not enough historical NHIRA records for ${escapeHtml(country)} to compute a risk score.</p>`;
+
+    if (result.compositeScore === null) {
+        return `
+            <div class="model-status-badge model-status-gray">
+                <span class="model-status-label">NOT AVAILABLE</span>
+                <p>${result.insufficientOverall
+                    ? `${escapeHtml(country)} has only ${result.totalIncidents} incident(s) across ${result.totalYears} year(s) on file — below the minimum (${RISK_SCORE_MIN_TOTAL_INCIDENTS} incidents, ${RISK_SCORE_MIN_TOTAL_YEARS} years) for a composite score, regardless of how many individual factors happened to return a value.`
+                    : `Only ${result.availableCount} of 6 risk factors could be reliably computed for ${escapeHtml(country)} (minimum ${RISK_SCORE_MIN_FACTORS} required).`
+                } Showing "Not available" rather than a score built on too thin a base.</p>
+            </div>
+        `;
+    }
+
+    const factorRows = Object.entries(RISK_FACTOR_LABELS).map(([key, label]) => {
+        const f = result.factors[key];
+        return `
+            <tr>
+                <td>${label} <span class="backtest-range">(${RISK_SCORE_WEIGHTS[key]}% weight)</span></td>
+                <td>${f ? `${f.score}/100` : "Not available"}</td>
+                <td>${f ? escapeHtml(f.detail) : "Insufficient data — excluded, remaining weights rescaled"}</td>
+            </tr>
+        `;
+    }).join("");
+
+    return `
+        <div class="risk-score-header">
+            <span class="risk-score-icon">${RISK_TIER_ICONS[result.tier]}</span>
+            <div>
+                <p class="risk-score-value">${result.compositeScore}<span class="forecast-block-unit">/100</span></p>
+                <p class="risk-score-tier">${RISK_TIER_NAMES[result.tier]}</p>
+            </div>
+        </div>
+        <p class="meta">
+            Current geographic risk relative to ${escapeHtml(country)}'s own historical baseline — computed from
+            ${result.availableCount} of 6 weighted factors (${result.usedWeightSum}% of full weight available; remaining
+            weight redistributed proportionally, not padded with a guess).
+        </p>
+
+        <p class="chart-title">What's contributing to this score</p>
+        <table class="backtest-table">
+            <thead><tr><th>Factor</th><th>Score</th><th>Why</th></tr></thead>
+            <tbody>${factorRows}</tbody>
+        </table>
+
+        <p class="forecast-disclaimer">
+            This is a research measure of whether ${escapeHtml(country)} currently shows a statistically elevated incident
+            pattern relative to its own baseline — it is not a claim that any specific incident is predictable, and it does
+            not identify people, targets, or locations at the individual level.
+        </p>
+    `;
+}
 
 function computeAnnualForecastAsOf(country, asOfYear) {
     const countryEvents = events.filter(e => e.country === country && e.year <= asOfYear);
@@ -1352,7 +1613,9 @@ function computeAnnualForecastAsOf(country, asOfYear) {
     // same reason as the tactical estimate above — this is the exact
     // function the backtest exercises, so a reactive recent-rate term
     // here directly caused the model to lose to the naive baseline.
-    const rawEstimate = longRunRate + slope + (recentRate - longRunRate) * RECENT_RATE_SHRINKAGE;
+    const trendAdjustment = Math.round(slope * 10) / 10;
+    const recentRateAdjustment = Math.round((recentRate - longRunRate) * RECENT_RATE_SHRINKAGE * 10) / 10;
+    const rawEstimate = longRunRate + trendAdjustment + recentRateAdjustment;
     const modelEstimate = Math.max(0, Math.round(rawEstimate * 10) / 10);
     const margin = Math.max(1, Math.round(Math.sqrt(Math.max(variance, modelEstimate))));
     const naiveBaseline = usableYears.length ? (yearlyCounts[usableYears[usableYears.length - 1]] || 0) : 0;
@@ -1363,6 +1626,7 @@ function computeAnnualForecastAsOf(country, asOfYear) {
         estimateHigh: Math.round(modelEstimate + margin),
         yearsOfData: usableYears.length,
         baseline: Math.round(longRunRate * 10) / 10,
+        trendAdjustment, recentRateAdjustment,
         naiveBaseline
     };
 }
@@ -1396,6 +1660,22 @@ function computeBacktest(country) {
         const elevatedThreshold = forecast.baseline * 1.15;
         const predictedElevated = forecast.modelEstimate > elevatedThreshold;
         const actualElevated = actual > elevatedThreshold;
+        // Naive elevated-classifier baseline: "next year will be
+        // elevated because last year was" — a genuine, comparably
+        // simple baseline for the BINARY question, distinct from the
+        // naiveBaseline COUNT used for Model A's MAE/RMSE above.
+        const naivePredictedElevated = naiveBaseline > elevatedThreshold;
+
+        // Risk Score, computed "as of" year y using ONLY data through
+        // that year — same walk-forward guarantee as everything else
+        // backtested here. riskScorePredictedElevated is null (not
+        // false) when the score itself was unavailable that year, so
+        // it can be excluded from its own precision/recall rather than
+        // silently counted as a miss.
+        const riskScoreAtY = computeRiskScoreFactors(country, y);
+        const riskScorePredictedElevated = (riskScoreAtY && riskScoreAtY.compositeScore !== null)
+            ? (riskScoreAtY.tier === "high" || riskScoreAtY.tier === "veryhigh")
+            : null;
 
         results.push({
             trainThrough: y,
@@ -1406,7 +1686,10 @@ function computeBacktest(country) {
             actual, hit, naiveBaseline,
             modelError: Math.abs(forecast.modelEstimate - actual),
             naiveError: Math.abs(naiveBaseline - actual),
-            predictedElevated, actualElevated
+            predictedElevated, actualElevated, naivePredictedElevated,
+            riskScoreValue: riskScoreAtY ? riskScoreAtY.compositeScore : null,
+            riskScoreTier: riskScoreAtY ? riskScoreAtY.tier : null,
+            riskScorePredictedElevated
         });
     }
 
@@ -1428,6 +1711,34 @@ function computeBacktest(country) {
     const fn = results.filter(r => !r.predictedElevated && r.actualElevated).length;
     const precision = (tp + fp) > 0 ? Math.round((tp / (tp + fp)) * 1000) / 10 : null;
     const recall = (tp + fn) > 0 ? Math.round((tp / (tp + fn)) * 1000) / 10 : null;
+    // Same precision/recall exercise for the naive elevated-classifier
+    // baseline, so Model B's 92.9%-style recall claims have something
+    // real to be compared against.
+    const nTp = results.filter(r => r.naivePredictedElevated && r.actualElevated).length;
+    const nFp = results.filter(r => r.naivePredictedElevated && !r.actualElevated).length;
+    const nFn = results.filter(r => !r.naivePredictedElevated && r.actualElevated).length;
+    const naivePrecision = (nTp + nFp) > 0 ? Math.round((nTp / (nTp + nFp)) * 1000) / 10 : null;
+    const naiveRecall = (nTp + nFn) > 0 ? Math.round((nTp / (nTp + nFn)) * 1000) / 10 : null;
+
+    // Risk Score's own precision/recall/false-positive/false-negative
+    // rates, computed ONLY over years where the score was actually
+    // available — years it couldn't be computed for are excluded, not
+    // counted as failures.
+    const rsRows = results.filter(r => r.riskScorePredictedElevated !== null);
+    let riskScoreMetrics = null;
+    if (rsRows.length > 0) {
+        const rsTp = rsRows.filter(r => r.riskScorePredictedElevated && r.actualElevated).length;
+        const rsFp = rsRows.filter(r => r.riskScorePredictedElevated && !r.actualElevated).length;
+        const rsFn = rsRows.filter(r => !r.riskScorePredictedElevated && r.actualElevated).length;
+        const rsTn = rsRows.filter(r => !r.riskScorePredictedElevated && !r.actualElevated).length;
+        riskScoreMetrics = {
+            precision: (rsTp + rsFp) > 0 ? Math.round((rsTp / (rsTp + rsFp)) * 1000) / 10 : null,
+            recall: (rsTp + rsFn) > 0 ? Math.round((rsTp / (rsTp + rsFn)) * 1000) / 10 : null,
+            falsePositiveRate: (rsFp + rsTn) > 0 ? Math.round((rsFp / (rsFp + rsTn)) * 1000) / 10 : null,
+            falseNegativeRate: (rsFn + rsTp) > 0 ? Math.round((rsFn / (rsFn + rsTp)) * 1000) / 10 : null,
+            yearsTested: rsRows.length
+        };
+    }
 
     return {
         results,
@@ -1437,7 +1748,9 @@ function computeBacktest(country) {
         modelRMSE: Math.round(modelRMSE * 100) / 100,
         naiveRMSE: Math.round(naiveRMSE * 100) / 100,
         beatsNaive: modelMAE < naiveMAE,
-        precision, recall,
+        precision, recall, naivePrecision, naiveRecall,
+        truePositives: tp, falsePositives: fp, falseNegatives: fn,
+        riskScoreMetrics,
         yearsTested: results.length
     };
 }
@@ -1543,6 +1856,54 @@ function computeEmpiricalPredictionInterval(backtestResults, centralEstimate, co
     };
 }
 
+// =====================================================================
+// PREDICTION INTERVAL CALIBRATION — genuinely out-of-sample
+//
+// "Historical 80% prediction intervals contained the actual outcome
+// 78% of the time" is only a meaningful claim if the interval was
+// built WITHOUT looking at the years it's being checked against.
+// Building an interval from residuals and then checking its coverage
+// on those SAME residuals is circular — it will always look well
+// calibrated. This uses the same walk-forward split as
+// tuneShrinkageWeight: build the interval from the training years
+// only, then check coverage on the held-out years the interval-
+// building step never saw.
+// =====================================================================
+
+function computeIntervalCalibration(backtestResults, coverage) {
+    if (!backtestResults || backtestResults.length < MIN_YEARS_FOR_BLEND_TUNING) return null;
+
+    const splitIndex = Math.max(3, Math.floor(backtestResults.length * 0.7));
+    const trainWindow = backtestResults.slice(0, splitIndex);
+    const testWindow = backtestResults.slice(splitIndex);
+    if (trainWindow.length < 3 || testWindow.length < 2) return null;
+
+    const trainResiduals = trainWindow.map(r => r.actual - r.predictedCentral).sort((a, b) => a - b);
+    const tail = (1 - coverage) / 2;
+    const lowerResidual = quantile(trainResiduals, tail);
+    const upperResidual = quantile(trainResiduals, 1 - tail);
+
+    // Apply the TRAINING-derived residual band to each held-out year's
+    // OWN central prediction, then check whether that year's actual
+    // fell inside it. The interval shape comes only from training years;
+    // it is never refit or peeked at using the held-out years.
+    const covered = testWindow.filter(r => {
+        const low = r.predictedCentral + lowerResidual;
+        const high = r.predictedCentral + upperResidual;
+        return r.actual >= low && r.actual <= high;
+    }).length;
+
+    return {
+        coveragePct: Math.round(coverage * 100),
+        actualCoveragePct: Math.round((covered / testWindow.length) * 1000) / 10,
+        trainYears: trainWindow.length,
+        testYears: testWindow.length,
+        verdict: (covered / testWindow.length) < coverage - 0.15 ? "overconfident"
+            : (covered / testWindow.length) > coverage + 0.15 ? "unnecessarily wide"
+            : "reasonably calibrated"
+    };
+}
+
 // Dynamic, honest status wording keyed to REAL computed numbers for
 // this country, never a hardcoded universal claim. Model A (count
 // forecast) and Model B (elevated-year detector) get separate
@@ -1602,6 +1963,23 @@ function renderBacktestTable(backtest) {
     `).join("");
 
     return `
+        <p class="chart-title">Summary — Model A</p>
+        <table class="backtest-table">
+            <thead><tr><th>Metric</th><th>Result</th></tr></thead>
+            <tbody>
+                <tr><td>Backtests completed</td><td>${backtest.yearsTested} year${backtest.yearsTested === 1 ? "" : "s"}</td></tr>
+                <tr><td>Forecast accuracy (beats naive baseline?)</td><td>${backtest.beatsNaive ? "Yes" : "No"}</td></tr>
+                <tr><td>Mean absolute error</td><td>${backtest.modelMAE} <span class="backtest-range">(naive: ${backtest.naiveMAE})</span></td></tr>
+                <tr><td>Root mean squared error</td><td>${backtest.modelRMSE} <span class="backtest-range">(naive: ${backtest.naiveRMSE})</span></td></tr>
+                <tr><td>Within prediction interval (calibration)</td><td>${backtest.hitRate}%</td></tr>
+                <tr><td>Elevated-year detection — precision</td><td>${backtest.precision === null ? "Not computable" : `${backtest.precision}%`} <span class="backtest-range">(naive: ${backtest.naivePrecision === null ? "n/a" : backtest.naivePrecision + "%"})</span></td></tr>
+                <tr><td>Elevated-year detection — recall</td><td>${backtest.recall === null ? "Not computable" : `${backtest.recall}%`} <span class="backtest-range">(naive: ${backtest.naiveRecall === null ? "n/a" : backtest.naiveRecall + "%"})</span></td></tr>
+                <tr><td>False positives</td><td>${backtest.falsePositives} <span class="backtest-range">of ${backtest.yearsTested} tested years</span></td></tr>
+                <tr><td>False negatives</td><td>${backtest.falseNegatives} <span class="backtest-range">of ${backtest.yearsTested} tested years</span></td></tr>
+            </tbody>
+        </table>
+
+        <p class="chart-title">Year-by-year detail</p>
         <table class="backtest-table">
             <thead>
                 <tr><th>Forecast year</th><th>Predicted incidents</th><th>Actual</th><th>Error</th><th>Calibration</th></tr>
@@ -1609,7 +1987,30 @@ function renderBacktestTable(backtest) {
             <tbody>${rows}</tbody>
         </table>
 
-        <p class="chart-title">Model performance</p>
+        <p class="chart-title">Prediction interval calibration (out-of-sample)</p>
+        <p class="meta">
+            Built from the earliest ~70% of backtested years only, then checked against the most recent ~30% — years
+            the interval itself was never fit to. Checking calibration against the same years an interval was built
+            from is circular and will always look well-calibrated; this doesn't do that.
+        </p>
+        <dl class="forecast-fields">
+            ${[0.8, 0.9].map(cov => {
+                const cal = computeIntervalCalibration(backtest.results, cov);
+                const label = `${Math.round(cov * 100)}% prediction interval`;
+                if (!cal) return `<dt>${label}</dt><dd>Not enough backtested years to check out-of-sample (need a training and a held-out period).</dd>`;
+                return `
+                    <dt>${label}</dt>
+                    <dd>Contained the actual outcome in <b>${cal.actualCoveragePct}%</b> of ${cal.testYears} held-out year${cal.testYears === 1 ? "" : "s"}
+                    (built from ${cal.trainYears} training years) — <b>${cal.verdict}</b>${
+                        cal.verdict === "overconfident" ? " (narrower than it should be — actual outcomes fell outside it more often than the stated coverage implies)"
+                        : cal.verdict === "unnecessarily wide" ? " (wider than it needs to be — actual outcomes almost always fell well inside it)"
+                        : ""
+                    }.</dd>
+                `;
+            }).join("")}
+        </dl>
+
+        <p class="chart-title">Model performance detail</p>
         <dl class="forecast-fields">
             <dt>Calibration (hit rate)</dt>
             <dd>${backtest.hitRate}% of actuals fell inside the model's prediction interval for that year. This is the heuristic interval's calibration — with ${backtest.yearsTested} backtested years now available, the live forecast above can use an empirical prediction interval built from these actual errors instead, which does carry a stated percentage.</dd>
@@ -1624,10 +2025,35 @@ function renderBacktestTable(backtest) {
             <dd>${backtest.beatsNaive ? "Yes" : "No"} — a model that can't outperform "predict the same as last year" isn't adding information</dd>
 
             <dt>Precision (elevated-year flagging)</dt>
-            <dd>${backtest.precision === null ? "Not computable — the model never flagged an elevated year in this test window" : `${backtest.precision}% of years the model flagged as elevated actually were`}</dd>
+            <dd>${backtest.precision === null ? "Not computable — the model never flagged an elevated year in this test window" : `${backtest.precision}% of years the model flagged as elevated actually were`}${backtest.naivePrecision !== null ? ` (naive persistence baseline: ${backtest.naivePrecision}%)` : ""}</dd>
 
             <dt>Recall (elevated-year flagging)</dt>
-            <dd>${backtest.recall === null ? "Not computable — no actual elevated years occurred in this test window" : `${backtest.recall}% of actually-elevated years were correctly flagged in advance`}</dd>
+            <dd>${backtest.recall === null ? "Not computable — no actual elevated years occurred in this test window" : `${backtest.recall}% of actually-elevated years were correctly flagged in advance`}${backtest.naiveRecall !== null ? ` (naive persistence baseline: ${backtest.naiveRecall}%)` : ""}</dd>
+
+            <dt>False positives / False negatives</dt>
+            <dd>${backtest.falsePositives} false positive${backtest.falsePositives === 1 ? "" : "s"}, ${backtest.falseNegatives} false negative${backtest.falseNegatives === 1 ? "" : "s"}, out of ${backtest.yearsTested} tested years</dd>
+        </dl>
+
+        <p class="chart-title">NHIRA Risk Score performance (same backtest years)</p>
+        <dl class="forecast-fields">
+            ${!backtest.riskScoreMetrics ? `
+                <dt>Risk Score</dt><dd>Not available for any backtested year — insufficient factor data throughout the tested window.</dd>
+            ` : `
+                <dt>Precision</dt>
+                <dd>${backtest.riskScoreMetrics.precision === null ? "Not computable" : `${backtest.riskScoreMetrics.precision}% of years flagged High/Very High actually were elevated`}</dd>
+
+                <dt>Recall</dt>
+                <dd>${backtest.riskScoreMetrics.recall === null ? "Not computable" : `${backtest.riskScoreMetrics.recall}% of actually-elevated years were flagged High/Very High in advance`}</dd>
+
+                <dt>False positive rate</dt>
+                <dd>${backtest.riskScoreMetrics.falsePositiveRate === null ? "Not computable" : `${backtest.riskScoreMetrics.falsePositiveRate}% of non-elevated years were incorrectly flagged High/Very High`}</dd>
+
+                <dt>False negative rate</dt>
+                <dd>${backtest.riskScoreMetrics.falseNegativeRate === null ? "Not computable" : `${backtest.riskScoreMetrics.falseNegativeRate}% of actually-elevated years were missed`}</dd>
+
+                <dt>Years tested</dt>
+                <dd>${backtest.riskScoreMetrics.yearsTested} of ${backtest.yearsTested} backtested years had enough data to compute a Risk Score</dd>
+            `}
         </dl>
 
         <p class="review-criteria-note">
@@ -1723,6 +2149,13 @@ function renderForecast(country) {
             <p class="forecast-subhead">${escapeHtml(result.country)} · ${result.periodLabel}</p>
         </div>
 
+        <h3 class="analysis-heading">NHIRA Research Risk Score</h3>
+        <p class="meta">
+            Current geographic risk relative to ${escapeHtml(country)}'s own historical baseline — a single explainable
+            0–100 composite of the six weighted factors below, back-tested the same way as Models A and B.
+        </p>
+        ${renderRiskScore(country)}
+
         <h3 class="analysis-heading">Model A — Incident Count Forecast</h3>
         <p class="meta">Answers "how many incidents should we expect?"</p>
         <div class="model-status-badge model-status-${modelA.level}">
@@ -1767,10 +2200,9 @@ function renderForecast(country) {
         <div class="forecast-explain">
             <p class="forecast-explain-title">12-month incident probability</p>
             <p>
-                ${result.incidentProbability12mo === null ? "Not computable — insufficient annual data." : `
-                    <b>${result.incidentProbability12mo}%</b> probability of at least one incident in the next 12 months,
-                    based on a Poisson approximation from the modeled annual rate (${result.annualModelEstimate} incidents/year).
-                `}
+                <b>${result.incidentProbability12mo}%</b> probability of at least one incident in the next 12 months,
+                based on a Poisson approximation from NHIRA's model-adjusted expected rate (${result.modelAdjustedRate}
+                incidents/year — the exact same number shown as the central estimate below, not a separate calculation).
                 This is a statistical estimate derived from historical patterns — not a prediction about a specific
                 person, target, or event, and its own calibration (whether "70% probability" years actually see an
                 incident about 70% of the time) has not itself been backtested. The count-based backtest below tests
@@ -1805,17 +2237,24 @@ function renderForecast(country) {
                 : "Insufficient state/province data to compute"}</dd>
         </dl>
 
-        <p class="chart-title">Forecast components</p>
+        <p class="chart-title">Forecast components — three explicitly distinct numbers</p>
         <table class="forecast-components">
             <tbody>
-                <tr><td>Long-run baseline</td><td>${result.baseline}</td></tr>
-                <tr><td>Trend adjustment</td><td>${sign(result.trendAdjustment)}</td></tr>
-                <tr><td>Recent-rate adjustment</td><td>${sign(result.recentRateAdjustment)}</td></tr>
-                <tr><td>Seasonality adjustment</td><td>${sign(result.seasonalityAdjustment)}</td></tr>
-                <tr class="forecast-components-total"><td>Central estimate</td><td>${result.modelEstimate}</td></tr>
+                <tr><td>Historical annual rate <span class="backtest-range">(unadjusted long-run average)</span></td><td>${result.historicalAnnualRate}</td></tr>
+                <tr><td>+ Trend adjustment</td><td>${sign(result.trendAdjustment)}</td></tr>
+                <tr><td>+ Recent-rate adjustment <span class="backtest-range">(shrunk ${Math.round(RECENT_RATE_SHRINKAGE * 100)}%)</span></td><td>${sign(result.recentRateAdjustment)}</td></tr>
+                <tr class="forecast-components-total"><td>= Model-adjusted expected rate</td><td>${result.modelAdjustedRate}</td></tr>
+                <tr class="forecast-components-total"><td>Forecast central estimate <span class="backtest-range">(same number — no further adjustment)</span></td><td>${result.modelEstimate}</td></tr>
                 <tr><td>Prediction interval</td><td>${result.estimateLow}–${result.estimateHigh} <span class="backtest-range">(heuristic — see Model A above for the possibly-refined empirical interval)</span></td></tr>
             </tbody>
         </table>
+        <p class="review-criteria-note">
+            Seasonal context (informational — NOT included in the estimate above): upcoming months are historically
+            <b>${result.seasonalityLabel.toLowerCase()}</b> for ${escapeHtml(country)}. Earlier versions of this panel folded a
+            seasonal nudge into the central estimate as a fourth silent adjustment, which is exactly how the same number
+            ended up displayed two different ways in different sections. There is now only one model-adjusted rate; this
+            note is descriptive context sitting next to it, not a hidden contributor to it.
+        </p>
 
         <p class="chart-title">Primary contributing factors</p>
         <ul class="forecast-factors">
@@ -1848,7 +2287,7 @@ function renderForecast(country) {
                 <dd>${result.yoyChangePct === null ? "Not enough consecutive years to compute" : `${result.yoyChangePct > 0 ? "+" : ""}${result.yoyChangePct}% YoY`} (adjustment: ${sign(result.recentRateAdjustment)})</dd>
 
                 <dt>Seasonality</dt>
-                <dd>${result.seasonalityLabel} (adjustment: ${sign(result.seasonalityAdjustment)})</dd>
+                <dd>${result.seasonalityLabel} — informational context only; not included in the central estimate (see "Forecast components" above)</dd>
 
                 <dt>Overdispersion</dt>
                 <dd>${result.dispersionRatio} (variance-to-mean ratio — a value noticeably above 1 indicates overdispersion, which is why negative-binomial, rather than plain Poisson, is the better candidate once real regression is built)</dd>
@@ -1860,7 +2299,7 @@ function renderForecast(country) {
                 <dd>${definitionConsistencyHtml(events.filter(e => e.country === country), country) || "No records to check."}</dd>
 
                 <dt>Forecast method</dt>
-                <dd>Descriptive V1 — baseline + trend adjustment + recent-rate adjustment + seasonality adjustment = central estimate, with an uncertainty band from this country's own year-to-year variance. Not a fitted Poisson/negative-binomial regression, random forest, or gradient boosting model — those require server-side fitting and validation, not client-side approximation.</dd>
+                <dd>Descriptive V1 — historical annual rate + trend adjustment + shrunk recent-rate adjustment = model-adjusted expected rate = forecast central estimate (one formula, used identically for the live display, the 12-month probability, and the backtest below), with an uncertainty band from this country's own year-to-year variance. Seasonality is reported as separate context, not folded into the number. Not a fitted Poisson/negative-binomial regression, random forest, or gradient boosting model — those require server-side fitting and validation, not client-side approximation.</dd>
 
                 <dt>Backtesting</dt>
                 <dd>${backtestCache[country] ? forecastValidationSummary(backtestCache[country]) : 'Not yet completed for this country. Forecast validation stays "Not yet established" until run — see the Backtest section below.'}</dd>
@@ -2820,13 +3259,40 @@ function statusToScore(statusKey) {
 }
 
 const DQ_COMPONENT_LABELS = {
-    sourceReliability: "Source reliability",
-    exactLocation: "Location precision",
+    sourceReliability: "Source reliability (historical-source verification)",
+    exactLocation: "Exact/approximate coordinates",
     casualtyVerification: "Casualty verification",
     dateVerification: "Date verification",
-    duplicateCheck: "Duplicate check",
-    classificationConfidence: "Classification confidence"
+    duplicateCheck: "Duplicate detection",
+    classificationConfidence: "Classification confidence",
+    casualtyStandardDocumented: "Victim-only casualty standard documented"
 };
+
+// Core fields a usable, mappable, comparable incident record needs.
+// This is a simple presence check — it flags what's MISSING, it
+// doesn't grade what's present (that's computeDataQualityScore's job).
+const MISSING_DATA_CHECK_FIELDS = [
+    ["title", "Title"],
+    ["date", "Date"],
+    ["lat", "Latitude"],
+    ["lng", "Longitude"],
+    ["fatalities", "Fatalities"],
+    ["injuries", "Injuries"],
+    ["venue", "Venue"],
+    ["category", "Category"]
+];
+
+function computeMissingDataFlags(event) {
+    const missing = MISSING_DATA_CHECK_FIELDS
+        .filter(([key]) => event[key] === undefined || event[key] === null || event[key] === "")
+        .map(([, label]) => label);
+
+    if (!(Array.isArray(event.sources) && event.sources.length)) missing.push("Sources");
+    if (!event.location_precision) missing.push("Location precision");
+    if (!event.sourceDefinition) missing.push("Source definition");
+
+    return missing;
+}
 
 function computeDataQualityScore(event) {
     const components = {};
@@ -2857,6 +3323,19 @@ function computeDataQualityScore(event) {
     const classScore = statusToScore(dq.category);
     if (classScore !== null) components.classificationConfidence = classScore;
 
+    // Victim-only casualty standard — is it even KNOWN whether this
+    // record's fatality count includes or excludes the perpetrator?
+    // Full credit only when the source definition's convention is
+    // actually confirmed (not just that a definition string exists).
+    if (event.sourceDefinition) {
+        const def = SOURCE_DEFINITIONS[event.sourceDefinition];
+        if (def) {
+            components.casualtyStandardDocumented = def.perpetratorExcluded === null ? 0.4 : 1.0;
+        } else {
+            components.casualtyStandardDocumented = 0.2; // named but not in the registry — barely better than unknown
+        }
+    }
+
     const values = Object.values(components);
     if (!values.length) return null;
 
@@ -2868,7 +3347,18 @@ function computeDataQualityScore(event) {
 
 function renderDataQualityScore(event) {
     const result = computeDataQualityScore(event);
-    if (!result) return "";
+    const missingFlags = computeMissingDataFlags(event);
+
+    const missingHtml = missingFlags.length ? `
+        <p class="chart-title">Missing-data flags</p>
+        <ul class="review-criteria">
+            ${missingFlags.map(f => `<li>${escapeHtml(f)} not recorded</li>`).join("")}
+        </ul>
+    ` : `<p class="definition-note definition-ok">No missing core fields detected for this record.</p>`;
+
+    if (!result) {
+        return `<p class="dq-empty">Data quality not yet assessed for this record — no source, location, verification, or classification signals documented.</p>${missingHtml}`;
+    }
 
     const rows = Object.entries(result.components).map(([key, val]) =>
         `<li><span class="dq-field">${DQ_COMPONENT_LABELS[key] || key}</span><span class="dq-status">${Math.round(val * 100)}%</span></li>`
@@ -2885,6 +3375,7 @@ function renderDataQualityScore(event) {
             yet are excluded rather than scored as failures. This reflects documented evidence, not an independent
             fact-check.
         </p>
+        ${missingHtml}
     `;
 }
 
