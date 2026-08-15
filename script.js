@@ -1870,6 +1870,19 @@ function computeBacktest(country) {
         };
     }
 
+    // Threshold sweep decides whether the fixed 60-point tier boundary
+    // is actually the best cutoff for the binary elevated-year call —
+    // it usually isn't a coincidence that it matches; it's a separate,
+    // walk-forward-chosen value. riskScoreMetrics above still reports
+    // the FIXED-threshold numbers (so it's directly comparable across
+    // countries using one consistent rule); the sweep below reports
+    // what a TUNED threshold would actually achieve, honestly
+    // validated on years it was never chosen using.
+    const thresholdSweep = computeRiskScoreThresholdSweep(results);
+    const tunedThreshold = thresholdSweep ? thresholdSweep.recommendedThreshold : 60;
+    const incrementalValue = computeIncrementalValue(results, tunedThreshold);
+    const brierScores = computeAllBrierScores(results);
+
     return {
         results,
         hitRate: Math.round(hitRate * 1000) / 10, // percent, 1 decimal — this IS the interval calibration rate
@@ -1880,9 +1893,148 @@ function computeBacktest(country) {
         beatsNaive: modelMAE < naiveMAE,
         precision, recall, naivePrecision, naiveRecall,
         truePositives: tp, falsePositives: fp, falseNegatives: fn,
-        riskScoreMetrics,
+        riskScoreMetrics, thresholdSweep, incrementalValue, brierScores,
         yearsTested: results.length
     };
+}
+
+// =====================================================================
+// MODEL C THRESHOLD OPTIMIZATION
+//
+// The 60-point tier boundary (used for the human-readable Baseline/
+// Elevated/High/Very High labels) is a fixed, disclosed convention —
+// not necessarily the best cutoff for the binary "elevated year" call.
+// This sweeps candidate thresholds, picks whichever has the best
+// precision/recall balance (F1) on TRAINING years only, then reports
+// that threshold's real performance on held-out years it was never
+// chosen using. Same walk-forward discipline as the blend-weight
+// tuner and the interval calibration check.
+// =====================================================================
+
+const RISK_SCORE_THRESHOLD_CANDIDATES = [40, 45, 50, 55, 60, 65, 70];
+
+function riskScoreMetricsAtThreshold(window, threshold) {
+    const scored = window.filter(r => r.riskScoreValue !== null);
+    if (!scored.length) return { precision: null, recall: null, f1: null, n: 0 };
+    const tp = scored.filter(r => r.riskScoreValue >= threshold && r.actualElevated).length;
+    const fp = scored.filter(r => r.riskScoreValue >= threshold && !r.actualElevated).length;
+    const fn = scored.filter(r => r.riskScoreValue < threshold && r.actualElevated).length;
+    const precision = (tp + fp) > 0 ? tp / (tp + fp) : null;
+    const recall = (tp + fn) > 0 ? tp / (tp + fn) : null;
+    const f1 = (precision !== null && recall !== null && (precision + recall) > 0)
+        ? 2 * precision * recall / (precision + recall) : null;
+    return { precision, recall, f1, n: scored.length };
+}
+
+function computeRiskScoreThresholdSweep(results) {
+    const scored = results.filter(r => r.riskScoreValue !== null);
+    if (scored.length < MIN_YEARS_FOR_BLEND_TUNING) return null;
+
+    const splitIndex = Math.max(3, Math.floor(scored.length * 0.7));
+    const trainWindow = scored.slice(0, splitIndex);
+    const testWindow = scored.slice(splitIndex);
+    if (trainWindow.length < 3 || testWindow.length < 2) return null;
+
+    const sweep = RISK_SCORE_THRESHOLD_CANDIDATES.map(threshold => {
+        const m = riskScoreMetricsAtThreshold(trainWindow, threshold);
+        return {
+            threshold,
+            trainPrecisionPct: m.precision === null ? null : Math.round(m.precision * 1000) / 10,
+            trainRecallPct: m.recall === null ? null : Math.round(m.recall * 1000) / 10,
+            trainF1: m.f1
+        };
+    });
+
+    const withF1 = sweep.filter(s => s.trainF1 !== null);
+    const chosen = withF1.length
+        ? withF1.reduce((best, s) => (s.trainF1 > best.trainF1 ? s : best), withF1[0])
+        : sweep[Math.floor(sweep.length / 2)]; // fallback: middle candidate if F1 is never computable
+
+    const testMetrics = riskScoreMetricsAtThreshold(testWindow, chosen.threshold);
+
+    return {
+        sweep,
+        recommendedThreshold: chosen.threshold,
+        testPrecisionPct: testMetrics.precision === null ? null : Math.round(testMetrics.precision * 1000) / 10,
+        testRecallPct: testMetrics.recall === null ? null : Math.round(testMetrics.recall * 1000) / 10,
+        trainYears: trainWindow.length,
+        testYears: testWindow.length
+    };
+}
+
+// =====================================================================
+// INCREMENTAL VALUE — does Model C add anything Model B doesn't?
+//
+// For each backtested year, compare whether B's flag (Model A's count
+// vs. elevated threshold) and C's flag (Risk Score vs. its
+// walk-forward-recommended threshold) were each individually right.
+// If C is only ever right when B is ALSO right, C is redundant. The
+// number that actually answers the question is bWrongCRight — years
+// where C caught something B missed.
+// =====================================================================
+
+function computeIncrementalValue(results, cThreshold) {
+    const scored = results.filter(r => r.riskScoreValue !== null);
+    if (!scored.length) return null;
+
+    let bothRight = 0, bothWrong = 0, bRightCWrong = 0, bWrongCRight = 0;
+    scored.forEach(r => {
+        const bCorrect = r.predictedElevated === r.actualElevated;
+        const cCorrect = (r.riskScoreValue >= cThreshold) === r.actualElevated;
+        if (bCorrect && cCorrect) bothRight++;
+        else if (bCorrect && !cCorrect) bRightCWrong++;
+        else if (!bCorrect && cCorrect) bWrongCRight++;
+        else bothWrong++;
+    });
+
+    return {
+        n: scored.length, bothRight, bothWrong, bRightCWrong, bWrongCRight,
+        cAddsValue: bWrongCRight > bRightCWrong
+    };
+}
+
+// =====================================================================
+// BRIER SCORE
+//
+// Mean squared error between a stated probability and the actual
+// binary outcome (0 or 1). Lower is better: 0 = perfect, 0.25 = no
+// better than a coin flip, 1 = perfectly wrong every time. Unlike
+// precision/recall (which only judge a hard yes/no call), Brier score
+// rewards a well-calibrated PROBABILITY — the right lens for anything
+// expressed as "X% probability."
+// =====================================================================
+
+function computeBrierScore(results, probabilityFn) {
+    const scored = results
+        .map(r => ({ p: probabilityFn(r), actual: r.actualElevated ? 1 : 0 }))
+        .filter(x => x.p !== null && Number.isFinite(x.p));
+    if (!scored.length) return null;
+    const sum = scored.reduce((s, x) => s + (x.p - x.actual) ** 2, 0);
+    return { score: Math.round((sum / scored.length) * 1000) / 1000, n: scored.length };
+}
+
+function computeAllBrierScores(results) {
+    const modelB = computeBrierScore(results, r =>
+        Number.isFinite(r.predictedCentral) && Number.isFinite(r.elevatedThreshold)
+            ? poissonProbabilityAbove(r.predictedCentral, r.elevatedThreshold)
+            : null
+    );
+    const modelC = computeBrierScore(results, r =>
+        r.riskScoreValue !== null ? r.riskScoreValue / 100 : null
+    );
+
+    // Baseline: the simplest defensible "no-skill" probability forecast
+    // — the overall historical elevated-rate across ALL backtested
+    // years, applied as one constant probability to every year (the
+    // standard "climatology" baseline used in forecast scoring).
+    const overallElevatedRate = results.length
+        ? results.filter(r => r.actualElevated).length / results.length
+        : null;
+    const baseline = overallElevatedRate !== null
+        ? computeBrierScore(results, () => overallElevatedRate)
+        : null;
+
+    return { modelB, modelC, baseline };
 }
 
 // =====================================================================
@@ -2144,6 +2296,13 @@ function computeOverdispersionTest(backtestResults, dispersionRatio, coverage) {
 // merely looks plausible.
 // =====================================================================
 
+// A bucket with only 1-2 years can show something like "100% actual
+// elevated rate" that sounds decisive but is really just one
+// coin-flip's outcome. Below this sample size, the bucket reports
+// "Insufficient sample" instead of a percentage that would overstate
+// how much is actually known.
+const MIN_CALIBRATION_BUCKET_SAMPLE = 4;
+
 function computeCalibrationDashboard(backtestResults) {
     if (!backtestResults || backtestResults.length < 6) return null;
 
@@ -2165,12 +2324,16 @@ function computeCalibrationDashboard(backtestResults) {
 
     const bucketResults = buckets.map(b => {
         const inBucket = withProb.filter(r => r.probability >= b.min && r.probability < b.max);
-        if (!inBucket.length) return { ...b, n: 0, actualElevatedPct: null };
+        if (!inBucket.length) return { ...b, n: 0, actualElevatedPct: null, insufficientSample: false };
+        if (inBucket.length < MIN_CALIBRATION_BUCKET_SAMPLE) {
+            return { ...b, n: inBucket.length, actualElevatedPct: null, insufficientSample: true };
+        }
         const actualElevatedCount = inBucket.filter(r => r.actualElevated).length;
         return {
             ...b,
             n: inBucket.length,
-            actualElevatedPct: Math.round((actualElevatedCount / inBucket.length) * 1000) / 10
+            actualElevatedPct: Math.round((actualElevatedCount / inBucket.length) * 1000) / 10,
+            insufficientSample: false
         };
     });
 
@@ -2368,7 +2531,7 @@ function renderBacktestTable(backtest, dispersionRatio) {
                 <tr>
                     <td>${b.label}</td>
                     <td>${b.n}</td>
-                    <td>${b.actualElevatedPct === null ? "No years in this bucket" : `${b.actualElevatedPct}%`}</td>
+                    <td>${b.n === 0 ? "No years in this bucket" : b.insufficientSample ? `Insufficient sample (n=${b.n})` : `${b.actualElevatedPct}%`}</td>
                 </tr>
             `).join("");
             return `
@@ -2377,12 +2540,81 @@ function renderBacktestTable(backtest, dispersionRatio) {
                     <tbody>${rows}</tbody>
                 </table>
                 <p class="review-criteria-note">
-                    Buckets with very few years (check the middle column) are not statistically reliable — a single
-                    year swings the percentage a lot. Read this as a work-in-progress diagnostic, not a settled result,
-                    until each bucket has a meaningful sample size.
+                    Buckets marked "Insufficient sample" (fewer than ${MIN_CALIBRATION_BUCKET_SAMPLE} years) show no
+                    percentage on purpose — a rate computed from 1-2 years can look decisive (e.g. "100%") while really
+                    just reflecting a single outcome. Only buckets with a real sample size are reported as a rate.
                 </p>
             `;
         })()}
+
+        <h3 class="analysis-heading">Model C threshold optimization</h3>
+        <p class="meta">
+            The 60-point tier boundary is a fixed, human-readable convention — not necessarily the best cutoff for the
+            binary "elevated year" call. This sweeps candidate thresholds, picks the best-balanced one using training
+            years only, then reports its real performance on held-out years it was never chosen using.
+        </p>
+        ${!backtest.thresholdSweep ? `<p class="dq-empty">Not enough backtested years with a Risk Score to run a threshold sweep yet.</p>` : `
+            <table class="backtest-table">
+                <thead><tr><th>Threshold</th><th>Training recall</th><th>Training precision</th></tr></thead>
+                <tbody>
+                    ${backtest.thresholdSweep.sweep.map(s => `
+                        <tr class="${s.threshold === backtest.thresholdSweep.recommendedThreshold ? "blend-chosen" : ""}">
+                            <td>${s.threshold}</td>
+                            <td>${s.trainRecallPct === null ? "n/a" : s.trainRecallPct + "%"}</td>
+                            <td>${s.trainPrecisionPct === null ? "n/a" : s.trainPrecisionPct + "%"}</td>
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+            <p class="backtest-summary">
+                <b>Recommended threshold: ${backtest.thresholdSweep.recommendedThreshold}</b>, chosen strictly from
+                ${backtest.thresholdSweep.trainYears} training years' precision/recall balance. Applied to the
+                ${backtest.thresholdSweep.testYears} held-out year(s) it was never fit to: recall
+                <b>${backtest.thresholdSweep.testRecallPct === null ? "n/a" : backtest.thresholdSweep.testRecallPct + "%"}</b>,
+                precision <b>${backtest.thresholdSweep.testPrecisionPct === null ? "n/a" : backtest.thresholdSweep.testPrecisionPct + "%"}</b>.
+            </p>
+        `}
+
+        <h3 class="analysis-heading">Model comparison</h3>
+        <p class="meta">Does Model C provide incremental information beyond A/B, or is it just more sophisticated without being more useful?</p>
+        <table class="backtest-table">
+            <thead><tr><th>Model</th><th>MAE</th><th>RMSE</th><th>Recall</th><th>Precision</th><th>Calibration</th></tr></thead>
+            <tbody>
+                <tr><td>Naive</td><td>${backtest.naiveMAE}</td><td>${backtest.naiveRMSE}</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td>Model A</td><td>${backtest.modelMAE}</td><td>${backtest.modelRMSE}</td><td>—</td><td>—</td><td>${backtest.hitRate}%</td></tr>
+                <tr><td>Model B</td><td>${backtest.modelMAE}</td><td>${backtest.modelRMSE}</td><td>${backtest.recall === null ? "—" : backtest.recall + "%"}</td><td>${backtest.precision === null ? "—" : backtest.precision + "%"}</td><td>—</td></tr>
+                <tr><td>Model C</td><td>—</td><td>—</td><td>${!backtest.riskScoreMetrics || backtest.riskScoreMetrics.recall === null ? "—" : backtest.riskScoreMetrics.recall + "%"}</td><td>${!backtest.riskScoreMetrics || backtest.riskScoreMetrics.precision === null ? "—" : backtest.riskScoreMetrics.precision + "%"}</td><td>—</td></tr>
+            </tbody>
+        </table>
+        <p class="review-criteria-note">Model B and C don't produce their own incident count, so MAE/RMSE shown for them is Model A's (the count forecast the elevated-year call is built on). Model A is a regression, not a classifier, so it has no recall/precision of its own.</p>
+
+        ${!backtest.incrementalValue ? "" : `
+            <div class="model-status-badge model-status-${backtest.incrementalValue.cAddsValue ? "green" : "yellow"}">
+                <span class="model-status-label">${backtest.incrementalValue.cAddsValue ? "MODEL C ADDS INCREMENTAL VALUE" : "MODEL C NOT YET SHOWING INCREMENTAL VALUE"}</span>
+                <p>
+                    Across ${backtest.incrementalValue.n} backtested year(s): both models right in ${backtest.incrementalValue.bothRight},
+                    both wrong in ${backtest.incrementalValue.bothWrong}, B right but C wrong in ${backtest.incrementalValue.bRightCWrong},
+                    <b>C right but B wrong in ${backtest.incrementalValue.bWrongCRight}</b> (the years that actually
+                    matter for this question — where C caught something B missed).
+                    ${backtest.incrementalValue.cAddsValue
+                        ? "C caught more years B missed than it missed that B caught — genuine incremental signal on this data."
+                        : "C is not yet catching more than it's missing relative to B — on current evidence, B alone does at least as well."}
+                </p>
+            </div>
+        `}
+
+        <h3 class="analysis-heading">Brier score — probability quality</h3>
+        <p class="meta">Lower is better: 0 = perfect, 0.25 = no better than a coin flip, 1 = perfectly wrong every time.</p>
+        ${!backtest.brierScores ? `<p class="dq-empty">Not enough data to compute Brier scores yet.</p>` : `
+            <dl class="forecast-fields">
+                <dt>Model B probability</dt>
+                <dd>${backtest.brierScores.modelB ? `${backtest.brierScores.modelB.score} (n=${backtest.brierScores.modelB.n})` : "Not computable"}</dd>
+                <dt>Model C probability</dt>
+                <dd>${backtest.brierScores.modelC ? `${backtest.brierScores.modelC.score} (n=${backtest.brierScores.modelC.n}) — Risk Score ÷ 100 treated as a probability` : "Not computable"}</dd>
+                <dt>Baseline probability</dt>
+                <dd>${backtest.brierScores.baseline ? `${backtest.brierScores.baseline.score} (n=${backtest.brierScores.baseline.n}) — constant historical elevated-rate, the same "no-skill" reference used in weather forecasting` : "Not computable"}</dd>
+            </dl>
+        `}
 
         <p class="review-criteria-note">
             Every row above was trained ONLY on data available before that forecast year — the model was never shown
