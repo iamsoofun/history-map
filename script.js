@@ -1206,6 +1206,19 @@ function computeForecast(country) {
         yoyChangePct = Math.round((((yearlyCounts[lastYear] || 0) - yearlyCounts[prevYear]) / yearlyCounts[prevYear]) * 1000) / 10;
     }
 
+    // Explicit measurement windows for "Recent Activity" — spelled out
+    // separately so nobody has to infer what's being compared from a
+    // single YoY percentage. A -97% YoY figure means something very
+    // different next to "2 incidents last year" than next to "80".
+    const last3 = usableYears.slice(-3).map(y => yearlyCounts[y] || 0);
+    const recentActivityWindows = {
+        latestYearLabel: lastYear,
+        latestYearCount: lastYear !== undefined ? (yearlyCounts[lastYear] || 0) : null,
+        priorYearLabel: prevYear,
+        priorYearCount: prevYear !== undefined ? (yearlyCounts[prevYear] || 0) : null,
+        threeYearAnnualizedRate: last3.length ? Math.round((last3.reduce((a, b) => a + b, 0) / last3.length) * 10) / 10 : null
+    };
+
     const allCounts = allYears.map(y => yearlyCounts[y] || 0);
     const longRunRate = allCounts.reduce((a, b) => a + b, 0) / allCounts.length;
 
@@ -1382,7 +1395,7 @@ function computeForecast(country) {
         dispersionRatio, yoyChangePct, yoyContradictsTier,
         yearsOfData: usableYears.length, totalInWindow,
         multiWindowTrend, acceleration, timeSinceLastIncidentDays, geographicConcentration,
-        incidentProbability12mo, regime: regimeResult, populationAdjustedRate
+        incidentProbability12mo, regime: regimeResult, populationAdjustedRate, recentActivityWindows
     };
 }
 
@@ -1476,6 +1489,7 @@ function computePopulationAdjustedRate(country, annualRate) {
     if (!pop || !Number.isFinite(annualRate)) return null;
     return {
         perMillion: Math.round((annualRate / pop.population) * 1_000_000 * 100) / 100,
+        per100k: Math.round((annualRate / pop.population) * 100_000 * 1000) / 1000,
         population: pop.population,
         asOf: pop.asOf,
         citation: pop.citation,
@@ -1543,7 +1557,7 @@ function percentileRank(value, allValues) {
 const RISK_SCORE_MIN_TOTAL_INCIDENTS = 6;
 const RISK_SCORE_MIN_TOTAL_YEARS = 4;
 
-function computeRiskScoreFactors(country, asOfYear) {
+function computeRiskScoreFactors(country, asOfYear, excludeKey) {
     const cutoff = asOfYear ?? THIS_YEAR;
     const countryEvents = events.filter(e => e.country === country && e.year <= cutoff);
     if (countryEvents.length === 0) return null;
@@ -1625,7 +1639,12 @@ function computeRiskScoreFactors(country, asOfYear) {
 
     // Composite: weighted average of AVAILABLE factors only, reweighted
     // so the used weights sum to 100% — never padded with a guess.
-    const availableKeys = Object.keys(factors).filter(k => factors[k] !== null);
+    // excludeKey (ablation testing) forces one factor out of the
+    // composite even when it WAS computable, by treating it the same
+    // as "not available" and letting the other weights absorb its
+    // share — same reweighting path either way, so ablation results
+    // are directly comparable to the normal missing-factor case.
+    const availableKeys = Object.keys(factors).filter(k => factors[k] !== null && k !== excludeKey);
     if (insufficientOverall || availableKeys.length < RISK_SCORE_MIN_FACTORS) {
         return {
             factors, compositeScore: null, tier: null,
@@ -1643,7 +1662,20 @@ function computeRiskScoreFactors(country, asOfYear) {
 
     const tier = compositeScore >= 80 ? "veryhigh" : compositeScore >= 60 ? "high" : compositeScore >= 40 ? "elevated" : "lower";
 
-    return { factors, compositeScore, tier, availableCount: availableKeys.length, usedWeightSum };
+    // Factor dispersion — NOT a confidence interval. It's the standard
+    // deviation of the individual factor scores feeding into this
+    // composite. If the six (or however many are available) factors
+    // largely agree, the spread is small; if they pull in different
+    // directions, the composite is smoothing over real disagreement
+    // between signals. That disagreement is what's being labeled here.
+    const factorScores = availableKeys.map(k => factors[k].score);
+    const factorMean = factorScores.reduce((a, b) => a + b, 0) / factorScores.length;
+    const factorStd = Math.sqrt(factorScores.reduce((a, b) => a + (b - factorMean) ** 2, 0) / factorScores.length);
+
+    return {
+        factors, compositeScore, tier, availableCount: availableKeys.length, usedWeightSum,
+        factorDispersion: Math.round(factorStd * 10) / 10
+    };
 }
 
 const RISK_TIER_ICONS = { lower: "🟢", elevated: "🟡", high: "🟠", veryhigh: "🔴" };
@@ -1704,6 +1736,36 @@ function renderRiskScore(country) {
             <thead><tr><th>Factor</th><th>Score</th><th>Why</th></tr></thead>
             <tbody>${factorRows}</tbody>
         </table>
+
+        <p class="chart-title">Score uncertainty</p>
+        ${(() => {
+            const dispersionLevel = result.factorDispersion < 12 ? "Low" : result.factorDispersion < 22 ? "Moderate" : "High";
+            const evidenceQuality = result.availableCount >= 6 ? "Full" : result.availableCount >= 5 ? "High" : result.availableCount >= 4 ? "Moderate" : "Low";
+
+            const cachedBacktest = backtestCache[country];
+            let rangeHtml = `Not yet available — run a backtest below to compute this country's historical score range.`;
+            if (cachedBacktest && !cachedBacktest.insufficientData) {
+                const scored = cachedBacktest.results.filter(r => r.riskScoreValue !== null).map(r => r.riskScoreValue);
+                if (scored.length >= 3) {
+                    rangeHtml = `${Math.min(...scored)}–${Math.max(...scored)}, across ${scored.length} backtested year(s) — the actual range of NHIRA Risk Scores this country has historically had, not a statistical confidence interval.`;
+                } else {
+                    rangeHtml = `Not enough backtested years with a computable score yet (need at least 3, have ${scored.length}).`;
+                }
+            }
+
+            return `
+                <dl class="forecast-fields">
+                    <dt>Uncertainty (factor agreement)</dt>
+                    <dd><b>${dispersionLevel}</b> — standard deviation of the ${result.availableCount} contributing factor scores is ${result.factorDispersion} points. This measures how much the underlying signals agree with each other, NOT a statistical confidence interval on the composite score itself.</dd>
+
+                    <dt>Historical score range</dt>
+                    <dd>${rangeHtml}</dd>
+
+                    <dt>Evidence quality</dt>
+                    <dd><b>${evidenceQuality}</b> — ${result.availableCount} of 6 possible factors were computable (${result.usedWeightSum}% of full weight).</dd>
+                </dl>
+            `;
+        })()}
 
         <p class="forecast-disclaimer">
             This is a research measure of whether ${escapeHtml(country)} currently shows a statistically elevated incident
@@ -2035,6 +2097,100 @@ function computeAllBrierScores(results) {
         : null;
 
     return { modelB, modelC, baseline };
+}
+
+// =====================================================================
+// MODEL C ABLATION TESTING
+//
+// Before adding a 7th factor (population), find out whether the
+// existing six deserve the weight they already have. Runs the SAME
+// walk-forward years as the main backtest, seven ways: the full
+// model, then each factor removed one at a time. Every variant is
+// judged against the SAME held-out ground truth (actualElevated) and
+// the SAME classification threshold (the full model's own
+// walk-forward-recommended threshold, held fixed) — changing only one
+// thing (which factor is excluded) so the comparison is clean.
+//
+// "MAE"/"RMSE" here are NOT in incident-count units (Model C doesn't
+// forecast a count) — they're mean absolute/squared error between the
+// score-as-probability (score/100) and the binary actual outcome, the
+// natural analogs for a probability-style output. RMSE of that is
+// mathematically sqrt(Brier score). "Calibration" is calibration-in-
+// the-large (|mean predicted probability − mean actual rate|) — a
+// single honest number, not a full bucket table, since splitting an
+// already-small backtest seven ways would leave each bucket too thin
+// to say anything reliable (exactly the problem just fixed in the
+// main calibration dashboard).
+// =====================================================================
+
+const ABLATION_VARIANTS = [
+    { key: null, label: "Full Model C" },
+    { key: "recentActivity", label: "C without recent activity" },
+    { key: "historicalBaseline", label: "C without historical baseline" },
+    { key: "acceleration", label: "C without trend" },
+    { key: "geographicClustering", label: "C without geography" },
+    { key: "casualtySeverity", label: "C without severity" },
+    { key: "temporalSeasonal", label: "C without seasonality" }
+];
+
+function computeAblationVariantMetrics(country, backtestYears, excludeKey, threshold) {
+    const rows = backtestYears.map(({ trainThrough, actualElevated }) => {
+        const rs = computeRiskScoreFactors(country, trainThrough, excludeKey || undefined);
+        if (!rs || rs.compositeScore === null) return null;
+        return { probability: rs.compositeScore / 100, actualElevated };
+    }).filter(Boolean);
+
+    const coverage = backtestYears.length ? Math.round((rows.length / backtestYears.length) * 1000) / 10 : 0;
+    if (!rows.length) return { coverage, n: 0, precision: null, recall: null, falsePositiveRate: null, falseNegativeRate: null, calibrationGap: null, probMAE: null, probRMSE: null };
+
+    const tp = rows.filter(r => r.probability * 100 >= threshold && r.actualElevated).length;
+    const fp = rows.filter(r => r.probability * 100 >= threshold && !r.actualElevated).length;
+    const fn = rows.filter(r => r.probability * 100 < threshold && r.actualElevated).length;
+    const tn = rows.filter(r => r.probability * 100 < threshold && !r.actualElevated).length;
+
+    const precision = (tp + fp) > 0 ? Math.round((tp / (tp + fp)) * 1000) / 10 : null;
+    const recall = (tp + fn) > 0 ? Math.round((tp / (tp + fn)) * 1000) / 10 : null;
+    const falsePositiveRate = (fp + tn) > 0 ? Math.round((fp / (fp + tn)) * 1000) / 10 : null;
+    const falseNegativeRate = (fn + tp) > 0 ? Math.round((fn / (fn + tp)) * 1000) / 10 : null;
+
+    const meanProb = rows.reduce((s, r) => s + r.probability, 0) / rows.length;
+    const meanActual = rows.reduce((s, r) => s + (r.actualElevated ? 1 : 0), 0) / rows.length;
+    const calibrationGap = Math.round(Math.abs(meanProb - meanActual) * 1000) / 10;
+
+    const probMAE = Math.round((rows.reduce((s, r) => s + Math.abs(r.probability - (r.actualElevated ? 1 : 0)), 0) / rows.length) * 1000) / 1000;
+    const probRMSE = Math.round(Math.sqrt(rows.reduce((s, r) => s + (r.probability - (r.actualElevated ? 1 : 0)) ** 2, 0) / rows.length) * 1000) / 1000;
+
+    return { coverage, n: rows.length, precision, recall, falsePositiveRate, falseNegativeRate, calibrationGap, probMAE, probRMSE };
+}
+
+function computeAblationTest(country, backtest) {
+    if (!backtest || backtest.insufficientData || !backtest.results.length) return null;
+
+    const threshold = backtest.thresholdSweep ? backtest.thresholdSweep.recommendedThreshold : 60;
+    const backtestYears = backtest.results.map(r => ({ trainThrough: r.trainThrough, actualElevated: r.actualElevated }));
+    if (backtestYears.length < 4) return null;
+
+    const variants = ABLATION_VARIANTS.map(v => ({
+        key: v.key,
+        label: v.label,
+        metrics: computeAblationVariantMetrics(country, backtestYears, v.key, threshold)
+    }));
+
+    const full = variants[0];
+    const withDeltas = variants.map(v => {
+        if (v.key === null || !full.metrics.n || !v.metrics.n) return { ...v, deltas: null };
+        const d = (a, b) => (a === null || b === null) ? null : Math.round((a - b) * 10) / 10;
+        return {
+            ...v,
+            deltas: {
+                recall: d(v.metrics.recall, full.metrics.recall),
+                precision: d(v.metrics.precision, full.metrics.precision),
+                probMAE: v.metrics.probMAE === null || full.metrics.probMAE === null ? null : Math.round((v.metrics.probMAE - full.metrics.probMAE) * 1000) / 1000
+            }
+        };
+    });
+
+    return { threshold, variants: withDeltas, sharedYears: backtestYears.length };
 }
 
 // =====================================================================
@@ -2383,7 +2539,7 @@ function forecastValidationSummary(backtest) {
     return `${backtest.hitRate}% hit rate over ${backtest.yearsTested} year${backtest.yearsTested === 1 ? "" : "s"} — model MAE ${backtest.modelMAE} vs. naive MAE ${backtest.naiveMAE} (${backtest.beatsNaive ? "beats" : "does not beat"} the naive baseline)`;
 }
 
-function renderBacktestTable(backtest, dispersionRatio) {
+function renderBacktestTable(backtest, dispersionRatio, country) {
     if (backtest.insufficientData) {
         return `<p class="dq-empty">Not enough historical years to backtest yet — ${backtest.yearsAvailable} year(s) available, need at least ${MIN_BACKTEST_TRAIN_YEARS + 2}.</p>`;
     }
@@ -2616,6 +2772,57 @@ function renderBacktestTable(backtest, dispersionRatio) {
             </dl>
         `}
 
+        <h3 class="analysis-heading">Model C ablation testing</h3>
+        <p class="meta">
+            Before adding a 7th factor (population), this checks whether the existing six deserve the weight they have.
+            Same walk-forward years, same shared threshold, one factor removed at a time — isolating the effect of each.
+        </p>
+        ${(() => {
+            const ablation = computeAblationTest(country, backtest);
+            if (!ablation) return `<p class="dq-empty">Not enough backtested years with Risk Score coverage to run ablation testing yet.</p>`;
+
+            const rows = ablation.variants.map(v => {
+                const m = v.metrics;
+                if (!m.n) return `<tr><td>${escapeHtml(v.label)}</td><td colspan="7">No coverage for this variant</td></tr>`;
+                return `
+                    <tr class="${v.key === null ? "blend-chosen" : ""}">
+                        <td>${escapeHtml(v.label)}</td>
+                        <td>${m.probMAE}${v.deltas?.probMAE != null ? ` <span class="backtest-range">(${v.deltas.probMAE > 0 ? "+" : ""}${v.deltas.probMAE})</span>` : ""}</td>
+                        <td>${m.probRMSE}</td>
+                        <td>${m.recall === null ? "—" : m.recall + "%"}${v.deltas?.recall != null ? ` <span class="backtest-range">(${v.deltas.recall > 0 ? "+" : ""}${v.deltas.recall}pp)</span>` : ""}</td>
+                        <td>${m.precision === null ? "—" : m.precision + "%"}${v.deltas?.precision != null ? ` <span class="backtest-range">(${v.deltas.precision > 0 ? "+" : ""}${v.deltas.precision}pp)</span>` : ""}</td>
+                        <td>${m.falsePositiveRate === null ? "—" : m.falsePositiveRate + "%"}</td>
+                        <td>${m.falseNegativeRate === null ? "—" : m.falseNegativeRate + "%"}</td>
+                        <td>${m.calibrationGap === null ? "—" : m.calibrationGap + "pp"}</td>
+                        <td>${m.coverage}%</td>
+                    </tr>
+                `;
+            }).join("");
+
+            return `
+                <table class="backtest-table ablation-table">
+                    <thead>
+                        <tr>
+                            <th>Variant</th><th>Prob. MAE</th><th>Prob. RMSE</th><th>Recall</th><th>Precision</th>
+                            <th>FPR</th><th>FNR</th><th>Calib. gap</th><th>Coverage</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <p class="review-criteria-note">
+                    Deltas (in parentheses) show the change vs. the full model — e.g. "+3.2" on Prob. MAE means removing
+                    that factor made the model WORSE (higher error is worse); a negative delta on Prob. MAE means removing
+                    that factor actually IMPROVED it, which is the signal that a factor may not deserve its current weight.
+                    "Prob. MAE/RMSE" are mean absolute/squared error between the score-as-probability and the actual
+                    outcome — not incident-count units, since Model C doesn't forecast a count. "Calib. gap" is
+                    calibration-in-the-large (|mean predicted probability − mean actual rate|), a single honest number
+                    rather than a full bucket table, since splitting ${ablation.sharedYears} years seven ways would leave
+                    each bucket too thin to trust. All variants use the SAME shared threshold (${ablation.threshold},
+                    the full model's own walk-forward-recommended cutoff) so only the excluded factor differs between rows.
+                </p>
+            `;
+        })()}
+
         <p class="review-criteria-note">
             Every row above was trained ONLY on data available before that forecast year — the model was never shown
             the year it was predicting. "Here is how NHIRA performed when it was not allowed to see the future."
@@ -2687,6 +2894,32 @@ function renderForecast(country) {
         </div>
     ` : "";
 
+    const raw = result.recentActivityWindows;
+    const recentActivityHtml = `
+        <p class="chart-title">Recent activity — measurement windows</p>
+        <dl class="forecast-fields">
+            <dt>Latest complete year${raw.latestYearLabel !== undefined ? ` (${raw.latestYearLabel})` : ""}</dt>
+            <dd>${raw.latestYearCount === null ? "Not available" : `${raw.latestYearCount} incident${raw.latestYearCount === 1 ? "" : "s"}`}</dd>
+
+            <dt>Prior year${raw.priorYearLabel !== undefined ? ` (${raw.priorYearLabel})` : ""}</dt>
+            <dd>${raw.priorYearCount === null ? "Not available — not enough consecutive years" : `${raw.priorYearCount} incident${raw.priorYearCount === 1 ? "" : "s"}`}</dd>
+
+            <dt>YoY change</dt>
+            <dd>${result.yoyChangePct === null ? "Not computable" : `${result.yoyChangePct > 0 ? "+" : ""}${result.yoyChangePct}%`}</dd>
+
+            <dt>3-year annualized rate</dt>
+            <dd>${raw.threeYearAnnualizedRate === null ? "Not available" : `${raw.threeYearAnnualizedRate}/year`}</dd>
+
+            <dt>Long-run rate (for comparison)</dt>
+            <dd>${result.historicalAnnualRate}/year</dd>
+        </dl>
+        <p class="review-criteria-note">
+            A large YoY swing on a small base year (e.g. 2 incidents → 0) can look dramatic as a percentage while
+            representing very little real change — these raw counts are shown specifically so that judgment call is
+            never hidden behind a single percentage.
+        </p>
+    `;
+
     const sign = n => (n >= 0 ? "+" : "") + n;
 
     // Prefer the empirical interval (built from real backtest residuals,
@@ -2751,7 +2984,7 @@ function renderForecast(country) {
         <dl class="forecast-fields">
             <dt>Population-adjusted rate</dt>
             <dd>${result.populationAdjustedRate
-                ? `${result.populationAdjustedRate.perMillion} incidents per million people (population ${result.populationAdjustedRate.population.toLocaleString()}, ${escapeHtml(result.populationAdjustedRate.asOf)}) — <a href="${escapeHtml(result.populationAdjustedRate.citationUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(result.populationAdjustedRate.citation)}</a>`
+                ? `${result.populationAdjustedRate.per100k} per 100,000 people · ${result.populationAdjustedRate.perMillion} per million (population ${result.populationAdjustedRate.population.toLocaleString()}, ${escapeHtml(result.populationAdjustedRate.asOf)}) — <a href="${escapeHtml(result.populationAdjustedRate.citationUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(result.populationAdjustedRate.citation)}</a>. Displayed as context only — not yet a weighted input to Model C, pending the ablation results above.`
                 : "Not available — no cited population figure integrated for this country yet"}</dd>
 
             <dt>Regime</dt>
@@ -2843,6 +3076,7 @@ function renderForecast(country) {
         </ul>
 
         ${explainHtml}
+        ${recentActivityHtml}
 
         <p class="forecast-disclaimer">
             This is a statistical risk category based on historical patterns in NHIRA's current dataset —
@@ -2893,7 +3127,7 @@ function renderForecast(country) {
             predictive value, not just plausible-looking numbers.
         </p>
         <button id="fcBacktestBtn" type="button" class="backtest-run-btn">Run backtest for ${escapeHtml(country)}</button>
-        <div id="fcBacktestOutput">${backtestCache[country] ? renderBacktestTable(backtestCache[country], result.dispersionRatio) : ""}</div>
+        <div id="fcBacktestOutput">${backtestCache[country] ? renderBacktestTable(backtestCache[country], result.dispersionRatio, country) : ""}</div>
     `;
 
     const fcBacktestBtn = document.getElementById("fcBacktestBtn");

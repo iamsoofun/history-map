@@ -1580,3 +1580,10 @@ html, body {
   text-transform: uppercase;
   color: var(--ink-soft);
 }
+
+/* ---------- Ablation table ---------- */
+
+.ablation-table th, .ablation-table td {
+  font-size: .72rem;
+  padding: 5px 6px;
+}
