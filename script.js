@@ -1872,20 +1872,44 @@ const RISK_FACTOR_LABELS = {
 };
 
 // =====================================================================
-// LIVE VALIDATION STATUS — the fix for the exact gap flagged: the
-// public forecast and the backtest-validated model must be the SAME
-// model, not two separately-maintained calculations that can drift
-// apart. This reads whatever backtest has already been run and
-// cached for this country THIS SESSION (never triggers a fresh
-// backtest on page load — that stays an explicit "Run backtest"
-// action) and checks the exact same mechanical validated flag the
-// C.3→C.4→C.5 comparison table uses. If it's true, the live Risk
-// Score uses historical-population mode; if a backtest hasn't been
-// run yet, or it isn't validated, the live score stays on the
-// honest 6-factor version — never silently assumes validation.
+// MODEL C PRODUCTION LOCK — Phase 3 of the locked sequence: "Freeze
+// C.5." This is a DELIBERATE EDITORIAL DECISION, not something the
+// code re-derives live. A country only appears here after a human has
+// actually reviewed its C.3→C.4→C.5 comparison and decided, as the
+// site owner, that C.5 should be the production version — the exact
+// numbers that justified the decision are recorded alongside it so
+// the claim is traceable, not just asserted.
+//
+// This is why it fixes the sync gap for real: the previous version
+// checked backtestCache, which is empty on every fresh page load —
+// meaning ordinary visitors (who never click "Run Backtest") always
+// saw the un-validated fallback, even for a country that WAS validated.
+// A lock works for every visitor immediately, because it doesn't
+// depend on anything happening in their browser session.
+//
+// Canada is deliberately NOT in this registry — only US-specific
+// numbers have been reviewed and locked in this conversation. Add
+// Canada here only after its own C.4→C.5 comparison has actually been
+// reviewed and confirmed, the same way, with its own numbers.
 // =====================================================================
 
+const MODEL_C_PRODUCTION_LOCK = {
+    "United States": {
+        populationMode: "historical",
+        lockedReason: "C.5 (historical population) vs. C.3 (no population), US walk-forward backtest: "
+            + "Probability MAE 0.407→0.396, Probability RMSE 0.411→0.402, Recall 87.5%→95.8%, Precision 95.5%→92.0%. "
+            + "No look-ahead leakage — year-specific population confirmed to use only data available as of each forecast year."
+    }
+    // Canada: not yet locked — awaiting its own reviewed C.4/C.5 comparison.
+};
+
 function getLivePopulationMode(country) {
+    const locked = MODEL_C_PRODUCTION_LOCK[country];
+    if (locked) return { mode: locked.populationMode, status: "locked", lockedReason: locked.lockedReason };
+
+    // Fallback for any country NOT yet locked: live per-session
+    // detection, useful for previewing status before deciding to lock
+    // it in, but never itself presented as a production guarantee.
     const cached = backtestCache[country];
     if (!cached || cached.insufficientData) return { mode: undefined, status: "not_run" };
     if (!POPULATION_DATA[country] || !HISTORICAL_POPULATION_SERIES[country]) return { mode: undefined, status: "no_data" };
@@ -1894,7 +1918,7 @@ function getLivePopulationMode(country) {
     if (!popTest || !popTest.deltasC5) return { mode: undefined, status: "not_run" };
 
     return popTest.validated
-        ? { mode: "historical", status: "validated", popTest }
+        ? { mode: "historical", status: "validated_unlocked", popTest }
         : { mode: undefined, status: "not_validated", popTest };
 }
 
@@ -1943,8 +1967,11 @@ function renderRiskScore(country) {
 
         <p class="chart-title">What's contributing to this score</p>
         ${(() => {
-            if (liveMode.status === "validated") {
-                return `<p class="definition-note definition-ok">Population-adjusted rate (historical, C.5-validated) is ACTIVE in this score — the same methodology the backtest confirmed, not a separate calculation.</p>`;
+            if (liveMode.status === "locked") {
+                return `<p class="definition-note definition-ok"><b>Model C.5 — validated historical-population version (locked for production).</b> Population-adjusted rate is ACTIVE in this score, using the population that existed around each historical year — the exact methodology the backtest confirmed. ${escapeHtml(liveMode.lockedReason)}</p>`;
+            }
+            if (liveMode.status === "validated_unlocked") {
+                return `<p class="definition-note definition-ok">A backtest run this session shows historical-population adjustment validates for ${escapeHtml(country)} and is active in this score — but this hasn't been reviewed and locked for production yet, so it won't show this way for other visitors until it is.</p>`;
             }
             if (liveMode.status === "not_validated") {
                 return `<p class="definition-note definition-warn">A backtest has been run for ${escapeHtml(country)}, but historical population adjustment did not validate (see the C.3→C.4→C.5 comparison below) — this score uses the standard 6-factor version without it.</p>`;
@@ -3488,11 +3515,17 @@ function renderForecast(country) {
         ? `${empiricalInterval.coveragePct}% prediction interval${empiricalInterval.provisional ? " (provisional — based on only " + empiricalInterval.nResiduals + " backtested years)" : ""}`
         : "Prediction interval (heuristic — not yet tied to a stated percentage; run a backtest below to establish one)";
 
+    const headerLiveMode = getLivePopulationMode(country);
+    const modelVersionLabel = headerLiveMode.status === "locked"
+        ? "Model C.5 — validated historical-population version"
+        : "Model C — 6-factor version (no population adjustment locked for this country yet)";
+
     fcOutput.innerHTML = `
         <div class="forecast-header">
             <span class="risk-badge risk-${result.riskTier}">${riskLabel}</span>
             <h3>NHIRA statistical forecast: ${riskLabel.toLowerCase()} historical-activity category</h3>
             <p class="forecast-subhead">${escapeHtml(result.country)} · ${result.periodLabel}</p>
+            <p class="forecast-model-version">Model: ${escapeHtml(modelVersionLabel)}</p>
         </div>
 
         <h3 class="analysis-heading">NHIRA Research Risk Score</h3>
@@ -3628,7 +3661,8 @@ function renderForecast(country) {
             <li>Regional historical rate (${result.baseline} incidents/year long-run average)</li>
             <li>${(() => {
                 const liveMode = getLivePopulationMode(country);
-                if (liveMode.status === "validated") return "Population-adjusted rate (historical, C.5-validated) — active in the Risk Score above";
+                if (liveMode.status === "locked") return "Population-adjusted rate — Model C.5 (historical population, integrated using the population available around each forecast year) — locked for production, active in the Risk Score above";
+                if (liveMode.status === "validated_unlocked") return "Population-adjusted rate — validated this session, active in the Risk Score above, not yet locked for production";
                 if (liveMode.status === "not_validated") return "Population-adjusted rate — data available, but historical-population adjustment did not validate for this country (see backtest below)";
                 if (liveMode.status === "no_data") return "Population-adjusted rate — not available (no population dataset integrated for this country)";
                 return "Population-adjusted rate — data available; run a backtest below to check whether it validates for live use";

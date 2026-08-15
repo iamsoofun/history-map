@@ -1587,3 +1587,12 @@ html, body {
   font-size: .72rem;
   padding: 5px 6px;
 }
+
+/* ---------- Forecast model version label ---------- */
+
+.forecast-model-version {
+  margin: 4px 0 0;
+  font: 600 .68rem/1.4 var(--font-mono);
+  color: var(--ink-soft);
+  letter-spacing: .02em;
+}
