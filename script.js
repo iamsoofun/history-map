@@ -2194,6 +2194,106 @@ function computeAblationTest(country, backtest) {
 }
 
 // =====================================================================
+// CROSS-COUNTRY VALIDATION — C.1 (US) vs. C.2 (Canada) vs. C.3 (pooled)
+//
+// A genuine hierarchical/mixed-effects model (a shared component that
+// learns common patterns while still letting each country keep its
+// own baseline) needs real partial-pooling statistics — that's
+// server-side work with a proper stats library, not something to
+// approximate client-side and call "the model." What IS honestly
+// buildable here: the model's weights (25/20/20/15/10/10) are ALREADY
+// fixed constants applied identically regardless of country — so
+// "C.3, combined" is the same shared formula, evaluated against the
+// POOLED walk-forward years from both countries at once. If it holds
+// up on the pooled set as well as it does on each country
+// individually, that's real evidence the pattern generalizes rather
+// than being tuned to one country's quirks.
+// =====================================================================
+
+function aggregateResultsMetrics(results, riskScoreThreshold) {
+    if (!results || !results.length) return null;
+
+    const modelMAE = results.reduce((s, r) => s + r.modelError, 0) / results.length;
+    const naiveMAE = results.reduce((s, r) => s + r.naiveError, 0) / results.length;
+    const modelRMSE = Math.sqrt(results.reduce((s, r) => s + r.modelError ** 2, 0) / results.length);
+    const naiveRMSE = Math.sqrt(results.reduce((s, r) => s + r.naiveError ** 2, 0) / results.length);
+
+    const tp = results.filter(r => r.predictedElevated && r.actualElevated).length;
+    const fp = results.filter(r => r.predictedElevated && !r.actualElevated).length;
+    const fn = results.filter(r => !r.predictedElevated && r.actualElevated).length;
+    const modelBPrecision = (tp + fp) > 0 ? Math.round((tp / (tp + fp)) * 1000) / 10 : null;
+    const modelBRecall = (tp + fn) > 0 ? Math.round((tp / (tp + fn)) * 1000) / 10 : null;
+
+    const scored = results.filter(r => r.riskScoreValue !== null);
+    let modelCPrecision = null, modelCRecall = null;
+    if (scored.length) {
+        const cTp = scored.filter(r => r.riskScoreValue >= riskScoreThreshold && r.actualElevated).length;
+        const cFp = scored.filter(r => r.riskScoreValue >= riskScoreThreshold && !r.actualElevated).length;
+        const cFn = scored.filter(r => r.riskScoreValue < riskScoreThreshold && r.actualElevated).length;
+        modelCPrecision = (cTp + cFp) > 0 ? Math.round((cTp / (cTp + cFp)) * 1000) / 10 : null;
+        modelCRecall = (cTp + cFn) > 0 ? Math.round((cTp / (cTp + cFn)) * 1000) / 10 : null;
+    }
+
+    return {
+        n: results.length,
+        modelMAE: Math.round(modelMAE * 100) / 100, naiveMAE: Math.round(naiveMAE * 100) / 100,
+        modelRMSE: Math.round(modelRMSE * 100) / 100, naiveRMSE: Math.round(naiveRMSE * 100) / 100,
+        beatsNaive: modelMAE < naiveMAE,
+        modelBPrecision, modelBRecall, modelCPrecision, modelCRecall,
+        modelCCoverage: Math.round((scored.length / results.length) * 1000) / 10
+    };
+}
+
+function computeCrossCountryValidation() {
+    const usBacktest = computeBacktest("United States");
+    const caBacktest = computeBacktest("Canada");
+
+    if (usBacktest.insufficientData || caBacktest.insufficientData) {
+        return { insufficientData: true, usAvailable: !usBacktest.insufficientData, caAvailable: !caBacktest.insufficientData };
+    }
+
+    const usThreshold = usBacktest.thresholdSweep ? usBacktest.thresholdSweep.recommendedThreshold : 60;
+    const caThreshold = caBacktest.thresholdSweep ? caBacktest.thresholdSweep.recommendedThreshold : 60;
+    // C.3 uses the untuned default (60), not either country's own tuned
+    // value — a genuinely shared model can't locally retune itself per
+    // country and still be "one model."
+    const sharedThreshold = 60;
+
+    const c1 = aggregateResultsMetrics(usBacktest.results, usThreshold);
+    const c2 = aggregateResultsMetrics(caBacktest.results, caThreshold);
+    const c3 = aggregateResultsMetrics([...usBacktest.results, ...caBacktest.results], sharedThreshold);
+
+    return {
+        insufficientData: false,
+        c1, c2, c3,
+        usThreshold, caThreshold, sharedThreshold,
+        usYears: usBacktest.results.length, caYears: caBacktest.results.length
+    };
+}
+
+// Does population adjustment change which country looks more elevated?
+// With only two countries carrying real population data, a ranked
+// percentile comparison isn't meaningful — but a direct raw-vs-adjusted
+// comparison between exactly these two countries is, and it's the
+// honest version of "does population adjustment change the picture"
+// given the data that actually exists right now.
+function computePopulationRankingTest() {
+    const usForecast = computeForecast("United States");
+    const caForecast = computeForecast("Canada");
+    if (!usForecast || !caForecast || !usForecast.populationAdjustedRate || !caForecast.populationAdjustedRate) return null;
+
+    const rawWinner = usForecast.historicalAnnualRate >= caForecast.historicalAnnualRate ? "United States" : "Canada";
+    const adjustedWinner = usForecast.populationAdjustedRate.per100k >= caForecast.populationAdjustedRate.per100k ? "United States" : "Canada";
+
+    return {
+        us: { raw: usForecast.historicalAnnualRate, per100k: usForecast.populationAdjustedRate.per100k },
+        ca: { raw: caForecast.historicalAnnualRate, per100k: caForecast.populationAdjustedRate.per100k },
+        rawWinner, adjustedWinner,
+        rankingChanges: rawWinner !== adjustedWinner
+    };
+}
+
+// =====================================================================
 // MODEL A REDESIGN — shrinkage/blending layer
 //
 // NHIRA forecast = weight * statistical model + (1 - weight) * naive
@@ -2830,6 +2930,63 @@ function renderBacktestTable(backtest, dispersionRatio, country) {
     `;
 }
 
+function renderCrossCountryValidation() {
+    const v = computeCrossCountryValidation();
+
+    if (v.insufficientData) {
+        return `<p class="dq-empty">Not enough backtested history yet in ${v.usAvailable ? "" : "the United States"}${!v.usAvailable && !v.caAvailable ? " or " : ""}${v.caAvailable ? "" : "Canada"} to run cross-country validation.</p>`;
+    }
+
+    function row(label, key, suffix) {
+        const fmt = x => x === null ? "—" : (typeof x === "boolean" ? (x ? "Yes" : "No") : `${x}${suffix || ""}`);
+        return `<tr><td>${label}</td><td>${fmt(v.c1[key])}</td><td>${fmt(v.c2[key])}</td><td>${fmt(v.c3[key])}</td></tr>`;
+    }
+
+    const popTest = computePopulationRankingTest();
+
+    return `
+        <table class="backtest-table">
+            <thead><tr><th>Metric</th><th>C.1 — United States (n=${v.usYears})</th><th>C.2 — Canada (n=${v.caYears})</th><th>C.3 — Pooled (n=${v.c1.n + v.c2.n})</th></tr></thead>
+            <tbody>
+                ${row("Model MAE", "modelMAE")}
+                ${row("Naive MAE", "naiveMAE")}
+                ${row("Model RMSE", "modelRMSE")}
+                ${row("Beats naive?", "beatsNaive")}
+                ${row("Model B recall", "modelBRecall", "%")}
+                ${row("Model B precision", "modelBPrecision", "%")}
+                ${row("Model C recall", "modelCRecall", "%")}
+                ${row("Model C precision", "modelCPrecision", "%")}
+                ${row("Model C coverage", "modelCCoverage", "%")}
+            </tbody>
+        </table>
+        <p class="review-criteria-note">
+            C.1 and C.2 use each country's OWN walk-forward-recommended Model C threshold (US: ${v.usThreshold}, Canada:
+            ${v.caThreshold}). C.3 is the SAME fixed-weight formula evaluated on the pooled US+Canada backtest years using
+            the untuned default threshold (${v.sharedThreshold}) — a genuinely shared model can't locally retune itself
+            per country. If C.3's numbers hold up reasonably close to C.1 and C.2 individually, that's evidence the
+            pattern generalizes rather than being fit to one country's quirks. If C.3 is notably worse than both, the
+            two countries may need to stay modeled separately rather than combined.
+        </p>
+
+        <p class="chart-title">Population adjustment — does it change the picture?</p>
+        ${!popTest ? `<p class="dq-empty">Population-adjusted rate not available for one or both countries yet.</p>` : `
+            <table class="backtest-table">
+                <thead><tr><th></th><th>Raw rate (incidents/year)</th><th>Per 100,000 population</th></tr></thead>
+                <tbody>
+                    <tr><td>United States</td><td>${popTest.us.raw}</td><td>${popTest.us.per100k}</td></tr>
+                    <tr><td>Canada</td><td>${popTest.ca.raw}</td><td>${popTest.ca.per100k}</td></tr>
+                </tbody>
+            </table>
+            <p class="backtest-summary">
+                Higher raw rate: <b>${popTest.rawWinner}</b>. Higher per-capita rate: <b>${popTest.adjustedWinner}</b>.
+                ${popTest.rankingChanges
+                    ? "<b>These disagree</b> — population adjustment changes which country looks more elevated. This is exactly the scenario population adjustment exists to catch."
+                    : "These agree — for these two countries, population adjustment doesn't currently change which one looks more elevated, though it still changes the reported magnitude."}
+            </p>
+        `}
+    `;
+}
+
 function renderBlendTuning(tuning) {
     if (!tuning) {
         return `<p class="dq-empty">Not enough backtested years yet to tune a model/naive blend weight (need at least ${MIN_YEARS_FOR_BLEND_TUNING}, split into a training and a held-out period).</p>`;
@@ -3128,6 +3285,17 @@ function renderForecast(country) {
         </p>
         <button id="fcBacktestBtn" type="button" class="backtest-run-btn">Run backtest for ${escapeHtml(country)}</button>
         <div id="fcBacktestOutput">${backtestCache[country] ? renderBacktestTable(backtestCache[country], result.dispersionRatio, country) : ""}</div>
+
+        ${(country === "United States" || country === "Canada") ? `
+            <h3 class="analysis-heading">Cross-country validation — C.1 (US) vs. C.2 (Canada) vs. C.3 (pooled)</h3>
+            <p class="meta">
+                Before Model D gets built, this checks whether Model C's fixed-weight formula generalizes across both
+                countries or is quietly overfit to one of them. Runs a full backtest for each country independently, plus
+                the same formula evaluated on the two countries' walk-forward years pooled together.
+            </p>
+            <button id="fcCrossCountryBtn" type="button" class="backtest-run-btn">Run cross-country validation</button>
+            <div id="fcCrossCountryOutput"></div>
+        ` : ""}
     `;
 
     const fcBacktestBtn = document.getElementById("fcBacktestBtn");
@@ -3149,6 +3317,17 @@ function renderForecast(country) {
             // all depend on this result together, and patching them
             // separately risks them drifting out of sync with each other.
             renderForecast(country);
+        });
+    }
+
+    const fcCrossCountryBtn = document.getElementById("fcCrossCountryBtn");
+    const fcCrossCountryOutput = document.getElementById("fcCrossCountryOutput");
+    if (fcCrossCountryBtn && fcCrossCountryOutput) {
+        fcCrossCountryBtn.addEventListener("click", () => {
+            // Ensure both countries have a cached backtest before comparing.
+            if (!backtestCache["United States"]) backtestCache["United States"] = computeBacktest("United States");
+            if (!backtestCache["Canada"]) backtestCache["Canada"] = computeBacktest("Canada");
+            fcCrossCountryOutput.innerHTML = renderCrossCountryValidation();
         });
     }
 
