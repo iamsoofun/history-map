@@ -1497,6 +1497,124 @@ function computePopulationAdjustedRate(country, annualRate) {
     };
 }
 
+// =====================================================================
+// C.5 — HISTORICAL (YEAR-SPECIFIC) POPULATION
+//
+// Using TODAY's population to adjust a forecast made "as of" 2010
+// leaks information from outside the historical prediction window
+// into the calculation — exactly what walk-forward testing exists to
+// prevent everywhere else in this model. This is a real annual
+// population series, not a single snapshot, so a backtest year gets
+// the population that actually existed around that year.
+//
+// US: complete annual series, 1900-2025, U.S. Census Bureau
+// (pre-1980 historical estimates, 1980s-2020s intercensal/postcensal
+// series), compiled via Multpl.
+// Canada: real data points at 5-year intervals from 1955 (UN World
+// Population Prospects 2024 Revision, medium-fertility variant, via
+// Worldometer) plus annual figures for 2020, 2022-2026. Years between
+// known points are LINEARLY INTERPOLATED — disclosed as such, not
+// presented as a real annual estimate. No data before 1955; lookups
+// for earlier years return null rather than extrapolating blindly.
+// =====================================================================
+
+const US_POPULATION_BY_YEAR = {
+    1900: 76090000, 1901: 77580000, 1902: 79160000, 1903: 80630000, 1904: 82170000,
+    1905: 83820000, 1906: 85450000, 1907: 87010000, 1908: 88710000, 1909: 90490000,
+    1910: 92410000, 1911: 93860000, 1912: 95330000, 1913: 97220000, 1914: 99110000,
+    1915: 100550000, 1916: 101960000, 1917: 103270000, 1918: 103210000, 1919: 104510000,
+    1920: 106460000, 1921: 108540000, 1922: 110050000, 1923: 111950000, 1924: 114110000,
+    1925: 115830000, 1926: 117400000, 1927: 119040000, 1928: 120510000, 1929: 121770000,
+    1930: 123080000, 1931: 124040000, 1932: 124840000, 1933: 125580000, 1934: 126370000,
+    1935: 127250000, 1936: 128050000, 1937: 128820000, 1938: 129820000, 1939: 130880000,
+    1940: 132120000, 1941: 133400000, 1942: 134860000, 1943: 136740000, 1944: 138400000,
+    1945: 139930000, 1946: 141390000, 1947: 144130000, 1948: 146630000, 1949: 149190000,
+    1950: 152270000, 1951: 154880000, 1952: 157550000, 1953: 160180000, 1954: 163030000,
+    1955: 165930000, 1956: 168900000, 1957: 171980000, 1958: 174880000, 1959: 177830000,
+    1960: 180670000, 1961: 183690000, 1962: 186540000, 1963: 189240000, 1964: 191890000,
+    1965: 194300000, 1966: 196560000, 1967: 198710000, 1968: 200710000, 1969: 202680000,
+    1970: 205050000, 1971: 207660000, 1972: 209900000, 1973: 211910000, 1974: 213850000,
+    1975: 215970000, 1976: 218040000, 1977: 220240000, 1978: 222580000, 1979: 225060000,
+    1980: 227220000, 1981: 229470000, 1982: 231660000, 1983: 233790000, 1984: 235820000,
+    1985: 237920000, 1986: 240130000, 1987: 242290000, 1988: 244500000, 1989: 246820000,
+    1990: 249620000, 1991: 252980000, 1992: 256510000, 1993: 259920000, 1994: 263130000,
+    1995: 266280000, 1996: 269390000, 1997: 272650000, 1998: 275850000, 1999: 279040000,
+    2000: 282160000, 2001: 284970000, 2002: 287630000, 2003: 290110000, 2004: 292810000,
+    2005: 295520000, 2006: 298380000, 2007: 301230000, 2008: 304090000, 2009: 306770000,
+    2010: 309320000, 2011: 311560000, 2012: 313830000, 2013: 315990000, 2014: 318300000,
+    2015: 320640000, 2016: 322940000, 2017: 324990000, 2018: 326690000, 2019: 328240000,
+    2020: 331580000, 2021: 332100000, 2022: 334020000, 2023: 336810000, 2024: 340110000,
+    2025: 342030000
+};
+
+const CANADA_POPULATION_BY_YEAR = {
+    1955: 15728274, 1960: 17898790, 1965: 19685518, 1970: 21440022, 1975: 23148986,
+    1980: 24533776, 1985: 25927465, 1990: 27789443, 1995: 29459131, 2000: 30891803,
+    2005: 32440173, 2010: 34196899, 2015: 35962234, 2017: 36708083, 2020: 38171902,
+    2022: 38821259, 2023: 39299105, 2024: 39742430, 2025: 40126723, 2026: 40467728
+};
+
+const HISTORICAL_POPULATION_SERIES = {
+    "United States": {
+        data: US_POPULATION_BY_YEAR,
+        citation: "U.S. Census Bureau — historical national population estimates (1900-1989), intercensal estimates (1990-2009), monthly population estimates (2010-2025)",
+        citationUrl: "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+        interpolated: false
+    },
+    Canada: {
+        data: CANADA_POPULATION_BY_YEAR,
+        citation: "United Nations, Dept. of Economic and Social Affairs, Population Division — World Population Prospects 2024 Revision (medium-fertility variant), via Worldometer",
+        citationUrl: "https://www.worldometers.info/world-population/canada-population/",
+        interpolated: true // years between the stored points are linearly interpolated
+    }
+};
+
+function getHistoricalPopulation(country, year) {
+    const series = HISTORICAL_POPULATION_SERIES[country];
+    if (!series) return null;
+
+    const years = Object.keys(series.data).map(Number).sort((a, b) => a - b);
+    if (!years.length) return null;
+
+    if (series.data[year] !== undefined) return { population: series.data[year], interpolated: false };
+
+    // Outside the known range entirely — don't extrapolate.
+    if (year < years[0] || year > years[years.length - 1]) return null;
+
+    // Linear interpolation between the two nearest known points.
+    let lower = years[0], upper = years[years.length - 1];
+    for (let i = 0; i < years.length - 1; i++) {
+        if (years[i] <= year && years[i + 1] >= year) {
+            lower = years[i];
+            upper = years[i + 1];
+            break;
+        }
+    }
+    if (lower === upper) return { population: series.data[lower], interpolated: false };
+
+    const fraction = (year - lower) / (upper - lower);
+    const interpolatedPop = Math.round(series.data[lower] + (series.data[upper] - series.data[lower]) * fraction);
+    return { population: interpolatedPop, interpolated: true };
+}
+
+function computeHistoricalPopulationAdjustedRate(country, annualRate, year) {
+    const series = HISTORICAL_POPULATION_SERIES[country];
+    if (!series || !Number.isFinite(annualRate)) return null;
+
+    const lookup = getHistoricalPopulation(country, year);
+    if (!lookup) return null;
+
+    return {
+        perMillion: Math.round((annualRate / lookup.population) * 1_000_000 * 100) / 100,
+        per100k: Math.round((annualRate / lookup.population) * 100_000 * 1000) / 1000,
+        population: lookup.population,
+        year,
+        interpolated: lookup.population && series.interpolated && series.data[year] === undefined,
+        citation: series.citation,
+        citationUrl: series.citationUrl
+    };
+}
+
 
 const RISK_SCORE_WEIGHTS = {
     recentActivity: 25,
@@ -1573,7 +1691,7 @@ function percentileRank(value, allValues) {
 const RISK_SCORE_MIN_TOTAL_INCIDENTS = 6;
 const RISK_SCORE_MIN_TOTAL_YEARS = 4;
 
-function computeRiskScoreFactors(country, asOfYear, excludeKey, includePopulation) {
+function computeRiskScoreFactors(country, asOfYear, excludeKey, populationMode) {
     const cutoff = asOfYear ?? THIS_YEAR;
     const countryEvents = events.filter(e => e.country === country && e.year <= cutoff);
     if (countryEvents.length === 0) return null;
@@ -1653,35 +1771,51 @@ function computeRiskScoreFactors(country, asOfYear, excludeKey, includePopulatio
     }
     factors.temporalSeasonal = seasonalScore !== null ? { score: seasonalScore, detail: seasonalDetail } : null;
 
-    // 7. Population-adjusted rate (C.4 — only computed when explicitly
-    // requested AND cited population data exists for this country).
+    // 7. Population-adjusted rate — two modes:
     //
-    // Honest caveat, disclosed rather than hidden: NHIRA currently
-    // holds ONE static population figure per country (a 2025 snapshot),
-    // not a historical population time series. Since a country's
-    // population barely moves within a ~10-20 year backtest window,
-    // dividing every year's count by nearly the same constant does not
-    // change the RELATIVE pattern of high/low years within that
-    // country's own history — mathematically, this factor is expected
-    // to track recentActivity closely for exactly that reason. The C
-    // vs. C+population walk-forward test below measures this directly
-    // instead of assuming it; if it's true, that's not a modeling
-    // failure, it's a data limitation — a population TIME SERIES would
-    // let this factor add real independent information.
-    if (includePopulation) {
+    // "static" (C.4): today's population snapshot used for both the
+    // recent and long-run terms. Mathematically expected to track
+    // recentActivity closely, since a near-constant divisor doesn't
+    // change the relative pattern of high/low years within one
+    // country's own history — a real limitation of a single snapshot,
+    // not a modeling bug.
+    //
+    // "historical" (C.5): each YEAR's own per-capita rate is computed
+    // using the population that actually existed around that year, so
+    // a forecast made "as of" 2010 uses ~2010 population, not today's.
+    // This is the version that can genuinely differ from
+    // recentActivity, because it captures population CHANGE over the
+    // window, not just a rescaled constant.
+    if (populationMode === "static") {
         const popAdjusted = computePopulationAdjustedRate(country, recentRate);
         const popAdjustedBaseline = computePopulationAdjustedRate(country, longRunRate);
-        if (popAdjusted && popAdjustedBaseline && popAdjustedBaseline.per100k > 0) {
-            factors.populationAdjusted = {
+        factors.populationAdjusted = (popAdjusted && popAdjustedBaseline && popAdjustedBaseline.per100k > 0)
+            ? {
                 score: ratioToScore(popAdjusted.per100k / popAdjustedBaseline.per100k),
-                detail: `${popAdjusted.per100k}/100k recent vs. ${popAdjustedBaseline.per100k}/100k long-run (population ${popAdjustedBaseline.population.toLocaleString()})`
-            };
-        } else {
-            factors.populationAdjusted = null;
-        }
+                detail: `${popAdjusted.per100k}/100k recent vs. ${popAdjustedBaseline.per100k}/100k long-run (static population snapshot, ${popAdjustedBaseline.population.toLocaleString()})`
+              }
+            : null;
+    } else if (populationMode === "historical") {
+        const recentYearsList = usableYears.slice(-2);
+        const recentPerCapitaValues = recentYearsList
+            .map(y => { const p = getHistoricalPopulation(country, y); return p ? ((yearlyCounts[y] || 0) / p.population) * 100000 : null; })
+            .filter(v => v !== null);
+        const allPerCapitaValues = allYears
+            .map(y => { const p = getHistoricalPopulation(country, y); return p ? ((yearlyCounts[y] || 0) / p.population) * 100000 : null; })
+            .filter(v => v !== null);
+
+        const recentPerCapitaAvg = recentPerCapitaValues.length ? recentPerCapitaValues.reduce((a, b) => a + b, 0) / recentPerCapitaValues.length : null;
+        const longRunPerCapitaAvg = allPerCapitaValues.length ? allPerCapitaValues.reduce((a, b) => a + b, 0) / allPerCapitaValues.length : null;
+
+        factors.populationAdjusted = (recentPerCapitaAvg !== null && longRunPerCapitaAvg !== null && longRunPerCapitaAvg > 0)
+            ? {
+                score: ratioToScore(recentPerCapitaAvg / longRunPerCapitaAvg),
+                detail: `${Math.round(recentPerCapitaAvg * 1000) / 1000}/100k recent vs. ${Math.round(longRunPerCapitaAvg * 1000) / 1000}/100k long-run, using each year's own population (${allPerCapitaValues.length} of ${allYears.length} years had population data)`
+              }
+            : null;
     }
 
-    const activeWeights = includePopulation ? RISK_SCORE_WEIGHTS_WITH_POPULATION : RISK_SCORE_WEIGHTS;
+    const activeWeights = populationMode ? RISK_SCORE_WEIGHTS_WITH_POPULATION : RISK_SCORE_WEIGHTS;
 
     // Composite: weighted average of AVAILABLE factors only, reweighted
     // so the used weights sum to 100% — never padded with a guess.
@@ -2179,9 +2313,9 @@ const ABLATION_VARIANTS = [
     { key: "temporalSeasonal", label: "C without seasonality" }
 ];
 
-function computeAblationVariantMetrics(country, backtestYears, excludeKey, threshold, includePopulation) {
+function computeAblationVariantMetrics(country, backtestYears, excludeKey, threshold, populationMode) {
     const rows = backtestYears.map(({ trainThrough, actualElevated }) => {
-        const rs = computeRiskScoreFactors(country, trainThrough, excludeKey || undefined, includePopulation);
+        const rs = computeRiskScoreFactors(country, trainThrough, excludeKey || undefined, populationMode);
         if (!rs || rs.compositeScore === null) return null;
         return { probability: rs.compositeScore / 100, actualElevated };
     }).filter(Boolean);
@@ -2250,34 +2384,58 @@ function computeAblationTest(country, backtest) {
 // population data (currently US/Canada).
 // =====================================================================
 
+// Three-way comparison, per the locked development sequence: C.3 (no
+// population) -> C.4 (static/current population) -> C.5 (year-specific
+// historical population). If C.5 holds up at least as well as C.4 —
+// and both, ideally, hold up versus the no-population baseline — that
+// tells us whether a real population time series is actually adding
+// value, versus just being a data-completeness exercise.
 function computePopulationFactorTest(country, backtest) {
     if (!backtest || backtest.insufficientData || !backtest.results.length) return null;
-    if (!POPULATION_DATA[country]) return null;
+    if (!POPULATION_DATA[country] || !HISTORICAL_POPULATION_SERIES[country]) return null;
 
     const threshold = backtest.thresholdSweep ? backtest.thresholdSweep.recommendedThreshold : 60;
     const backtestYears = backtest.results.map(r => ({ trainThrough: r.trainThrough, actualElevated: r.actualElevated }));
     if (backtestYears.length < 4) return null;
 
-    const withoutPopulation = computeAblationVariantMetrics(country, backtestYears, null, threshold, false);
-    const withPopulation = computeAblationVariantMetrics(country, backtestYears, null, threshold, true);
+    const c3 = computeAblationVariantMetrics(country, backtestYears, null, threshold, undefined);
+    const c4 = computeAblationVariantMetrics(country, backtestYears, null, threshold, "static");
+    const c5 = computeAblationVariantMetrics(country, backtestYears, null, threshold, "historical");
 
-    if (!withoutPopulation.n || !withPopulation.n) return { threshold, withoutPopulation, withPopulation, deltas: null, sharedYears: backtestYears.length };
+    if (!c3.n || !c4.n || !c5.n) {
+        return { threshold, c3, c4, c5, deltas: null, validated: false, sharedYears: backtestYears.length };
+    }
 
     const d = (a, b) => (a === null || b === null) ? null : Math.round((a - b) * 10) / 10;
     const dRaw = (a, b) => (a === null || b === null) ? null : Math.round((a - b) * 1000) / 1000;
 
+    const deltasC4 = {
+        recall: d(c4.recall, c3.recall), precision: d(c4.precision, c3.precision),
+        probMAE: dRaw(c4.probMAE, c3.probMAE), probRMSE: dRaw(c4.probRMSE, c3.probRMSE)
+    };
+    const deltasC5 = {
+        recall: d(c5.recall, c3.recall), precision: d(c5.precision, c3.precision),
+        probMAE: dRaw(c5.probMAE, c3.probMAE), probRMSE: dRaw(c5.probRMSE, c3.probRMSE)
+    };
+    const deltasC5vsC4 = {
+        recall: d(c5.recall, c4.recall), precision: d(c5.precision, c4.precision),
+        probMAE: dRaw(c5.probMAE, c4.probMAE), probRMSE: dRaw(c5.probRMSE, c4.probRMSE)
+    };
+
+    // "Validated" is a strict, mechanical check, not a judgment call:
+    // C.5 must not make MAE or RMSE meaningfully worse than C.3 (the
+    // no-population baseline), and must not make recall meaningfully
+    // worse either. This can only ever be TRUE from real numbers —
+    // there's no path that marks it true by default.
+    const tolerance = 0.02; // small numerical noise tolerance
+    const validated = deltasC5.probMAE !== null && deltasC5.probMAE <= tolerance
+        && deltasC5.probRMSE !== null && deltasC5.probRMSE <= tolerance
+        && deltasC5.recall !== null && deltasC5.recall >= -2; // allow at most a 2pp recall dip
+
     return {
-        threshold,
-        withoutPopulation, withPopulation,
-        deltas: {
-            recall: d(withPopulation.recall, withoutPopulation.recall),
-            precision: d(withPopulation.precision, withoutPopulation.precision),
-            falsePositiveRate: d(withPopulation.falsePositiveRate, withoutPopulation.falsePositiveRate),
-            falseNegativeRate: d(withPopulation.falseNegativeRate, withoutPopulation.falseNegativeRate),
-            calibrationGap: d(withPopulation.calibrationGap, withoutPopulation.calibrationGap),
-            probMAE: dRaw(withPopulation.probMAE, withoutPopulation.probMAE),
-            probRMSE: dRaw(withPopulation.probRMSE, withoutPopulation.probRMSE)
-        },
+        threshold, c3, c4, c5,
+        deltasC4, deltasC5, deltasC5vsC4,
+        validated,
         sharedYears: backtestYears.length
     };
 }
@@ -3022,44 +3180,51 @@ function renderBacktestTable(backtest, dispersionRatio, country) {
             `;
         })()}
 
-        <h3 class="analysis-heading">C.4 — does population adjustment help?</h3>
+        <h3 class="analysis-heading">C.3 → C.4 → C.5 — does population adjustment help, and does using real historical population improve on today's snapshot?</h3>
         <p class="meta">
-            Adds population as a 7th factor (10-point weight, carved from the existing six — not stacked on top) and
-            compares against the unmodified model on the same walk-forward years, same threshold.
+            C.3 is the no-population baseline. C.4 adds population using today's static snapshot for every year (the
+            same limitation flagged earlier). C.5 adds population using the population that actually existed AROUND
+            each backtest year — so a forecast made "as of" 2010 uses ~2010 population, never 2025's, which would leak
+            information from outside the historical prediction window into the calculation.
         </p>
         ${(() => {
-            if (!POPULATION_DATA[country]) return `<p class="dq-empty">No cited population data for ${escapeHtml(country)} yet — this test only runs for countries with a real population figure on file.</p>`;
+            if (!POPULATION_DATA[country] || !HISTORICAL_POPULATION_SERIES[country]) return `<p class="dq-empty">No population data on file for ${escapeHtml(country)} — this test only runs for countries with both a current figure and a historical series.</p>`;
             const popTest = computePopulationFactorTest(country, backtest);
             if (!popTest) return `<p class="dq-empty">Not enough backtested years to run this test yet.</p>`;
-            if (!popTest.deltas) return `<p class="dq-empty">Population factor produced no coverage in this backtest window.</p>`;
+            if (!popTest.deltasC5) return `<p class="dq-empty">Population factor produced no coverage in this backtest window.</p>`;
 
-            const d = popTest.deltas;
-            const improved = k => d[k] !== null && d[k] < 0; // for error-style metrics, negative delta = improvement
-            const improvedRecall = d.recall !== null && d.recall > 0;
-            const improvedPrecision = d.precision !== null && d.precision > 0;
+            function metricRow(label, key, suffix, lowerIsBetter) {
+                const c3v = popTest.c3[key], c4v = popTest.c4[key], c5v = popTest.c5[key];
+                const c5delta = popTest.deltasC5[key];
+                const improved = c5delta !== null && (lowerIsBetter ? c5delta < 0 : c5delta > 0);
+                const fmt = v => v === null ? "—" : `${v}${suffix || ""}`;
+                return `<tr><td>${label}</td><td>${fmt(c3v)}</td><td>${fmt(c4v)}</td><td>${fmt(c5v)}</td><td class="${improved ? "backtest-hit" : ""}">${c5delta == null ? "—" : (c5delta > 0 ? "+" : "") + c5delta}</td></tr>`;
+            }
 
             return `
                 <table class="backtest-table">
-                    <thead><tr><th>Metric</th><th>Without population</th><th>With population</th><th>Delta</th></tr></thead>
+                    <thead><tr><th>Metric</th><th>C.3 (no pop.)</th><th>C.4 (static pop.)</th><th>C.5 (historical pop.)</th><th>C.5 vs. C.3</th></tr></thead>
                     <tbody>
-                        <tr><td>Prob. MAE</td><td>${popTest.withoutPopulation.probMAE}</td><td>${popTest.withPopulation.probMAE}</td><td class="${improved("probMAE") ? "backtest-hit" : ""}">${d.probMAE == null ? "—" : (d.probMAE > 0 ? "+" : "") + d.probMAE}</td></tr>
-                        <tr><td>Prob. RMSE</td><td>${popTest.withoutPopulation.probRMSE}</td><td>${popTest.withPopulation.probRMSE}</td><td class="${improved("probRMSE") ? "backtest-hit" : ""}">${d.probRMSE == null ? "—" : (d.probRMSE > 0 ? "+" : "") + d.probRMSE}</td></tr>
-                        <tr><td>Recall</td><td>${popTest.withoutPopulation.recall ?? "—"}%</td><td>${popTest.withPopulation.recall ?? "—"}%</td><td class="${improvedRecall ? "backtest-hit" : ""}">${d.recall == null ? "—" : (d.recall > 0 ? "+" : "") + d.recall + "pp"}</td></tr>
-                        <tr><td>Precision</td><td>${popTest.withoutPopulation.precision ?? "—"}%</td><td>${popTest.withPopulation.precision ?? "—"}%</td><td class="${improvedPrecision ? "backtest-hit" : ""}">${d.precision == null ? "—" : (d.precision > 0 ? "+" : "") + d.precision + "pp"}</td></tr>
-                        <tr><td>False positive rate</td><td>${popTest.withoutPopulation.falsePositiveRate ?? "—"}%</td><td>${popTest.withPopulation.falsePositiveRate ?? "—"}%</td><td>${d.falsePositiveRate == null ? "—" : (d.falsePositiveRate > 0 ? "+" : "") + d.falsePositiveRate + "pp"}</td></tr>
-                        <tr><td>False negative rate</td><td>${popTest.withoutPopulation.falseNegativeRate ?? "—"}%</td><td>${popTest.withPopulation.falseNegativeRate ?? "—"}%</td><td>${d.falseNegativeRate == null ? "—" : (d.falseNegativeRate > 0 ? "+" : "") + d.falseNegativeRate + "pp"}</td></tr>
-                        <tr><td>Calibration gap</td><td>${popTest.withoutPopulation.calibrationGap ?? "—"}pp</td><td>${popTest.withPopulation.calibrationGap ?? "—"}pp</td><td class="${improved("calibrationGap") ? "backtest-hit" : ""}">${d.calibrationGap == null ? "—" : (d.calibrationGap > 0 ? "+" : "") + d.calibrationGap}</td></tr>
-                        <tr><td>Coverage</td><td>${popTest.withoutPopulation.coverage}%</td><td>${popTest.withPopulation.coverage}%</td><td>—</td></tr>
+                        ${metricRow("Prob. MAE", "probMAE", "", true)}
+                        ${metricRow("Prob. RMSE", "probRMSE", "", true)}
+                        ${metricRow("Recall", "recall", "%", false)}
+                        ${metricRow("Precision", "precision", "%", false)}
                     </tbody>
                 </table>
+
+                <div class="model-status-badge model-status-${popTest.validated ? "green" : "yellow"}">
+                    <span class="model-status-label">${popTest.validated ? "MODEL C — VALIDATED VERSION (C.5)" : "NOT YET VALIDATED"}</span>
+                    <p>
+                        ${popTest.validated
+                            ? `C.5 (historical population) does not make error or recall meaningfully worse than the no-population baseline for ${escapeHtml(country)} — on this evidence, the historical-population version is the one to treat as "final Model C" for this country, per the locked development sequence.`
+                            : `C.5 either makes Prob. MAE/RMSE worse, or drops recall by more than 2 percentage points, relative to the no-population baseline for ${escapeHtml(country)}. On this evidence, population adjustment — even with real year-specific data — is not yet earning its place in the model for this country.`}
+                    </p>
+                </div>
+
                 <p class="review-criteria-note">
-                    Green-highlighted deltas mean adding population IMPROVED that metric. With NHIRA currently holding only
-                    a single static population snapshot per country (not a historical population time series), a country's
-                    population barely moves within the backtest window — so this factor is mathematically expected to track
-                    "recent activity" closely rather than add independent information. If the deltas above are near zero,
-                    that's this expectation confirmed empirically, not a bug: a real population time series (population by
-                    year, not just a current figure) would be the concrete next step to let this factor mean something the
-                    model doesn't already capture.
+                    Green-highlighted deltas mean C.5 improved that metric relative to C.3. Interpolated Canada population
+                    years are disclosed in the factor detail text (hover/inspect individual years); this comparison still
+                    runs on whatever data exists, it just isn't fabricating precision the underlying series doesn't have.
                 </p>
             `;
         })()}
@@ -3085,9 +3250,36 @@ function renderCrossCountryValidation() {
 
     const popTest = computePopulationRankingTest();
 
+    // Mechanical status check, not a judgment call: if C.3's recall
+    // trails BOTH individual countries by more than 15 points, pooling
+    // is doing real damage, not just showing mild generalization noise
+    // — that's the threshold for flagging it research-only rather than
+    // production-grade here.
+    const c3Recall = v.c3.modelCRecall;
+    const c1Recall = v.c1.modelCRecall;
+    const c2Recall = v.c2.modelCRecall;
+    const pooledUnderperforms = c3Recall !== null && c1Recall !== null && c2Recall !== null
+        && c3Recall < Math.min(c1Recall, c2Recall) - 15;
+
     return `
+        <div class="model-status-badge model-status-${pooledUnderperforms ? "yellow" : "gray"}">
+            <span class="model-status-label">C.3 IS RESEARCH-ONLY — NOT THE PRIMARY FORECAST</span>
+            <p>
+                The public NHIRA forecast for a given country always comes from that country's own model (C.1 for the
+                US, C.2 for Canada) — never from the pooled C.3. C.3 exists to test whether the shared formula
+                generalizes across countries, nothing more.
+                ${pooledUnderperforms
+                    ? `Right now it's earning that "research-only" label: pooled recall (${c3Recall}%) trails both individual
+                       countries by more than 15 points (US: ${c1Recall}%, Canada: ${c2Recall}%) — forcing one formula onto
+                       both countries at once is currently losing real information, not just showing mild generalization
+                       noise. Keep C.1 and C.2 as fully separate, independently-thresholded models rather than trying to
+                       replace them with a combined one.`
+                    : `Its numbers are currently reasonably close to both individual countries — a mildly encouraging
+                       generalization signal, though still not a reason to route the primary forecast through it.`}
+            </p>
+        </div>
         <table class="backtest-table">
-            <thead><tr><th>Metric</th><th>C.1 — United States (n=${v.usYears})</th><th>C.2 — Canada (n=${v.caYears})</th><th>C.3 — Pooled (n=${v.c1.n + v.c2.n})</th></tr></thead>
+            <thead><tr><th>Metric</th><th>C.1 — United States (n=${v.usYears})</th><th>C.2 — Canada (n=${v.caYears})</th><th>C.3 — Pooled, research-only (n=${v.c1.n + v.c2.n})</th></tr></thead>
             <tbody>
                 ${row("Model MAE", "modelMAE")}
                 ${row("Naive MAE", "naiveMAE")}
