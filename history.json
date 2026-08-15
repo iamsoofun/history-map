@@ -28399,5 +28399,2286 @@
     "sources": [
       "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
     ]
+  },
+ {
+    "id": 1432,
+    "title": "Allen Premium Outlets Shooting",
+    "date": "2023-05-06",
+    "year": 2023,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Allen",
+    "venue": "Allen Premium Outlets",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 33.11179,
+    "lng": -96.67305,
+    "fatalities": 8,
+    "injuries": 7,
+    "description": "A gunman opened fire at Allen Premium Outlets, killing eight people including a security guard and wounding seven others before being killed by law enforcement following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1433,
+    "title": "Farmington Multiple Location Shooting",
+    "date": "2023-05-15",
+    "year": 2023,
+    "country": "United States",
+    "state": "New Mexico",
+    "city": "Farmington",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 36.72806,
+    "lng": -108.21869,
+    "fatalities": 3,
+    "injuries": 6,
+    "description": "A gunman opened fire at various locations in Farmington, killing three people and wounding six others including two law enforcement officers before being killed by law enforcement following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1434,
+    "title": "Phoenix and Mesa Multiple Location Shooting",
+    "date": "2023-05-26",
+    "year": 2023,
+    "country": "United States",
+    "state": "Arizona",
+    "city": "Phoenix and Mesa",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 33.44838,
+    "lng": -112.07404,
+    "fatalities": 4,
+    "injuries": 1,
+    "description": "A gunman opened fire at various locations in Phoenix and Mesa over May 26 and 27, killing four people and wounding one before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1435,
+    "title": "Reedley Multiple Location Shooting",
+    "date": "2023-06-06",
+    "year": 2023,
+    "country": "United States",
+    "state": "California",
+    "city": "Reedley",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 36.59634,
+    "lng": -119.45040,
+    "fatalities": 1,
+    "injuries": 2,
+    "description": "A gunman opened fire at various locations in Reedley, killing one person and wounding two others before being killed by law enforcement at another location following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1436,
+    "title": "Mifflintown Multiple Location Shooting",
+    "date": "2023-06-17",
+    "year": 2023,
+    "country": "United States",
+    "state": "Pennsylvania",
+    "city": "Mifflintown",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 40.59647,
+    "lng": -77.39749,
+    "fatalities": 1,
+    "injuries": 1,
+    "description": "A gunman opened fire at various locations in Mifflintown, killing one law enforcement officer and wounding another before being killed by law enforcement at the scene following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1437,
+    "title": "Gorge Amphitheater Campground Shooting",
+    "date": "2023-06-17",
+    "year": 2023,
+    "country": "United States",
+    "state": "Washington",
+    "city": "Quincy",
+    "venue": "Gorge Amphitheater Campground",
+    "category": "Campground Shooting",
+    "type": "shooting",
+    "lat": 47.10111,
+    "lng": -119.99500,
+    "fatalities": 2,
+    "injuries": 3,
+    "description": "A gunman opened fire at the Gorge Amphitheater Campground, killing two people and wounding three others including a security officer before being apprehended by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1438,
+    "title": "Turnberry Towers Shooting",
+    "date": "2023-06-23",
+    "year": 2023,
+    "country": "United States",
+    "state": "Nevada",
+    "city": "Las Vegas",
+    "venue": "Turnberry Towers",
+    "category": "Residence Shooting",
+    "type": "shooting",
+    "lat": 36.14107,
+    "lng": -115.15306,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A gunman opened fire at people inside Turnberry Towers. No casualties were reported. The shooter was apprehended at the scene after being shot and detained by a security guard.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1439,
+    "title": "Philadelphia Multiple Location Shooting",
+    "date": "2023-07-03",
+    "year": 2023,
+    "country": "United States",
+    "state": "Pennsylvania",
+    "city": "Philadelphia",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 39.95258,
+    "lng": -75.16522,
+    "fatalities": 4,
+    "injuries": 4,
+    "description": "A gunman opened fire at various locations in Philadelphia, killing four people and wounding four others, including two people with incidental injuries, before being apprehended at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1440,
+    "title": "New York Multiple Location Shooting",
+    "date": "2023-07-08",
+    "year": 2023,
+    "country": "United States",
+    "state": "New York",
+    "city": "New York",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 40.71278,
+    "lng": -74.00597,
+    "fatalities": 1,
+    "injuries": 3,
+    "description": "A gunman opened fire at various locations in New York City, killing one person and wounding three others before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1441,
+    "title": "25th Street South Shooting",
+    "date": "2023-07-14",
+    "year": 2023,
+    "country": "United States",
+    "state": "North Dakota",
+    "city": "Fargo",
+    "venue": "25th Street South",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 46.87719,
+    "lng": -96.78980,
+    "fatalities": 1,
+    "injuries": 3,
+    "description": "A gunman opened fire on 25th Street South, killing one law enforcement officer and wounding three people including two law enforcement officers before being killed by law enforcement following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1442,
+    "title": "Hampton Multiple Location Shooting",
+    "date": "2023-07-15",
+    "year": 2023,
+    "country": "United States",
+    "state": "Georgia",
+    "city": "Hampton",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 33.38706,
+    "lng": -84.28298,
+    "fatalities": 4,
+    "injuries": 3,
+    "description": "A gunman opened fire at various locations in Hampton, killing four people and wounding three law enforcement officers before being killed by law enforcement at another location following an exchange of gunfire the next day.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1443,
+    "title": "Highways 101 and 146 Shooting",
+    "date": "2023-07-23",
+    "year": 2023,
+    "country": "United States",
+    "state": "California",
+    "city": "Monterey County",
+    "venue": "Highways 101 and 146",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 36.60024,
+    "lng": -121.89468,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A gunman fired at moving vehicles along Highways 101 and 146 in Monterey County. No casualties were reported before the shooter was apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+ {
+    "id": 1452,
+    "title": "Studio 1258 Shooting",
+    "date": "2023-10-29",
+    "year": 2023,
+    "country": "United States",
+    "state": "Illinois",
+    "city": "Chicago",
+    "venue": "Studio 1258",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 41.8781,
+    "lng": -87.6298,
+    "fatalities": 0,
+    "injuries": 15,
+    "description": "A gunman opened fire inside Studio 1258 in Chicago, wounding 15 people before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1453,
+    "title": "New Hampshire Hospital Shooting",
+    "date": "2023-11-17",
+    "year": 2023,
+    "country": "United States",
+    "state": "New Hampshire",
+    "city": "Concord",
+    "venue": "New Hampshire Hospital",
+    "category": "Healthcare Facility Shooting",
+    "type": "shooting",
+    "lat": 43.2081,
+    "lng": -71.5376,
+    "fatalities": 1,
+    "injuries": 0,
+    "description": "A gunman opened fire inside New Hampshire Hospital in Concord, killing one security officer before being killed by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1454,
+    "title": "Walmart Supercenter #2124 Shooting",
+    "date": "2023-11-20",
+    "year": 2023,
+    "country": "United States",
+    "state": "Ohio",
+    "city": "Beavercreek",
+    "venue": "Walmart Supercenter #2124",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 39.7092,
+    "lng": -84.0633,
+    "fatalities": 0,
+    "injuries": 4,
+    "description": "A gunman opened fire inside Walmart Supercenter #2124 in Beavercreek, wounding four people. Three injuries were caused by gunfire and one was incidental. The shooter died by suicide upon the arrival of law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1455,
+    "title": "North Prospect Street Shooting",
+    "date": "2023-11-25",
+    "year": 2023,
+    "country": "United States",
+    "state": "Vermont",
+    "city": "Burlington",
+    "venue": "North Prospect Street",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 44.4759,
+    "lng": -73.2121,
+    "fatalities": 0,
+    "injuries": 3,
+    "description": "A gunman opened fire on people outside a residence on North Prospect Street in Burlington, wounding three people before being apprehended by law enforcement at the scene the following day.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1456,
+    "title": "University of Nevada, Las Vegas Shooting",
+    "date": "2023-12-06",
+    "year": 2023,
+    "country": "United States",
+    "state": "Nevada",
+    "city": "Las Vegas",
+    "venue": "University of Nevada, Las Vegas",
+    "category": "University Shooting",
+    "type": "shooting",
+    "lat": 36.1070,
+    "lng": -115.1437,
+    "fatalities": 3,
+    "injuries": 1,
+    "description": "A gunman opened fire at the University of Nevada, Las Vegas, killing three employees and wounding one visiting professor before being killed by law enforcement following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+  {
+    "id": 1457,
+    "title": "Federal Way Multiple Location Shooting",
+    "date": "2023-12-06",
+    "year": 2023,
+    "country": "United States",
+    "state": "Washington",
+    "city": "Federal Way",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 47.3223,
+    "lng": -122.3126,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A gunman opened fire at occupied vehicles at various locations in Federal Way, wounding one person before being apprehended by law enforcement at another location the following day.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2023"
+    ]
+  },
+ {
+    "id": 1458,
+    "title": "Perry High School Shooting",
+    "date": "2024-01-04",
+    "year": 2024,
+    "country": "United States",
+    "state": "Iowa",
+    "city": "Perry",
+    "venue": "Perry High School",
+    "category": "School Shooting",
+    "type": "shooting",
+    "lat": 41.8389,
+    "lng": -94.1070,
+    "fatalities": 2,
+    "injuries": 6,
+    "description": "A shooter opened fire inside Perry High School, killing two people and wounding six others before dying by suicide at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1459,
+    "title": "Lakewood Church Shooting",
+    "date": "2024-02-11",
+    "year": 2024,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Houston",
+    "venue": "Lakewood Church",
+    "category": "House of Worship Shooting",
+    "type": "shooting",
+    "lat": 29.6847,
+    "lng": -95.4585,
+    "fatalities": 0,
+    "injuries": 2,
+    "description": "A shooter opened fire inside Lakewood Church, wounding two people before being killed by security personnel during an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1460,
+    "title": "Interstate 10 Multiple Location Shooting",
+    "date": "2024-04-08",
+    "year": 2024,
+    "country": "United States",
+    "state": "Florida",
+    "city": "Bonifay",
+    "venue": "Interstate 10",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 30.5230,
+    "lng": -85.6830,
+    "fatalities": 0,
+    "injuries": 2,
+    "description": "A shooter fired at people in moving vehicles along Interstate 10 near Bonifay, wounding two people before being apprehended at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1461,
+    "title": "100 Block North Gilcrease Museum Road Shooting",
+    "date": "2024-05-15",
+    "year": 2024,
+    "country": "United States",
+    "state": "Oklahoma",
+    "city": "Tulsa",
+    "venue": "100 Block North Gilcrease Museum Road",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 36.1540,
+    "lng": -95.9928,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter fired at occupied vehicles along North Gilcrease Museum Road. No casualties were reported before the shooter was killed by law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1462,
+    "title": "Delaware County Linen Inc. Shooting",
+    "date": "2024-05-22",
+    "year": 2024,
+    "country": "United States",
+    "state": "Pennsylvania",
+    "city": "Chester",
+    "venue": "Delaware County Linen Inc.",
+    "category": "Workplace Shooting",
+    "type": "shooting",
+    "lat": 39.8496,
+    "lng": -75.3557,
+    "fatalities": 2,
+    "injuries": 3,
+    "description": "A shooter opened fire at Delaware County Linen Inc., killing two employees and wounding three others before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1463,
+    "title": "Refresco Beverages and Oncor Electric Shooting",
+    "date": "2024-05-30",
+    "year": 2024,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Fort Worth",
+    "venue": "Refresco Beverages and Oncor Electric",
+    "category": "Workplace Shooting",
+    "type": "shooting",
+    "lat": 32.7555,
+    "lng": -97.3308,
+    "fatalities": 1,
+    "injuries": 0,
+    "description": "A shooter opened fire outside Refresco Beverages and inside Oncor Electric, killing one employee. The shooter was apprehended by law enforcement the following day.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1464,
+    "title": "400 Block of South State Street Shooting",
+    "date": "2024-06-03",
+    "year": 2024,
+    "country": "United States",
+    "state": "California",
+    "city": "San Jacinto",
+    "venue": "400 Block of South State Street",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 33.7839,
+    "lng": -116.9586,
+    "fatalities": 1,
+    "injuries": 1,
+    "description": "A shooter fired at people in moving vehicles along South State Street, killing one person and wounding another before being apprehended at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1465,
+    "title": "Brooklands Plaza Splash Pad Shooting",
+    "date": "2024-06-15",
+    "year": 2024,
+    "country": "United States",
+    "state": "Michigan",
+    "city": "Rochester Hills",
+    "venue": "Brooklands Plaza Splash Pad",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 42.6584,
+    "lng": -83.1499,
+    "fatalities": 0,
+    "injuries": 9,
+    "description": "A shooter opened fire at Brooklands Plaza Splash Pad, wounding nine people before dying by suicide at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1466,
+    "title": "Coulter Street and 37th Avenue Shooting",
+    "date": "2024-06-17",
+    "year": 2024,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Amarillo",
+    "venue": "Coulter Street and 37th Avenue",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 35.2220,
+    "lng": -101.8313,
+    "fatalities": 0,
+    "injuries": 4,
+    "description": "A shooter fired at people in moving vehicles near Coulter Street and 37th Avenue, wounding four people before being apprehended the following day.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1467,
+    "title": "The Mad Butcher #406 Shooting",
+    "date": "2024-06-21",
+    "year": 2024,
+    "country": "United States",
+    "state": "Arkansas",
+    "city": "Fordyce",
+    "venue": "The Mad Butcher #406",
+    "category": "Grocery Store Shooting",
+    "type": "shooting",
+    "lat": 33.8137,
+    "lng": -92.4129,
+    "fatalities": 4,
+    "injuries": 10,
+    "description": "A shooter opened fire inside and outside The Mad Butcher supermarket, killing four people and wounding 10 others before being apprehended following an exchange of gunfire with law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1468,
+    "title": "Cherry Creek Racquet Club and Pheasant Run Communities Shooting",
+    "date": "2024-06-27",
+    "year": 2024,
+    "country": "United States",
+    "state": "Colorado",
+    "city": "Aurora",
+    "venue": "Cherry Creek Racquet Club and Pheasant Run Communities",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 39.7294,
+    "lng": -104.8319,
+    "fatalities": 0,
+    "injuries": 3,
+    "description": "A shooter opened fire in the Cherry Creek Racquet Club and Pheasant Run communities, wounding three people before being apprehended at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1469,
+    "title": "Canyon Lodge and Yellowstone National Park Shooting",
+    "date": "2024-07-04",
+    "year": 2024,
+    "country": "United States",
+    "state": "Wyoming",
+    "city": "Mammoth Hot Springs",
+    "venue": "Canyon Lodge / Yellowstone National Park",
+    "category": "Government Facility Shooting",
+    "type": "shooting",
+    "lat": 44.9760,
+    "lng": -110.7000,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter opened fire outside Canyon Lodge and Resort in Yellowstone National Park, wounding one law enforcement ranger before being killed by law enforcement rangers.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1470,
+    "title": "Charlotte Multiple Location Shooting",
+    "date": "2024-07-09",
+    "year": 2024,
+    "country": "United States",
+    "state": "North Carolina",
+    "city": "Charlotte",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 35.2271,
+    "lng": -80.8431,
+    "fatalities": 1,
+    "injuries": 2,
+    "description": "Two shooters opened fire at various locations in Charlotte, killing one person and wounding two others before both shooters were apprehended at another location two days later.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1471,
+    "title": "100 Block of Murphytown Road Shooting",
+    "date": "2024-07-24",
+    "year": 2024,
+    "country": "United States",
+    "state": "North Carolina",
+    "city": "Green Mountain",
+    "venue": "100 Block of Murphytown Road",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 35.9300,
+    "lng": -82.1800,
+    "fatalities": 0,
+    "injuries": 3,
+    "description": "A shooter fired at utility workers on Murphytown Road, wounding three people before being apprehended at the scene following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1472,
+    "title": "Monroe County Justice Center Shooting",
+    "date": "2024-08-02",
+    "year": 2024,
+    "country": "United States",
+    "state": "Tennessee",
+    "city": "Madisonville",
+    "venue": "Monroe County Justice Center",
+    "category": "Government Facility Shooting",
+    "type": "shooting",
+    "lat": 35.5198,
+    "lng": -84.3630,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at people inside and outside the Monroe County Justice Center. No casualties were reported before the shooter was killed by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1473,
+    "title": "For Oak Cliff Shooting",
+    "date": "2024-08-29",
+    "year": 2024,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Dallas",
+    "venue": "Oak Cliff Community Center",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 32.7310,
+    "lng": -96.8390,
+    "fatalities": 1,
+    "injuries": 3,
+    "description": "A shooter opened fire outside Oak Cliff Community Center, killing one law enforcement officer and wounding three people before being killed by law enforcement at another location following a vehicle pursuit.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+{
+    "id": 1458,
+    "title": "University Lake Park Shooting",
+    "date": "2024-11-25",
+    "year": 2024,
+    "country": "United States",
+    "state": "Alaska",
+    "city": "Anchorage",
+    "venue": "University Lake Park",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 61.1880,
+    "lng": -149.8200,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter opened fire at people on a trail near University Lake Park Medical Center in Anchorage, wounding one person before being apprehended at another location approximately three weeks later.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1459,
+    "title": "Feather River Adventist School Shooting",
+    "date": "2024-12-04",
+    "year": 2024,
+    "country": "United States",
+    "state": "California",
+    "city": "Oroville",
+    "venue": "Feather River Adventist School",
+    "category": "School Shooting",
+    "type": "shooting",
+    "lat": 39.5138,
+    "lng": -121.5564,
+    "fatalities": 0,
+    "injuries": 2,
+    "description": "A shooter opened fire on students outside Feather River Adventist School, wounding two students before dying by suicide at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1460,
+    "title": "Lafayette Laundry Shooting",
+    "date": "2024-12-05",
+    "year": 2024,
+    "country": "United States",
+    "state": "Indiana",
+    "city": "Lafayette",
+    "venue": "Lafayette Laundry",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 40.4167,
+    "lng": -86.8753,
+    "fatalities": 1,
+    "injuries": 2,
+    "description": "A shooter opened fire inside Lafayette Laundry, killing one person and wounding two others. The shooter died by suicide several days after sustaining a self-inflicted gunshot wound on the day of the shooting.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+  {
+    "id": 1461,
+    "title": "Abundant Life Christian School Shooting",
+    "date": "2024-12-16",
+    "year": 2024,
+    "country": "United States",
+    "state": "Wisconsin",
+    "city": "Madison",
+    "venue": "Abundant Life Christian School",
+    "category": "School Shooting",
+    "type": "shooting",
+    "lat": 43.0731,
+    "lng": -89.4012,
+    "fatalities": 2,
+    "injuries": 6,
+    "description": "A shooter opened fire inside Abundant Life Christian School, killing one student and one staff member and wounding six people before dying by suicide at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2024"
+    ]
+  },
+ {
+    "id": 1462,
+    "title": "Various Locations, Oklahoma City",
+    "date": "2022-01-25",
+    "year": 2022,
+    "country": "United States",
+    "state": "Oklahoma",
+    "city": "Oklahoma City",
+    "venue": "Various locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 35.4676,
+    "lng": -97.5164,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter opened fire at people at various locations in Oklahoma City, wounding one person before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1463,
+    "title": "Oroville Dam and Feather River Boulevard Shooting",
+    "date": "2022-02-02",
+    "year": 2022,
+    "country": "United States",
+    "state": "California",
+    "city": "Oroville",
+    "venue": "Oroville Dam and Feather River Boulevard",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 39.5138,
+    "lng": -121.5564,
+    "fatalities": 1,
+    "injuries": 4,
+    "description": "A shooter opened fire at people near Oroville Dam and Feather River Boulevard, killing one person and wounding four before being apprehended at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1464,
+    "title": "Players Sports Bar and Grill Shooting",
+    "date": "2022-02-06",
+    "year": 2022,
+    "country": "United States",
+    "state": "Florida",
+    "city": "Fort Lauderdale",
+    "venue": "Players Sports Bar and Grill",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 26.1224,
+    "lng": -80.1373,
+    "fatalities": 0,
+    "injuries": 4,
+    "description": "An unidentified shooter opened fire inside Players Sports Bar and Grill, wounding four people. The shooter remained at large according to the FBI report.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1465,
+    "title": "Phoenix Residential Location Shooting",
+    "date": "2022-02-11",
+    "year": 2022,
+    "country": "United States",
+    "state": "Arizona",
+    "city": "Phoenix",
+    "venue": "Residential location",
+    "category": "Residence Shooting",
+    "type": "shooting",
+    "lat": 33.4484,
+    "lng": -112.0740,
+    "fatalities": 1,
+    "injuries": 9,
+    "description": "A shooter opened fire at a residence in Phoenix, killing one person and wounding nine law enforcement officers before dying by suicide after an exchange of gunfire with law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1466,
+    "title": "Shannon Hills Residential Neighborhood Shooting",
+    "date": "2022-02-28",
+    "year": 2022,
+    "country": "United States",
+    "state": "Arkansas",
+    "city": "Shannon Hills",
+    "venue": "Residential neighborhood",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 34.6243,
+    "lng": -92.3932,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at people in a residential neighborhood in Shannon Hills. No casualties were reported before the shooter was apprehended at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1467,
+    "title": "Interstate 71 Shooting",
+    "date": "2022-03-11",
+    "year": 2022,
+    "country": "United States",
+    "state": "Ohio",
+    "city": "Columbus",
+    "venue": "Interstate 71",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 39.9612,
+    "lng": -82.9988,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at people and vehicles on Interstate 71 in Columbus. No casualties were reported before the shooter was apprehended following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1468,
+    "title": "Albuquerque Residential Neighborhood Shooting",
+    "date": "2022-03-14",
+    "year": 2022,
+    "country": "United States",
+    "state": "New Mexico",
+    "city": "Albuquerque",
+    "venue": "Residential neighborhood",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 35.0844,
+    "lng": -106.6504,
+    "fatalities": 1,
+    "injuries": 5,
+    "description": "A shooter opened fire at people in a residential neighborhood in Albuquerque, killing one person and wounding five, including three law enforcement officers, before being killed by law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1469,
+    "title": "Broward County Transit Bus Shooting",
+    "date": "2022-03-17",
+    "year": 2022,
+    "country": "United States",
+    "state": "Florida",
+    "city": "Fort Lauderdale",
+    "venue": "Broward County Transit Bus",
+    "category": "Government / Transportation Shooting",
+    "type": "shooting",
+    "lat": 26.1224,
+    "lng": -80.1373,
+    "fatalities": 2,
+    "injuries": 2,
+    "description": "A shooter opened fire at people on a Broward County Transit bus, killing two people and wounding two before being apprehended by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1470,
+    "title": "Showtime Bar and Lounge Shooting",
+    "date": "2022-03-19",
+    "year": 2022,
+    "country": "United States",
+    "state": "New York",
+    "city": "Queens",
+    "venue": "Showtime Bar and Lounge",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 40.7282,
+    "lng": -73.7949,
+    "fatalities": 0,
+    "injuries": 2,
+    "description": "An unidentified shooter opened fire at people inside Showtime Bar and Lounge in Queens, wounding two off-duty corrections officers. The shooter remained at large.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1471,
+    "title": "Frankische Plant Shooting",
+    "date": "2022-04-05",
+    "year": 2022,
+    "country": "United States",
+    "state": "South Carolina",
+    "city": "Anderson",
+    "venue": "Frankische Plant",
+    "category": "Workplace Shooting",
+    "type": "shooting",
+    "lat": 34.5034,
+    "lng": -82.6501,
+    "fatalities": 1,
+    "injuries": 1,
+    "description": "A shooter opened fire at the Frankische Plant, killing one employee and wounding another before dying by suicide at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1472,
+    "title": "36th Street Station Shooting",
+    "date": "2022-04-12",
+    "year": 2022,
+    "country": "United States",
+    "state": "New York",
+    "city": "Brooklyn",
+    "venue": "36th Street Station",
+    "category": "Transportation Facility Shooting",
+    "type": "shooting",
+    "lat": 40.6560,
+    "lng": -74.0038,
+    "fatalities": 0,
+    "injuries": 23,
+    "description": "A shooter opened fire at people inside the 36th Street Station in Brooklyn, wounding 23 people. The FBI reports that 10 were wounded by gunfire and 13 suffered incidental injuries. The shooter was apprehended the following day.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1473,
+    "title": "County Road C Shooting",
+    "date": "2022-04-15",
+    "year": 2022,
+    "country": "United States",
+    "state": "Wisconsin",
+    "city": "Oakland",
+    "venue": "County Road C",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 42.8850,
+    "lng": -88.5000,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at moving vehicles on County Road C in Oakland, Wisconsin. No casualties were reported before the shooter was apprehended at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1474,
+    "title": "Florissant Residential Location Shooting",
+    "date": "2022-04-17",
+    "year": 2022,
+    "country": "United States",
+    "state": "Colorado",
+    "city": "Florissant",
+    "venue": "Residential location",
+    "category": "Residence Shooting",
+    "type": "shooting",
+    "lat": 38.9478,
+    "lng": -105.2911,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at people at neighboring residences in Florissant. No casualties were reported before the shooter died by suicide at the scene after law enforcement arrived.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1475,
+    "title": "Edmund Burke School Shooting",
+    "date": "2022-04-22",
+    "year": 2022,
+    "country": "United States",
+    "state": "District of Columbia",
+    "city": "Washington",
+    "venue": "Edmund Burke School",
+    "category": "School Shooting",
+    "type": "shooting",
+    "lat": 38.9415,
+    "lng": -77.0700,
+    "fatalities": 0,
+    "injuries": 4,
+    "description": "A shooter opened fire at Edmund Burke School, wounding four people including a security officer before dying by suicide at the scene after law enforcement arrived.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1476,
+    "title": "Various Locations, Round Rock",
+    "date": "2022-05-07",
+    "year": 2022,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Round Rock",
+    "venue": "Various locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 30.5083,
+    "lng": -97.6789,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter opened fire at people at various locations in Round Rock, wounding one person before being killed by law enforcement following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1477,
+    "title": "Gwinnett County School Bus Shooting",
+    "date": "2022-05-09",
+    "year": 2022,
+    "country": "United States",
+    "state": "Georgia",
+    "city": "Suwanee",
+    "venue": "Gwinnett County School Bus",
+    "category": "School Transportation Shooting",
+    "type": "shooting",
+    "lat": 34.0515,
+    "lng": -84.0713,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter opened fire at people on a school bus in a residential neighborhood in Suwanee, wounding one bus driver before being apprehended at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1478,
+    "title": "Atlanta Residential Location Shooting",
+    "date": "2022-05-09",
+    "year": 2022,
+    "country": "United States",
+    "state": "Georgia",
+    "city": "Atlanta",
+    "venue": "Housing complex",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 33.7490,
+    "lng": -84.3880,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at people outside a housing complex in Atlanta. No casualties were reported before the shooter was apprehended at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1479,
+    "title": "Hair World Salon Shooting",
+    "date": "2022-05-11",
+    "year": 2022,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Dallas",
+    "venue": "Hair World Salon",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 32.7767,
+    "lng": -96.7970,
+    "fatalities": 0,
+    "injuries": 3,
+    "description": "A shooter opened fire inside Hair World Salon, wounding three employees before being apprehended six days later.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1480,
+    "title": "Tops Friendly Markets Shooting",
+    "date": "2022-05-14",
+    "year": 2022,
+    "country": "United States",
+    "state": "New York",
+    "city": "Buffalo",
+    "venue": "Tops Friendly Markets",
+    "category": "Commerce Mass Shooting",
+    "type": "shooting",
+    "lat": 42.9036,
+    "lng": -78.8189,
+    "fatalities": 10,
+    "injuries": 3,
+    "description": "A shooter opened fire inside and outside Tops Friendly Markets, killing 10 people and wounding three others before being apprehended at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1481,
+    "title": "Geneva Presbyterian Church Shooting",
+    "date": "2022-05-15",
+    "year": 2022,
+    "country": "United States",
+    "state": "California",
+    "city": "Laguna Woods",
+    "venue": "Geneva Presbyterian Church",
+    "category": "House of Worship Shooting",
+    "type": "shooting",
+    "lat": 33.6090,
+    "lng": -117.7256,
+    "fatalities": 1,
+    "injuries": 5,
+    "description": "A shooter opened fire inside Geneva Presbyterian Church, killing one person and wounding five before being restrained by citizens and apprehended by law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+ {
+    "id": 1482,
+    "title": "Vista View Apartments Shooting",
+    "date": "2022-05-25",
+    "year": 2022,
+    "country": "United States",
+    "state": "West Virginia",
+    "city": "Charleston",
+    "venue": "Vista View Apartments",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 38.3498,
+    "lng": -81.6326,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at people outside the Vista View Apartments in Charleston. No casualties were reported before the shooter was killed by an armed citizen at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1483,
+    "title": "Old River Road Shooting",
+    "date": "2022-05-28",
+    "year": 2022,
+    "country": "United States",
+    "state": "South Carolina",
+    "city": "Florence",
+    "venue": "Old River Road",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 34.1954,
+    "lng": -79.7626,
+    "fatalities": 1,
+    "injuries": 1,
+    "description": "A shooter fired at moving vehicles along Old River Road, killing one person and wounding another before being apprehended by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1484,
+    "title": "Saint Francis Hospital Shooting",
+    "date": "2022-06-01",
+    "year": 2022,
+    "country": "United States",
+    "state": "Oklahoma",
+    "city": "Tulsa",
+    "venue": "Natalie Medical Building, Saint Francis Hospital",
+    "category": "Healthcare Facility Shooting",
+    "type": "shooting",
+    "lat": 36.0558,
+    "lng": -95.9680,
+    "fatalities": 4,
+    "injuries": 0,
+    "description": "A shooter opened fire inside the Natalie Medical Building at Saint Francis Hospital, killing four people before dying by suicide after law enforcement arrived.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1485,
+    "title": "Columbia Machine Inc. Shooting",
+    "date": "2022-06-09",
+    "year": 2022,
+    "country": "United States",
+    "state": "Maryland",
+    "city": "Smithsburg",
+    "venue": "Columbia Machine Inc.",
+    "category": "Workplace Shooting",
+    "type": "shooting",
+    "lat": 39.6615,
+    "lng": -77.5725,
+    "fatalities": 3,
+    "injuries": 2,
+    "description": "A shooter opened fire at Columbia Machine Inc., killing three employees and wounding an employee and a law enforcement officer before being apprehended at another location following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1486,
+    "title": "Ellisville Multiple Location Shooting",
+    "date": "2022-06-12",
+    "year": 2022,
+    "country": "United States",
+    "state": "Missouri",
+    "city": "Ellisville",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 38.5926,
+    "lng": -90.5870,
+    "fatalities": 0,
+    "injuries": 2,
+    "description": "A shooter opened fire at people at various locations in Ellisville, wounding two people before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1487,
+    "title": "Duncanville Fieldhouse Shooting",
+    "date": "2022-06-13",
+    "year": 2022,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Duncanville",
+    "venue": "Duncanville Fieldhouse",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 32.6518,
+    "lng": -96.9083,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at people inside the Duncanville Fieldhouse. No casualties were reported before the shooter was killed by law enforcement following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1488,
+    "title": "Saint Stephen's Episcopal Church Shooting",
+    "date": "2022-06-16",
+    "year": 2022,
+    "country": "United States",
+    "state": "Alabama",
+    "city": "Vestavia Hills",
+    "venue": "Saint Stephen's Episcopal Church",
+    "category": "House of Worship Shooting",
+    "type": "shooting",
+    "lat": 33.4487,
+    "lng": -86.7870,
+    "fatalities": 3,
+    "injuries": 0,
+    "description": "A shooter opened fire inside Saint Stephen's Episcopal Church, killing three people before being restrained by a citizen and apprehended by law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1489,
+    "title": "Philadelphia Multiple Location Shooting",
+    "date": "2022-06-21",
+    "year": 2022,
+    "country": "United States",
+    "state": "Pennsylvania",
+    "city": "Philadelphia",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 39.9526,
+    "lng": -75.1652,
+    "fatalities": 1,
+    "injuries": 0,
+    "description": "A shooter opened fire at people at various locations in Philadelphia, killing one person before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1490,
+    "title": "Germantown and Tysons Multiple Location Shooting",
+    "date": "2022-07-04",
+    "year": 2022,
+    "country": "United States",
+    "state": "Maryland and Virginia",
+    "city": "Germantown and Tysons",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 39.1732,
+    "lng": -77.2717,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at people at various locations in Germantown, Maryland, and Tysons, Virginia. No casualties were reported before the shooter was apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1491,
+    "title": "Greenwood Park Mall Shooting",
+    "date": "2022-07-17",
+    "year": 2022,
+    "country": "United States",
+    "state": "Indiana",
+    "city": "Greenwood",
+    "venue": "Greenwood Park Mall",
+    "category": "Commerce Mass Shooting",
+    "type": "shooting",
+    "lat": 39.6068,
+    "lng": -86.1577,
+    "fatalities": 3,
+    "injuries": 2,
+    "description": "A shooter opened fire inside Greenwood Park Mall, killing three people and wounding two before being killed by an armed citizen at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1492,
+    "title": "Kinston Multiple Location Shooting",
+    "date": "2022-07-25",
+    "year": 2022,
+    "country": "United States",
+    "state": "North Carolina",
+    "city": "Kinston",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 35.2627,
+    "lng": -77.5816,
+    "fatalities": 2,
+    "injuries": 0,
+    "description": "A shooter opened fire at people at various locations in Kinston, killing two people before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1493,
+    "title": "Frisbee Street and Telegraph Road Shooting",
+    "date": "2022-07-27",
+    "year": 2022,
+    "country": "United States",
+    "state": "Michigan",
+    "city": "Detroit",
+    "venue": "Frisbee Street and Telegraph Road",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 42.3314,
+    "lng": -83.0458,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "An unidentified shooter opened fire at people in Detroit near Frisbee Street and Telegraph Road. No casualties were reported and the shooter remained at large according to the FBI report.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1494,
+    "title": "Detroit Residential Location Shooting",
+    "date": "2022-07-31",
+    "year": 2022,
+    "country": "United States",
+    "city": "Detroit",
+    "state": "Michigan",
+    "venue": "Residential location",
+    "category": "Residence Shooting",
+    "type": "shooting",
+    "lat": 42.3314,
+    "lng": -83.0458,
+    "fatalities": 2,
+    "injuries": 6,
+    "description": "A shooter opened fire at people at a residence in Detroit, killing two people and wounding six before being apprehended by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1495,
+    "title": "Little Rock Multiple Location Shooting",
+    "date": "2022-08-14",
+    "year": 2022,
+    "country": "United States",
+    "state": "Arkansas",
+    "city": "Little Rock",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 34.7465,
+    "lng": -92.2896,
+    "fatalities": 1,
+    "injuries": 1,
+    "description": "A shooter opened fire at various locations in Little Rock, killing one person and wounding another before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1496,
+    "title": "Interstate 85 Multiple Location Shooting",
+    "date": "2022-08-17",
+    "year": 2022,
+    "country": "United States",
+    "state": "Alabama and Georgia",
+    "city": "Interstate 85",
+    "venue": "Interstate 85",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 32.8407,
+    "lng": -85.2130,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter opened fire at people at various locations along Interstate 85 in Alabama and Georgia, wounding one person before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1497,
+    "title": "Houston Residential Location Shooting",
+    "date": "2022-08-28",
+    "year": 2022,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Houston",
+    "venue": "Residential location",
+    "category": "Residence Shooting",
+    "type": "shooting",
+    "lat": 29.7604,
+    "lng": -95.3698,
+    "fatalities": 3,
+    "injuries": 3,
+    "description": "A shooter opened fire at people evacuating a fire at a housing complex in Houston, killing three residents and wounding three others before being killed by law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1498,
+    "title": "Detroit Multiple Location Shooting",
+    "date": "2022-08-28",
+    "year": 2022,
+    "country": "United States",
+    "state": "Michigan",
+    "city": "Detroit",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 42.3314,
+    "lng": -83.0458,
+    "fatalities": 3,
+    "injuries": 1,
+    "description": "A shooter opened fire at people at various locations in Detroit, killing three people and wounding one before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1499,
+    "title": "Forum Shopping Center and Safeway Shooting",
+    "date": "2022-08-28",
+    "year": 2022,
+    "country": "United States",
+    "state": "Oregon",
+    "city": "Bend",
+    "venue": "Forum Shopping Center / Safeway",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 44.0582,
+    "lng": -121.3153,
+    "fatalities": 2,
+    "injuries": 2,
+    "description": "A shooter opened fire at the Forum Shopping Center and Safeway, killing two people and wounding two before committing suicide after being confronted by an employee.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1500,
+    "title": "Days Inn Hotel Shooting",
+    "date": "2022-08-28",
+    "year": 2022,
+    "country": "United States",
+    "state": "Arizona",
+    "city": "Phoenix",
+    "venue": "Days Inn Hotel",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 33.4484,
+    "lng": -112.0740,
+    "fatalities": 2,
+    "injuries": 5,
+    "description": "A shooter opened fire at people inside and outside the Days Inn Hotel, killing two people and wounding five including two law enforcement officers before dying by suicide following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1501,
+    "title": "Memphis Multiple Location Shooting",
+    "date": "2022-09-07",
+    "year": 2022,
+    "country": "United States",
+    "state": "Tennessee",
+    "city": "Memphis",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 35.1495,
+    "lng": -90.0490,
+    "fatalities": 3,
+    "injuries": 3,
+    "description": "A shooter opened fire at people at various locations throughout Memphis over the course of the day, killing three people and wounding three before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+ {
+    "id": 1502,
+    "title": "Baytown Multiple Location Shooting",
+    "date": "2022-10-05",
+    "year": 2022,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Baytown",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 29.7355,
+    "lng": -94.9774,
+    "fatalities": 2,
+    "injuries": 2,
+    "description": "A shooter opened fire at people at various locations in Baytown, killing two people and wounding two others before being killed by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1503,
+    "title": "Neuse River Greenway Shooting",
+    "date": "2022-10-13",
+    "year": 2022,
+    "country": "United States",
+    "state": "North Carolina",
+    "city": "Raleigh",
+    "venue": "Neuse River Greenway",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 35.8320,
+    "lng": -78.5710,
+    "fatalities": 5,
+    "injuries": 2,
+    "description": "A shooter opened fire along the Neuse River Greenway, killing five people including an off-duty law enforcement officer and wounding two others including a law enforcement officer before being apprehended following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1504,
+    "title": "Central Visual and Performing Arts High School Shooting",
+    "date": "2022-10-24",
+    "year": 2022,
+    "country": "United States",
+    "state": "Missouri",
+    "city": "St. Louis",
+    "venue": "Central Visual and Performing Arts High School",
+    "category": "School Shooting",
+    "type": "shooting",
+    "lat": 38.5739,
+    "lng": -90.2575,
+    "fatalities": 2,
+    "injuries": 7,
+    "description": "A shooter opened fire inside Central Visual and Performing Arts High School, killing one teacher and one student and wounding seven students before being killed by law enforcement following an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1505,
+    "title": "Interstate 10 Shooting",
+    "date": "2022-11-19",
+    "year": 2022,
+    "country": "United States",
+    "state": "Arizona",
+    "city": "Avondale",
+    "venue": "Interstate 10",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 33.4356,
+    "lng": -112.3496,
+    "fatalities": 1,
+    "injuries": 2,
+    "description": "A shooter opened fire at people on Interstate 10 in Avondale, killing one person and wounding two before being apprehended by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1506,
+    "title": "Club Q Shooting",
+    "date": "2022-11-19",
+    "year": 2022,
+    "country": "United States",
+    "state": "Colorado",
+    "city": "Colorado Springs",
+    "venue": "Club Q",
+    "category": "Commerce Mass Shooting",
+    "type": "shooting",
+    "lat": 38.8372,
+    "lng": -104.7463,
+    "fatalities": 5,
+    "injuries": 28,
+    "description": "A shooter opened fire inside Club Q, killing five people and wounding 28 before being restrained by two unarmed citizens and apprehended by law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1507,
+    "title": "Walmart #1841 Shooting",
+    "date": "2022-11-22",
+    "year": 2022,
+    "country": "United States",
+    "state": "Virginia",
+    "city": "Chesapeake",
+    "venue": "Walmart #1841",
+    "category": "Commerce Mass Shooting",
+    "type": "shooting",
+    "lat": 36.7682,
+    "lng": -76.2875,
+    "fatalities": 6,
+    "injuries": 6,
+    "description": "A shooter opened fire inside Walmart #1841, killing six employees and wounding six others before dying by suicide prior to the arrival of law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1508,
+    "title": "Lancaster Multiple Location Shooting",
+    "date": "2022-12-11",
+    "year": 2022,
+    "country": "United States",
+    "state": "Pennsylvania",
+    "city": "Lancaster",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 40.0379,
+    "lng": -76.3055,
+    "fatalities": 1,
+    "injuries": 2,
+    "description": "A shooter opened fire at people at various locations in Lancaster, killing one person and wounding two before dying by suicide at another location prior to the arrival of law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+  {
+    "id": 1509,
+    "title": "Orlando Multiple Location Shooting",
+    "date": "2022-12-14",
+    "year": 2022,
+    "country": "United States",
+    "state": "Florida",
+    "city": "Orlando",
+    "venue": "Multiple locations",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 28.5383,
+    "lng": -81.3792,
+    "fatalities": 0,
+    "injuries": 2,
+    "description": "A shooter opened fire at people at various locations in Orlando, wounding two people including a security guard before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2022"
+    ]
+  },
+
+  {
+    "id": 1510,
+    "title": "Wendy's Restaurant Shooting",
+    "date": "2020-01-22",
+    "year": 2020,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Houston",
+    "venue": "Wendy's Restaurant",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 29.7604,
+    "lng": -95.3698,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter opened fire at people at a Wendy's restaurant in Houston, wounding one person before being apprehended by law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1511,
+    "title": "Multiple Location Shooting, Aurora",
+    "date": "2020-02-15",
+    "year": 2020,
+    "country": "United States",
+    "state": "Colorado",
+    "city": "Aurora",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 39.7294,
+    "lng": -104.8319,
+    "fatalities": 1,
+    "injuries": 4,
+    "description": "A shooter opened fire at people at multiple locations in Aurora, killing one person and wounding four before being apprehended by law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1512,
+    "title": "Molotov Cocktail and Shooting Incident",
+    "date": "2020-02-24",
+    "year": 2020,
+    "country": "United States",
+    "state": "California",
+    "city": "Santa Clara",
+    "venue": "Residential area",
+    "category": "Residential Shooting",
+    "type": "shooting",
+    "lat": 37.3541,
+    "lng": -121.9552,
+    "fatalities": 0,
+    "injuries": 2,
+    "description": "A shooter opened fire during an incident involving multiple locations, wounding two people before being apprehended.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1513,
+    "title": "Milwaukee Brewery Shooting",
+    "date": "2020-02-26",
+    "year": 2020,
+    "country": "United States",
+    "state": "Wisconsin",
+    "city": "Milwaukee",
+    "venue": "Molson Coors Brewing Company",
+    "category": "Workplace Mass Shooting",
+    "type": "shooting",
+    "lat": 43.0389,
+    "lng": -87.9065,
+    "fatalities": 5,
+    "injuries": 0,
+    "description": "A shooter opened fire at the Molson Coors Brewing Company complex, killing five employees before dying by suicide at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1514,
+    "title": "North Carolina Highway Shooting",
+    "date": "2020-03-01",
+    "year": 2020,
+    "country": "United States",
+    "state": "North Carolina",
+    "city": "Charlotte",
+    "venue": "Highway",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 35.2271,
+    "lng": -80.8431,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter fired at people and vehicles along a highway in North Carolina, wounding one person before being apprehended.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1515,
+    "title": "Springfield Multiple Location Shooting",
+    "date": "2020-03-16",
+    "year": 2020,
+    "country": "United States",
+    "state": "Missouri",
+    "city": "Springfield",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 37.2090,
+    "lng": -93.2923,
+    "fatalities": 4,
+    "injuries": 0,
+    "description": "A shooter opened fire at people at multiple locations in Springfield, killing four people before being killed by law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1516,
+    "title": "Nashville Multiple Location Shooting",
+    "date": "2020-03-27",
+    "year": 2020,
+    "country": "United States",
+    "state": "Tennessee",
+    "city": "Nashville",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 36.1627,
+    "lng": -86.7816,
+    "fatalities": 1,
+    "injuries": 1,
+    "description": "A shooter opened fire at people at multiple locations in Nashville, killing one person and wounding another before being apprehended.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1517,
+    "title": "Tampa Multiple Location Shooting",
+    "date": "2020-04-03",
+    "year": 2020,
+    "country": "United States",
+    "state": "Florida",
+    "city": "Tampa",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 27.9506,
+    "lng": -82.4572,
+    "fatalities": 0,
+    "injuries": 2,
+    "description": "A shooter opened fire at people at multiple locations in Tampa, wounding two people before being apprehended.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1518,
+    "title": "Jacksonville Multiple Location Shooting",
+    "date": "2020-04-12",
+    "year": 2020,
+    "country": "United States",
+    "state": "Florida",
+    "city": "Jacksonville",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 30.3322,
+    "lng": -81.6557,
+    "fatalities": 1,
+    "injuries": 3,
+    "description": "A shooter opened fire at people at multiple locations in Jacksonville, killing one person and wounding three before being apprehended.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1519,
+    "title": "Maryland Multiple Location Shooting",
+    "date": "2020-04-17",
+    "year": 2020,
+    "country": "United States",
+    "state": "Maryland",
+    "city": "Baltimore",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 39.2904,
+    "lng": -76.6122,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter opened fire at people at multiple locations in Maryland, wounding one person before being apprehended.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+ {
+    "id": 1522,
+    "title": "Super 8 Hotel Shooting",
+    "date": "2020-05-17",
+    "year": 2020,
+    "country": "United States",
+    "state": "Illinois",
+    "city": "Rockford",
+    "venue": "Super 8 Hotel",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 42.2711,
+    "lng": -89.0940,
+    "fatalities": 1,
+    "injuries": 2,
+    "description": "A shooter opened fire inside the Super 8 hotel in Rockford, killing one person and wounding two before dying by suicide following an exchange of gunfire with law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1523,
+    "title": "Westgate Entertainment District Shooting",
+    "date": "2020-05-20",
+    "year": 2020,
+    "country": "United States",
+    "state": "Arizona",
+    "city": "Glendale",
+    "venue": "Westgate Entertainment District",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 33.5312,
+    "lng": -112.2625,
+    "fatalities": 0,
+    "injuries": 3,
+    "description": "A shooter opened fire inside the Westgate Entertainment District, wounding three people before being apprehended by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1524,
+    "title": "Naval Air Station Corpus Christi Shooting",
+    "date": "2020-05-21",
+    "year": 2020,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Corpus Christi",
+    "venue": "Naval Air Station Corpus Christi",
+    "category": "Government Facility Shooting",
+    "type": "shooting",
+    "lat": 27.6920,
+    "lng": -97.2900,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter fired at security force guards at the gate of Naval Air Station Corpus Christi, wounding one security force guard before being killed by security personnel.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1525,
+    "title": "Centennial Bridge Shooting",
+    "date": "2020-05-27",
+    "year": 2020,
+    "country": "United States",
+    "state": "Kansas",
+    "city": "Leavenworth",
+    "venue": "Centennial Bridge",
+    "category": "Highway Shooting",
+    "type": "shooting",
+    "lat": 39.3111,
+    "lng": -94.9225,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter randomly fired at vehicles on Centennial Bridge. An active-duty soldier intervened by striking the shooter with his vehicle, ending the encounter. One person was wounded and the shooter was apprehended.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1526,
+    "title": "Indoor Comfort and Heating Shooting",
+    "date": "2020-06-01",
+    "year": 2020,
+    "country": "United States",
+    "state": "Tennessee",
+    "city": "Paris Landing",
+    "venue": "Indoor Comfort and Heating",
+    "category": "Workplace Shooting",
+    "type": "shooting",
+    "lat": 36.3017,
+    "lng": -88.3117,
+    "fatalities": 2,
+    "injuries": 0,
+    "description": "A shooter opened fire inside Indoor Comfort and Heating, killing two people before dying by suicide at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1527,
+    "title": "Paso Robles Multiple Location Shooting",
+    "date": "2020-06-10",
+    "year": 2020,
+    "country": "United States",
+    "state": "California",
+    "city": "Paso Robles",
+    "venue": "Multiple locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 35.6266,
+    "lng": -120.6910,
+    "fatalities": 1,
+    "injuries": 4,
+    "description": "A shooter opened fire at the San Luis Obispo County Police Department building and later at the Paso Robles train station, killing one person and wounding four law enforcement officers before being killed by law enforcement the following day.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1528,
+    "title": "Rebar Bar and Lounge Shooting",
+    "date": "2020-06-12",
+    "year": 2020,
+    "country": "United States",
+    "state": "Texas",
+    "city": "San Antonio",
+    "venue": "Rebar Bar and Lounge",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 29.4241,
+    "lng": -98.4936,
+    "fatalities": 0,
+    "injuries": 8,
+    "description": "A shooter fired at patrons outside Rebar Bar and Lounge after being denied entry, wounding eight people before being apprehended six days later.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1529,
+    "title": "Giuseppe's Pizzeria Shooting",
+    "date": "2020-06-19",
+    "year": 2020,
+    "country": "United States",
+    "state": "Florida",
+    "city": "Sebastian",
+    "venue": "Giuseppe's Pizzeria",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 27.8164,
+    "lng": -80.4706,
+    "fatalities": 1,
+    "injuries": 0,
+    "description": "A shooter opened fire inside Giuseppe's Pizzeria, killing one person before being apprehended by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1530,
+    "title": "Applebee's Restaurant Shooting",
+    "date": "2020-06-22",
+    "year": 2020,
+    "country": "United States",
+    "state": "Missouri",
+    "city": "St. John",
+    "venue": "Applebee's Restaurant",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 38.7139,
+    "lng": -90.3435,
+    "fatalities": 1,
+    "injuries": 2,
+    "description": "A shooter opened fire inside an Applebee's restaurant, killing one person and wounding two before being apprehended at a residence the following day.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1531,
+    "title": "Bunn-O-Matic Warehouse Shooting",
+    "date": "2020-06-26",
+    "year": 2020,
+    "country": "United States",
+    "state": "Illinois",
+    "city": "Springfield",
+    "venue": "Bunn-O-Matic Warehouse",
+    "category": "Workplace Mass Shooting",
+    "type": "shooting",
+    "lat": 39.7817,
+    "lng": -89.6501,
+    "fatalities": 3,
+    "injuries": 0,
+    "description": "A shooter opened fire inside the Bunn-O-Matic warehouse, killing three people before dying by suicide at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1532,
+    "title": "Walmart Distribution Facility Shooting",
+    "date": "2020-06-27",
+    "year": 2020,
+    "country": "United States",
+    "state": "California",
+    "city": "Red Bluff",
+    "venue": "Walmart Distribution Facility",
+    "category": "Workplace Shooting",
+    "type": "shooting",
+    "lat": 40.1785,
+    "lng": -122.2358,
+    "fatalities": 2,
+    "injuries": 4,
+    "description": "A shooter drove a vehicle into a Walmart distribution facility, exited, and opened fire inside the building, killing two people and wounding four before dying from a gunshot wound sustained during an exchange with law enforcement.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1533,
+    "title": "Jefferson Square Park Shooting",
+    "date": "2020-06-27",
+    "year": 2020,
+    "country": "United States",
+    "state": "Kentucky",
+    "city": "Louisville",
+    "venue": "Jefferson Square Park",
+    "category": "Park Shooting",
+    "type": "shooting",
+    "lat": 38.2469,
+    "lng": -85.7664,
+    "fatalities": 1,
+    "injuries": 0,
+    "description": "A shooter opened fire into a large crowd in Jefferson Square Park, killing one person before being apprehended by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1534,
+    "title": "Manteca Residential Shooting",
+    "date": "2020-07-25",
+    "year": 2020,
+    "country": "United States",
+    "state": "California",
+    "city": "Manteca",
+    "venue": "Residential address",
+    "category": "Residence Shooting",
+    "type": "shooting",
+    "lat": 37.7974,
+    "lng": -121.2161,
+    "fatalities": 0,
+    "injuries": 9,
+    "description": "An unidentified shooter opened fire inside a residence in a Manteca neighborhood, wounding nine people. The shooter remained at large according to the FBI report.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1535,
+    "title": "Eagle River Residential Neighborhood Shooting",
+    "date": "2020-07-30",
+    "year": 2020,
+    "country": "United States",
+    "state": "Alaska",
+    "city": "Eagle River",
+    "venue": "Residential neighborhood",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 61.3219,
+    "lng": -149.5672,
+    "fatalities": 0,
+    "injuries": 1,
+    "description": "A shooter opened fire within a residential neighborhood in Eagle River, wounding one person before being apprehended by law enforcement at the scene.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1536,
+    "title": "Tampa Multiple Location Shooting",
+    "date": "2020-07-30",
+    "year": 2020,
+    "country": "United States",
+    "state": "Florida",
+    "city": "Tampa",
+    "venue": "Multiple locations",
+    "category": "Open Space Shooting",
+    "type": "shooting",
+    "lat": 27.9506,
+    "lng": -82.4572,
+    "fatalities": 0,
+    "injuries": 5,
+    "description": "A shooter opened fire at multiple locations in Tampa, wounding five people including one law enforcement officer before being apprehended at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1537,
+    "title": "Tin Cup Campground Shooting",
+    "date": "2020-08-01",
+    "year": 2020,
+    "country": "United States",
+    "state": "Idaho",
+    "city": "Challis",
+    "venue": "Tin Cup Campground",
+    "category": "Campground Shooting",
+    "type": "shooting",
+    "lat": 44.5013,
+    "lng": -114.2317,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at the Tin Cup Campground within the Salmon-Challis National Forest. No casualties were reported before the shooter was killed by an off-duty law enforcement officer.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1538,
+    "title": "Dayton Multiple Location Shooting",
+    "date": "2020-08-17",
+    "year": 2020,
+    "country": "United States",
+    "state": "Texas",
+    "city": "Dayton",
+    "venue": "Multiple residential locations",
+    "category": "Multiple Location Shooting",
+    "type": "shooting",
+    "lat": 30.0469,
+    "lng": -94.8852,
+    "fatalities": 3,
+    "injuries": 2,
+    "description": "A shooter went to multiple neighboring residences in Dayton, killing three people and wounding two before being apprehended by law enforcement at another location.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
+  },
+  {
+    "id": 1539,
+    "title": "Vons Gas Station Shooting",
+    "date": "2020-08-21",
+    "year": 2020,
+    "country": "United States",
+    "state": "California",
+    "city": "Nipomo",
+    "venue": "Vons Gas Station",
+    "category": "Commerce Shooting",
+    "type": "shooting",
+    "lat": 35.0428,
+    "lng": -120.4760,
+    "fatalities": 0,
+    "injuries": 0,
+    "description": "A shooter opened fire at the Vons gas station. No casualties were reported before the shooter was killed by law enforcement during an exchange of gunfire.",
+    "sources": [
+      "Federal Bureau of Investigation — Active Shooter Incidents in the United States in 2020"
+    ]
   }
 ]
