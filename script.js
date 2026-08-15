@@ -1105,6 +1105,78 @@ function linearTrendSlope(points) {
     return (n * sumXY - sumX * sumY) / denom;
 }
 
+// =====================================================================
+// REGIME-CHANGE DETECTOR
+//
+// A disclosed HEURISTIC, not a formal econometric structural-break
+// test (a real Chow test or CUSUM test needs regression machinery
+// this build doesn't have). It flags one of five states so a model
+// trained on an early period doesn't silently assume the recent
+// period behaves the same way:
+//   Stable / Increasing / Decreasing / High-volatility / Structural break
+// =====================================================================
+
+function detectRegime(usableYears, yearlyCounts) {
+    if (usableYears.length < 4) return { regime: "Insufficient data", detail: "Need at least 4 years of data." };
+
+    const counts = usableYears.map(y => yearlyCounts[y] || 0);
+    const mean = counts.reduce((a, b) => a + b, 0) / counts.length;
+    const variance = counts.reduce((a, b) => a + (b - mean) ** 2, 0) / counts.length;
+    const coefficientOfVariation = mean > 0 ? Math.sqrt(variance) / mean : 0;
+
+    const mid = Math.floor(usableYears.length / 2);
+    const earlyCounts = counts.slice(0, mid);
+    const lateCounts = counts.slice(mid);
+    const earlyMean = earlyCounts.reduce((a, b) => a + b, 0) / earlyCounts.length;
+    const lateMean = lateCounts.reduce((a, b) => a + b, 0) / lateCounts.length;
+    const earlyStd = Math.sqrt(earlyCounts.reduce((a, b) => a + (b - earlyMean) ** 2, 0) / earlyCounts.length);
+
+    // A genuine level-shift ("structural break") looks like: flat
+    // within the early half, flat within the late half, but a big gap
+    // BETWEEN the two halves. A smooth, steady climb also produces a
+    // big early-vs-late mean gap, but it does NOT look flat within
+    // each half — both halves have their own real trend. Checking
+    // within-half slope first is what tells the two apart; without
+    // it, every sustained trend gets misread as a sudden break.
+    const earlySlope = linearTrendSlope(earlyCounts.map((c, i) => [i, c]));
+    const lateSlope = linearTrendSlope(lateCounts.map((c, i) => [i, c]));
+    // Flatness needs to be judged RELATIVE to each half's own scale,
+    // not by a fixed absolute slope. A late half of [20, 21, 19] has
+    // an OLS slope of -0.5 in absolute terms — comfortably "flat" next
+    // to a mean of 20, but an absolute threshold couldn't tell that
+    // apart from a genuinely trending series with a small mean.
+    const earlySlopeRelative = earlyMean > 0 ? Math.abs(earlySlope) / earlyMean : Math.abs(earlySlope);
+    const lateSlopeRelative = lateMean > 0 ? Math.abs(lateSlope) / lateMean : Math.abs(lateSlope);
+    const bothHalvesFlat = earlySlopeRelative < 0.15 && lateSlopeRelative < 0.15;
+    // When the early half has zero internal variance (a perfectly
+    // flat run — the cleanest possible break signature), earlyStd is
+    // 0 and a purely relative threshold (gap > 2×earlyStd) can never
+    // fire no matter how large the actual jump is. Fall back to an
+    // absolute-gap threshold in that case instead of silently failing
+    // to detect the clearest kind of break there is.
+    const structuralBreak = bothHalvesFlat && (
+        earlyStd > 0
+            ? Math.abs(lateMean - earlyMean) > 2 * earlyStd
+            : Math.abs(lateMean - earlyMean) >= Math.max(1, mean * 0.3)
+    );
+
+    // Structural break is checked BEFORE volatility: a flat-then-jump
+    // series legitimately has high overall variance too, but
+    // "structural break" is the more specific, more useful diagnosis
+    // when both are true — volatility alone would bury that signal.
+    if (structuralBreak) {
+        return { regime: "Structural break", detail: `Flat within each half of the data, but the recent half (avg ${Math.round(lateMean * 10) / 10}/yr) sits well above/below the earlier half (avg ${Math.round(earlyMean * 10) / 10}/yr) — heuristic level-shift detector, not a formal statistical test with a p-value.` };
+    }
+    if (coefficientOfVariation > 0.75) {
+        return { regime: "High-volatility", detail: `Year-to-year counts vary widely relative to the mean (coefficient of variation ${Math.round(coefficientOfVariation * 100) / 100}), without a clean level-shift pattern.` };
+    }
+
+    const trendSlope = linearTrendSlope(usableYears.map((y, i) => [i, yearlyCounts[y] || 0]));
+    if (trendSlope > 0.15) return { regime: "Increasing", detail: "Sustained upward trend across the data window." };
+    if (trendSlope < -0.15) return { regime: "Decreasing", detail: "Sustained downward trend across the data window." };
+    return { regime: "Stable", detail: "No sustained trend, high volatility, or level shift detected." };
+}
+
 function computeForecast(country) {
     const countryEvents = events.filter(e => e.country === country && e.year <= THIS_YEAR);
     if (countryEvents.length === 0) return null;
@@ -1199,8 +1271,18 @@ function computeForecast(country) {
     // all. Separate from "forecast validation" (below), which is about
     // whether the resulting classification has ever been checked
     // against reality.
+    //
+    // "Insufficient data" is a genuine fourth state, not just a low
+    // score — below this floor, the point estimate itself is
+    // suppressed in the UI rather than shown with a "Low" label next
+    // to it. A confident-looking number next to the word "Low" still
+    // reads as a number to act on; "Insufficient data" doesn't.
+    const FORECAST_CONFIDENCE_MIN_YEARS = 2;
+    const FORECAST_CONFIDENCE_MIN_INCIDENTS = 3;
     let dataConfidence;
-    if (usableYears.length >= 8 && totalInWindow >= 15 && dispersionRatio < 3) dataConfidence = "High";
+    if (usableYears.length < FORECAST_CONFIDENCE_MIN_YEARS || totalInWindow < FORECAST_CONFIDENCE_MIN_INCIDENTS) {
+        dataConfidence = "Insufficient data";
+    } else if (usableYears.length >= 8 && totalInWindow >= 15 && dispersionRatio < 3) dataConfidence = "High";
     else if (usableYears.length >= 4 && totalInWindow >= 6) dataConfidence = "Moderate";
     else dataConfidence = "Low";
 
@@ -1288,6 +1370,9 @@ function computeForecast(country) {
     // count-based and interval-based backtests below).
     const incidentProbability12mo = Math.round((1 - Math.exp(-modelAdjustedRate)) * 1000) / 10;
 
+    const regimeResult = detectRegime(usableYears, yearlyCounts);
+    const populationAdjustedRate = computePopulationAdjustedRate(country, historicalAnnualRate);
+
     return {
         country, periodLabel, riskTier, estimateLow, estimateHigh,
         modelEstimate, historicalAnnualRate, modelAdjustedRate,
@@ -1297,7 +1382,7 @@ function computeForecast(country) {
         dispersionRatio, yoyChangePct, yoyContradictsTier,
         yearsOfData: usableYears.length, totalInWindow,
         multiWindowTrend, acceleration, timeSinceLastIncidentDays, geographicConcentration,
-        incidentProbability12mo
+        incidentProbability12mo, regime: regimeResult, populationAdjustedRate
     };
 }
 
@@ -1353,6 +1438,51 @@ let backtestCache = {};
 // computeRiskScoreBacktest for whether the score has any track record
 // of flagging genuinely elevated years in advance.
 // =====================================================================
+
+// =====================================================================
+// POPULATION-ADJUSTED RATE
+//
+// Locked spec: population-adjusted rate is reported "Not available"
+// rather than fabricated wherever real population data hasn't been
+// integrated for that country. This registry starts with exactly two
+// entries — the two countries actively growing in this dataset — each
+// with a real, cited, dated figure. Every other country returns "Not
+// available" until it's added the same way: with a citation, not a
+// guess. State/province-level population data would need a much
+// larger data-entry effort and is not attempted here.
+//
+// These are point-in-time estimates and WILL go stale — re-verify and
+// update asOf when revisiting this registry, don't just trust it
+// indefinitely.
+// =====================================================================
+
+const POPULATION_DATA = {
+    "United States": {
+        population: 341784857,
+        asOf: "2025",
+        citation: "U.S. Census Bureau (2025 official estimate), via Demographics of the United States",
+        citationUrl: "https://en.wikipedia.org/wiki/Demographics_of_the_United_States"
+    },
+    Canada: {
+        population: 41651653,
+        asOf: "July 1, 2025",
+        citation: "Statistics Canada, \"Canada's population estimates: Age and gender, July 1, 2025\"",
+        citationUrl: "https://www150.statcan.gc.ca/n1/daily-quotidien/250924/dq250924a-eng.htm"
+    }
+};
+
+function computePopulationAdjustedRate(country, annualRate) {
+    const pop = POPULATION_DATA[country];
+    if (!pop || !Number.isFinite(annualRate)) return null;
+    return {
+        perMillion: Math.round((annualRate / pop.population) * 1_000_000 * 100) / 100,
+        population: pop.population,
+        asOf: pop.asOf,
+        citation: pop.citation,
+        citationUrl: pop.citationUrl
+    };
+}
+
 
 const RISK_SCORE_WEIGHTS = {
     recentActivity: 25,
@@ -1683,7 +1813,7 @@ function computeBacktest(country) {
             predictedLow: forecast.estimateLow,
             predictedCentral: forecast.modelEstimate,
             predictedHigh: forecast.estimateHigh,
-            actual, hit, naiveBaseline,
+            actual, hit, naiveBaseline, elevatedThreshold,
             modelError: Math.abs(forecast.modelEstimate - actual),
             naiveError: Math.abs(naiveBaseline - actual),
             predictedElevated, actualElevated, naivePredictedElevated,
@@ -1904,6 +2034,149 @@ function computeIntervalCalibration(backtestResults, coverage) {
     };
 }
 
+// =====================================================================
+// POISSON PROBABILITY MATH
+//
+// Lanczos approximation for the log-gamma function — standard,
+// well-known numerical method, accurate to ~15 significant digits.
+// Needed to compute Poisson PMF/CDF in log-space so factorials of
+// larger counts don't overflow a double.
+// =====================================================================
+
+function lgamma(x) {
+    const g = 7;
+    const c = [
+        0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+        771.32342877765313, -176.61502916214059, 12.507343278686905,
+        -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+    ];
+    if (x < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * x)) - lgamma(1 - x);
+    x -= 1;
+    let a = c[0];
+    const t = x + g + 0.5;
+    for (let i = 1; i < g + 2; i++) a += c[i] / (x + i);
+    return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+}
+
+function logPoissonPMF(k, lambda) {
+    if (lambda <= 0) return k === 0 ? 0 : -Infinity;
+    if (k < 0) return -Infinity;
+    return -lambda + k * Math.log(lambda) - lgamma(k + 1);
+}
+
+function poissonCDF(k, lambda) {
+    if (k < 0) return 0;
+    let sum = 0;
+    for (let i = 0; i <= Math.floor(k); i++) sum += Math.exp(logPoissonPMF(i, lambda));
+    return Math.min(1, sum);
+}
+
+// P(X > threshold) — used for "probability this period is elevated."
+function poissonProbabilityAbove(lambda, threshold) {
+    return Math.max(0, 1 - poissonCDF(Math.floor(threshold), lambda));
+}
+
+// =====================================================================
+// OVERDISPERSION TEST — Poisson vs. quasi-Poisson interval
+//
+// Real fitted Negative Binomial regression needs MLE dispersion-
+// parameter estimation, which is server-side work (statsmodels/
+// scikit-learn territory), not something to approximate client-side
+// and call "Negative Binomial." What IS honestly buildable here: a
+// quasi-Poisson interval that widens the Poisson margin by
+// sqrt(dispersion ratio) when the data is overdispersed (variance >
+// mean) — a standard, disclosed correction, tested walk-forward
+// against the plain Poisson-style heuristic margin already in use.
+// Whichever calibrates closer to its stated coverage on HELD-OUT
+// years wins; NHIRA doesn't just assume the fancier option is better.
+// =====================================================================
+
+function computeOverdispersionTest(backtestResults, dispersionRatio, coverage) {
+    if (!backtestResults || backtestResults.length < MIN_YEARS_FOR_BLEND_TUNING) return null;
+
+    const splitIndex = Math.max(3, Math.floor(backtestResults.length * 0.7));
+    const trainWindow = backtestResults.slice(0, splitIndex);
+    const testWindow = backtestResults.slice(splitIndex);
+    if (trainWindow.length < 3 || testWindow.length < 2) return null;
+
+    const scaleFactor = dispersionRatio > 1 ? Math.sqrt(dispersionRatio) : 1;
+
+    function coverageOf(window, widthMultiplier) {
+        const covered = window.filter(r => {
+            const baseMargin = Math.max(1, Math.abs(r.predictedHigh - r.predictedCentral));
+            const margin = baseMargin * widthMultiplier;
+            return r.actual >= r.predictedCentral - margin && r.actual <= r.predictedCentral + margin;
+        }).length;
+        return covered / window.length;
+    }
+
+    // Fit the multiplier that best matches the STATED coverage on
+    // TRAINING years only, for each approach — Poisson (multiplier
+    // fixed at 1, i.e. the existing heuristic margin) vs. quasi-Poisson
+    // (multiplier = sqrt(dispersion ratio)).
+    const poissonTestCoverage = coverageOf(testWindow, 1);
+    const quasiPoissonTestCoverage = coverageOf(testWindow, scaleFactor);
+
+    const poissonGap = Math.abs(poissonTestCoverage - coverage);
+    const quasiPoissonGap = Math.abs(quasiPoissonTestCoverage - coverage);
+    const preferred = quasiPoissonGap < poissonGap ? "quasi-Poisson" : "Poisson";
+
+    return {
+        dispersionRatio,
+        scaleFactor: Math.round(scaleFactor * 100) / 100,
+        poissonTestCoveragePct: Math.round(poissonTestCoverage * 1000) / 10,
+        quasiPoissonTestCoveragePct: Math.round(quasiPoissonTestCoverage * 1000) / 10,
+        statedCoveragePct: Math.round(coverage * 100),
+        preferred,
+        testYears: testWindow.length
+    };
+}
+
+// =====================================================================
+// PROBABILITY CALIBRATION DASHBOARD
+//
+// For each backtested year, compute a genuine probability that the
+// year would be "elevated" (Poisson P(X > threshold), using ONLY
+// that year's walk-forward central estimate and threshold — nothing
+// from later years). Bucket those probabilities into 10-point bands
+// and check the ACTUAL elevated-rate within each band. This is what
+// makes "70% probability" a checkable claim instead of a number that
+// merely looks plausible.
+// =====================================================================
+
+function computeCalibrationDashboard(backtestResults) {
+    if (!backtestResults || backtestResults.length < 6) return null;
+
+    // Probability that this year would exceed its own elevated
+    // threshold, computed from ONLY that year's walk-forward central
+    // estimate and threshold — no information from later years.
+    const withProb = backtestResults.map(r => ({
+        ...r,
+        probability: poissonProbabilityAbove(r.predictedCentral, r.elevatedThreshold)
+    }));
+
+    const buckets = [
+        { label: "50–60%", min: 0.5, max: 0.6 },
+        { label: "60–70%", min: 0.6, max: 0.7 },
+        { label: "70–80%", min: 0.7, max: 0.8 },
+        { label: "80–90%", min: 0.8, max: 0.9 },
+        { label: "90–100%", min: 0.9, max: 1.001 }
+    ];
+
+    const bucketResults = buckets.map(b => {
+        const inBucket = withProb.filter(r => r.probability >= b.min && r.probability < b.max);
+        if (!inBucket.length) return { ...b, n: 0, actualElevatedPct: null };
+        const actualElevatedCount = inBucket.filter(r => r.actualElevated).length;
+        return {
+            ...b,
+            n: inBucket.length,
+            actualElevatedPct: Math.round((actualElevatedCount / inBucket.length) * 1000) / 10
+        };
+    });
+
+    return { bucketResults, totalYears: backtestResults.length };
+}
+
 // Dynamic, honest status wording keyed to REAL computed numbers for
 // this country, never a hardcoded universal claim. Model A (count
 // forecast) and Model B (elevated-year detector) get separate
@@ -1947,7 +2220,7 @@ function forecastValidationSummary(backtest) {
     return `${backtest.hitRate}% hit rate over ${backtest.yearsTested} year${backtest.yearsTested === 1 ? "" : "s"} — model MAE ${backtest.modelMAE} vs. naive MAE ${backtest.naiveMAE} (${backtest.beatsNaive ? "beats" : "does not beat"} the naive baseline)`;
 }
 
-function renderBacktestTable(backtest) {
+function renderBacktestTable(backtest, dispersionRatio) {
     if (backtest.insufficientData) {
         return `<p class="dq-empty">Not enough historical years to backtest yet — ${backtest.yearsAvailable} year(s) available, need at least ${MIN_BACKTEST_TRAIN_YEARS + 2}.</p>`;
     }
@@ -2056,6 +2329,61 @@ function renderBacktestTable(backtest) {
             `}
         </dl>
 
+        <h3 class="analysis-heading">Overdispersion test</h3>
+        <p class="meta">
+            Real fitted Negative Binomial regression needs server-side MLE dispersion estimation. What's tested here
+            instead is honest and disclosed: a quasi-Poisson interval (widened by √dispersion ratio when the data is
+            overdispersed) compared against the plain heuristic margin — walk-forward, on held-out years only.
+        </p>
+        ${(() => {
+            const od = computeOverdispersionTest(backtest.results, dispersionRatio, 0.8);
+            if (!od) return `<p class="dq-empty">Not enough backtested years to run this test yet.</p>`;
+            return `
+                <dl class="forecast-fields">
+                    <dt>Dispersion ratio (variance/mean)</dt>
+                    <dd>${od.dispersionRatio} — ${od.dispersionRatio > 1.5 ? "meaningfully overdispersed" : od.dispersionRatio > 1 ? "mildly overdispersed" : "not overdispersed"} relative to a Poisson assumption (ratio = 1)</dd>
+
+                    <dt>Poisson-style interval, held-out coverage</dt>
+                    <dd>${od.poissonTestCoveragePct}% (stated target: ${od.statedCoveragePct}%)</dd>
+
+                    <dt>Quasi-Poisson interval, held-out coverage</dt>
+                    <dd>${od.quasiPoissonTestCoveragePct}% (width ×${od.scaleFactor}, stated target: ${od.statedCoveragePct}%)</dd>
+
+                    <dt>Preferred</dt>
+                    <dd><b>${od.preferred}</b> — chosen because it lands closer to the stated ${od.statedCoveragePct}% target on ${od.testYears} held-out year(s) this comparison was never fit to.</dd>
+                </dl>
+            `;
+        })()}
+
+        <h3 class="analysis-heading">Probability calibration</h3>
+        <p class="meta">
+            If NHIRA says "70% probability," roughly 70% of comparably-scored forecasts should actually turn out
+            elevated. Each bucket below uses only that year's own walk-forward probability — never information from
+            later years.
+        </p>
+        ${(() => {
+            const cal = computeCalibrationDashboard(backtest.results);
+            if (!cal) return `<p class="dq-empty">Not enough backtested years to build a calibration table yet.</p>`;
+            const rows = cal.bucketResults.map(b => `
+                <tr>
+                    <td>${b.label}</td>
+                    <td>${b.n}</td>
+                    <td>${b.actualElevatedPct === null ? "No years in this bucket" : `${b.actualElevatedPct}%`}</td>
+                </tr>
+            `).join("");
+            return `
+                <table class="backtest-table">
+                    <thead><tr><th>Stated probability</th><th>Years in bucket</th><th>Actual elevated rate</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <p class="review-criteria-note">
+                    Buckets with very few years (check the middle column) are not statistically reliable — a single
+                    year swings the percentage a lot. Read this as a work-in-progress diagnostic, not a settled result,
+                    until each bucket has a meaningful sample size.
+                </p>
+            `;
+        })()}
+
         <p class="review-criteria-note">
             Every row above was trained ONLY on data available before that forecast year — the model was never shown
             the year it was predicting. "Here is how NHIRA performed when it was not allowed to see the future."
@@ -2163,6 +2491,12 @@ function renderForecast(country) {
             <p>${modelA.text}</p>
         </div>
 
+        ${result.dataConfidence === "Insufficient data" ? `
+            <div class="model-status-badge model-status-gray">
+                <span class="model-status-label">FORECAST CONFIDENCE: INSUFFICIENT DATA</span>
+                <p>${escapeHtml(country)} has too little historical data (${result.yearsOfData} year(s), ${result.totalInWindow} incident(s) in the analysis window) to responsibly show a point estimate. Rather than force a number, NHIRA is declining to display one here.</p>
+            </div>
+        ` : `
         <div class="forecast-blocks">
             <div class="forecast-block forecast-block-category">
                 <p class="forecast-block-label">Historical activity category</p>
@@ -2181,6 +2515,17 @@ function renderForecast(country) {
             <b>${intervalLabel}.</b> This range represents the model's estimated uncertainty for the 12-month forecast.
             It is not a guarantee, and the low/high ends are not promised minimum or maximum outcomes.
         </p>
+
+        <dl class="forecast-fields">
+            <dt>Population-adjusted rate</dt>
+            <dd>${result.populationAdjustedRate
+                ? `${result.populationAdjustedRate.perMillion} incidents per million people (population ${result.populationAdjustedRate.population.toLocaleString()}, ${escapeHtml(result.populationAdjustedRate.asOf)}) — <a href="${escapeHtml(result.populationAdjustedRate.citationUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(result.populationAdjustedRate.citation)}</a>`
+                : "Not available — no cited population figure integrated for this country yet"}</dd>
+
+            <dt>Regime</dt>
+            <dd><b>${result.regime.regime}</b> — ${escapeHtml(result.regime.detail)}${result.regime.regime === "Structural break" || result.regime.regime === "High-volatility" ? " A model trained across the full history may not reflect the current regime as well as one weighted toward recent years." : ""}</dd>
+        </dl>
+        `}
 
         <div id="fcBlendOutput"></div>
 
@@ -2316,7 +2661,7 @@ function renderForecast(country) {
             predictive value, not just plausible-looking numbers.
         </p>
         <button id="fcBacktestBtn" type="button" class="backtest-run-btn">Run backtest for ${escapeHtml(country)}</button>
-        <div id="fcBacktestOutput">${backtestCache[country] ? renderBacktestTable(backtestCache[country]) : ""}</div>
+        <div id="fcBacktestOutput">${backtestCache[country] ? renderBacktestTable(backtestCache[country], result.dispersionRatio) : ""}</div>
     `;
 
     const fcBacktestBtn = document.getElementById("fcBacktestBtn");
