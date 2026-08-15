@@ -1507,6 +1507,22 @@ const RISK_SCORE_WEIGHTS = {
     temporalSeasonal: 10
 };
 
+// C.4 — population added as a 7th factor, deliberately NOT given a
+// large weight by default. Population takes 10 points, carved from
+// the existing six (each scaled by 0.9) so the total still sums to
+// 100 — it's added on top of, not stacked in addition to, full
+// weight. Used only when includePopulation is explicitly requested
+// AND the country has cited population data (currently US/Canada).
+const RISK_SCORE_WEIGHTS_WITH_POPULATION = {
+    recentActivity: 22.5,
+    historicalBaseline: 18,
+    acceleration: 18,
+    geographicClustering: 13.5,
+    casualtySeverity: 9,
+    temporalSeasonal: 9,
+    populationAdjusted: 10
+};
+
 const RISK_SCORE_MIN_FACTORS = 3;
 
 // Smooth ratio-to-baseline mapping shared by any factor expressed as
@@ -1557,7 +1573,7 @@ function percentileRank(value, allValues) {
 const RISK_SCORE_MIN_TOTAL_INCIDENTS = 6;
 const RISK_SCORE_MIN_TOTAL_YEARS = 4;
 
-function computeRiskScoreFactors(country, asOfYear, excludeKey) {
+function computeRiskScoreFactors(country, asOfYear, excludeKey, includePopulation) {
     const cutoff = asOfYear ?? THIS_YEAR;
     const countryEvents = events.filter(e => e.country === country && e.year <= cutoff);
     if (countryEvents.length === 0) return null;
@@ -1637,6 +1653,36 @@ function computeRiskScoreFactors(country, asOfYear, excludeKey) {
     }
     factors.temporalSeasonal = seasonalScore !== null ? { score: seasonalScore, detail: seasonalDetail } : null;
 
+    // 7. Population-adjusted rate (C.4 — only computed when explicitly
+    // requested AND cited population data exists for this country).
+    //
+    // Honest caveat, disclosed rather than hidden: NHIRA currently
+    // holds ONE static population figure per country (a 2025 snapshot),
+    // not a historical population time series. Since a country's
+    // population barely moves within a ~10-20 year backtest window,
+    // dividing every year's count by nearly the same constant does not
+    // change the RELATIVE pattern of high/low years within that
+    // country's own history — mathematically, this factor is expected
+    // to track recentActivity closely for exactly that reason. The C
+    // vs. C+population walk-forward test below measures this directly
+    // instead of assuming it; if it's true, that's not a modeling
+    // failure, it's a data limitation — a population TIME SERIES would
+    // let this factor add real independent information.
+    if (includePopulation) {
+        const popAdjusted = computePopulationAdjustedRate(country, recentRate);
+        const popAdjustedBaseline = computePopulationAdjustedRate(country, longRunRate);
+        if (popAdjusted && popAdjustedBaseline && popAdjustedBaseline.per100k > 0) {
+            factors.populationAdjusted = {
+                score: ratioToScore(popAdjusted.per100k / popAdjustedBaseline.per100k),
+                detail: `${popAdjusted.per100k}/100k recent vs. ${popAdjustedBaseline.per100k}/100k long-run (population ${popAdjustedBaseline.population.toLocaleString()})`
+            };
+        } else {
+            factors.populationAdjusted = null;
+        }
+    }
+
+    const activeWeights = includePopulation ? RISK_SCORE_WEIGHTS_WITH_POPULATION : RISK_SCORE_WEIGHTS;
+
     // Composite: weighted average of AVAILABLE factors only, reweighted
     // so the used weights sum to 100% — never padded with a guess.
     // excludeKey (ablation testing) forces one factor out of the
@@ -1655,9 +1701,9 @@ function computeRiskScoreFactors(country, asOfYear, excludeKey) {
         };
     }
 
-    const usedWeightSum = availableKeys.reduce((s, k) => s + RISK_SCORE_WEIGHTS[k], 0);
+    const usedWeightSum = availableKeys.reduce((s, k) => s + activeWeights[k], 0);
     const compositeScore = Math.round(
-        availableKeys.reduce((s, k) => s + factors[k].score * (RISK_SCORE_WEIGHTS[k] / usedWeightSum), 0)
+        availableKeys.reduce((s, k) => s + factors[k].score * (activeWeights[k] / usedWeightSum), 0)
     );
 
     const tier = compositeScore >= 80 ? "veryhigh" : compositeScore >= 60 ? "high" : compositeScore >= 40 ? "elevated" : "lower";
@@ -2133,9 +2179,9 @@ const ABLATION_VARIANTS = [
     { key: "temporalSeasonal", label: "C without seasonality" }
 ];
 
-function computeAblationVariantMetrics(country, backtestYears, excludeKey, threshold) {
+function computeAblationVariantMetrics(country, backtestYears, excludeKey, threshold, includePopulation) {
     const rows = backtestYears.map(({ trainThrough, actualElevated }) => {
-        const rs = computeRiskScoreFactors(country, trainThrough, excludeKey || undefined);
+        const rs = computeRiskScoreFactors(country, trainThrough, excludeKey || undefined, includePopulation);
         if (!rs || rs.compositeScore === null) return null;
         return { probability: rs.compositeScore / 100, actualElevated };
     }).filter(Boolean);
@@ -2191,6 +2237,49 @@ function computeAblationTest(country, backtest) {
     });
 
     return { threshold, variants: withDeltas, sharedYears: backtestYears.length };
+}
+
+// =====================================================================
+// C.4 — DOES POPULATION ADJUSTMENT ACTUALLY HELP?
+//
+// Same methodology as ablation testing, run in reverse: instead of
+// removing a factor, this ADDS population as a 7th factor (10-point
+// weight, carved from the existing six) and compares the resulting
+// model against the unmodified baseline on the same walk-forward
+// years, same shared threshold. Only runs for countries with cited
+// population data (currently US/Canada).
+// =====================================================================
+
+function computePopulationFactorTest(country, backtest) {
+    if (!backtest || backtest.insufficientData || !backtest.results.length) return null;
+    if (!POPULATION_DATA[country]) return null;
+
+    const threshold = backtest.thresholdSweep ? backtest.thresholdSweep.recommendedThreshold : 60;
+    const backtestYears = backtest.results.map(r => ({ trainThrough: r.trainThrough, actualElevated: r.actualElevated }));
+    if (backtestYears.length < 4) return null;
+
+    const withoutPopulation = computeAblationVariantMetrics(country, backtestYears, null, threshold, false);
+    const withPopulation = computeAblationVariantMetrics(country, backtestYears, null, threshold, true);
+
+    if (!withoutPopulation.n || !withPopulation.n) return { threshold, withoutPopulation, withPopulation, deltas: null, sharedYears: backtestYears.length };
+
+    const d = (a, b) => (a === null || b === null) ? null : Math.round((a - b) * 10) / 10;
+    const dRaw = (a, b) => (a === null || b === null) ? null : Math.round((a - b) * 1000) / 1000;
+
+    return {
+        threshold,
+        withoutPopulation, withPopulation,
+        deltas: {
+            recall: d(withPopulation.recall, withoutPopulation.recall),
+            precision: d(withPopulation.precision, withoutPopulation.precision),
+            falsePositiveRate: d(withPopulation.falsePositiveRate, withoutPopulation.falsePositiveRate),
+            falseNegativeRate: d(withPopulation.falseNegativeRate, withoutPopulation.falseNegativeRate),
+            calibrationGap: d(withPopulation.calibrationGap, withoutPopulation.calibrationGap),
+            probMAE: dRaw(withPopulation.probMAE, withoutPopulation.probMAE),
+            probRMSE: dRaw(withPopulation.probRMSE, withoutPopulation.probRMSE)
+        },
+        sharedYears: backtestYears.length
+    };
 }
 
 // =====================================================================
@@ -2254,19 +2343,29 @@ function computeCrossCountryValidation() {
 
     const usThreshold = usBacktest.thresholdSweep ? usBacktest.thresholdSweep.recommendedThreshold : 60;
     const caThreshold = caBacktest.thresholdSweep ? caBacktest.thresholdSweep.recommendedThreshold : 60;
-    // C.3 uses the untuned default (60), not either country's own tuned
-    // value — a genuinely shared model can't locally retune itself per
-    // country and still be "one model."
-    const sharedThreshold = 60;
+
+    // C.3's threshold is walk-forward-tuned on the POOLED data, not
+    // borrowed from either country and not left at an arbitrary
+    // untuned default. Forcing the pooled model to use a fixed 60 while
+    // the individual countries tune to 55 and 40 was the actual bug —
+    // it wasn't testing whether the pooled MODEL works, it was testing
+    // whether the pooled model works AT A THRESHOLD NEITHER COUNTRY'S
+    // OWN DATA SUPPORTS. This reuses the exact same walk-forward
+    // sweep already proven for the single-country case, just given the
+    // pooled results array as its input.
+    const pooledResults = [...usBacktest.results, ...caBacktest.results];
+    const pooledSweep = computeRiskScoreThresholdSweep(pooledResults);
+    const sharedThreshold = pooledSweep ? pooledSweep.recommendedThreshold : 60;
 
     const c1 = aggregateResultsMetrics(usBacktest.results, usThreshold);
     const c2 = aggregateResultsMetrics(caBacktest.results, caThreshold);
-    const c3 = aggregateResultsMetrics([...usBacktest.results, ...caBacktest.results], sharedThreshold);
+    const c3 = aggregateResultsMetrics(pooledResults, sharedThreshold);
 
     return {
         insufficientData: false,
         c1, c2, c3,
         usThreshold, caThreshold, sharedThreshold,
+        pooledSweep,
         usYears: usBacktest.results.length, caYears: caBacktest.results.length
     };
 }
@@ -2923,6 +3022,48 @@ function renderBacktestTable(backtest, dispersionRatio, country) {
             `;
         })()}
 
+        <h3 class="analysis-heading">C.4 — does population adjustment help?</h3>
+        <p class="meta">
+            Adds population as a 7th factor (10-point weight, carved from the existing six — not stacked on top) and
+            compares against the unmodified model on the same walk-forward years, same threshold.
+        </p>
+        ${(() => {
+            if (!POPULATION_DATA[country]) return `<p class="dq-empty">No cited population data for ${escapeHtml(country)} yet — this test only runs for countries with a real population figure on file.</p>`;
+            const popTest = computePopulationFactorTest(country, backtest);
+            if (!popTest) return `<p class="dq-empty">Not enough backtested years to run this test yet.</p>`;
+            if (!popTest.deltas) return `<p class="dq-empty">Population factor produced no coverage in this backtest window.</p>`;
+
+            const d = popTest.deltas;
+            const improved = k => d[k] !== null && d[k] < 0; // for error-style metrics, negative delta = improvement
+            const improvedRecall = d.recall !== null && d.recall > 0;
+            const improvedPrecision = d.precision !== null && d.precision > 0;
+
+            return `
+                <table class="backtest-table">
+                    <thead><tr><th>Metric</th><th>Without population</th><th>With population</th><th>Delta</th></tr></thead>
+                    <tbody>
+                        <tr><td>Prob. MAE</td><td>${popTest.withoutPopulation.probMAE}</td><td>${popTest.withPopulation.probMAE}</td><td class="${improved("probMAE") ? "backtest-hit" : ""}">${d.probMAE == null ? "—" : (d.probMAE > 0 ? "+" : "") + d.probMAE}</td></tr>
+                        <tr><td>Prob. RMSE</td><td>${popTest.withoutPopulation.probRMSE}</td><td>${popTest.withPopulation.probRMSE}</td><td class="${improved("probRMSE") ? "backtest-hit" : ""}">${d.probRMSE == null ? "—" : (d.probRMSE > 0 ? "+" : "") + d.probRMSE}</td></tr>
+                        <tr><td>Recall</td><td>${popTest.withoutPopulation.recall ?? "—"}%</td><td>${popTest.withPopulation.recall ?? "—"}%</td><td class="${improvedRecall ? "backtest-hit" : ""}">${d.recall == null ? "—" : (d.recall > 0 ? "+" : "") + d.recall + "pp"}</td></tr>
+                        <tr><td>Precision</td><td>${popTest.withoutPopulation.precision ?? "—"}%</td><td>${popTest.withPopulation.precision ?? "—"}%</td><td class="${improvedPrecision ? "backtest-hit" : ""}">${d.precision == null ? "—" : (d.precision > 0 ? "+" : "") + d.precision + "pp"}</td></tr>
+                        <tr><td>False positive rate</td><td>${popTest.withoutPopulation.falsePositiveRate ?? "—"}%</td><td>${popTest.withPopulation.falsePositiveRate ?? "—"}%</td><td>${d.falsePositiveRate == null ? "—" : (d.falsePositiveRate > 0 ? "+" : "") + d.falsePositiveRate + "pp"}</td></tr>
+                        <tr><td>False negative rate</td><td>${popTest.withoutPopulation.falseNegativeRate ?? "—"}%</td><td>${popTest.withPopulation.falseNegativeRate ?? "—"}%</td><td>${d.falseNegativeRate == null ? "—" : (d.falseNegativeRate > 0 ? "+" : "") + d.falseNegativeRate + "pp"}</td></tr>
+                        <tr><td>Calibration gap</td><td>${popTest.withoutPopulation.calibrationGap ?? "—"}pp</td><td>${popTest.withPopulation.calibrationGap ?? "—"}pp</td><td class="${improved("calibrationGap") ? "backtest-hit" : ""}">${d.calibrationGap == null ? "—" : (d.calibrationGap > 0 ? "+" : "") + d.calibrationGap}</td></tr>
+                        <tr><td>Coverage</td><td>${popTest.withoutPopulation.coverage}%</td><td>${popTest.withPopulation.coverage}%</td><td>—</td></tr>
+                    </tbody>
+                </table>
+                <p class="review-criteria-note">
+                    Green-highlighted deltas mean adding population IMPROVED that metric. With NHIRA currently holding only
+                    a single static population snapshot per country (not a historical population time series), a country's
+                    population barely moves within the backtest window — so this factor is mathematically expected to track
+                    "recent activity" closely rather than add independent information. If the deltas above are near zero,
+                    that's this expectation confirmed empirically, not a bug: a real population time series (population by
+                    year, not just a current figure) would be the concrete next step to let this factor mean something the
+                    model doesn't already capture.
+                </p>
+            `;
+        })()}
+
         <p class="review-criteria-note">
             Every row above was trained ONLY on data available before that forecast year — the model was never shown
             the year it was predicting. "Here is how NHIRA performed when it was not allowed to see the future."
@@ -2961,12 +3102,33 @@ function renderCrossCountryValidation() {
         </table>
         <p class="review-criteria-note">
             C.1 and C.2 use each country's OWN walk-forward-recommended Model C threshold (US: ${v.usThreshold}, Canada:
-            ${v.caThreshold}). C.3 is the SAME fixed-weight formula evaluated on the pooled US+Canada backtest years using
-            the untuned default threshold (${v.sharedThreshold}) — a genuinely shared model can't locally retune itself
-            per country. If C.3's numbers hold up reasonably close to C.1 and C.2 individually, that's evidence the
-            pattern generalizes rather than being fit to one country's quirks. If C.3 is notably worse than both, the
-            two countries may need to stay modeled separately rather than combined.
+            ${v.caThreshold}). C.3's threshold (${v.sharedThreshold}) is ALSO walk-forward-tuned — on the pooled data,
+            not borrowed from either country and not left at an arbitrary untuned default. Forcing a pooled model to use
+            a threshold neither country's own data actually supports would test whether the model works at the wrong
+            operating point, not whether pooling itself works. If C.3's numbers hold up reasonably close to C.1 and C.2
+            individually, that's evidence the pattern generalizes rather than being fit to one country's quirks. If C.3
+            is notably worse than both, the two countries may need to stay modeled separately rather than combined.
         </p>
+        ${v.pooledSweep ? `
+            <p class="chart-title">C.3 pooled threshold sweep</p>
+            <table class="backtest-table">
+                <thead><tr><th>Threshold</th><th>Training recall</th><th>Training precision</th></tr></thead>
+                <tbody>
+                    ${v.pooledSweep.sweep.map(s => `
+                        <tr class="${s.threshold === v.pooledSweep.recommendedThreshold ? "blend-chosen" : ""}">
+                            <td>${s.threshold}</td>
+                            <td>${s.trainRecallPct === null ? "n/a" : s.trainRecallPct + "%"}</td>
+                            <td>${s.trainPrecisionPct === null ? "n/a" : s.trainPrecisionPct + "%"}</td>
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+            <p class="review-criteria-note">
+                Chosen from ${v.pooledSweep.trainYears} pooled training years; held-out performance on the remaining
+                ${v.pooledSweep.testYears} pooled years: recall ${v.pooledSweep.testRecallPct === null ? "n/a" : v.pooledSweep.testRecallPct + "%"},
+                precision ${v.pooledSweep.testPrecisionPct === null ? "n/a" : v.pooledSweep.testPrecisionPct + "%"}.
+            </p>
+        ` : `<p class="dq-empty">Not enough pooled years to walk-forward tune C.3's own threshold yet — using the untuned default (60).</p>`}
 
         <p class="chart-title">Population adjustment — does it change the picture?</p>
         ${!popTest ? `<p class="dq-empty">Population-adjusted rate not available for one or both countries yet.</p>` : `
