@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,7 +34,7 @@
     </div>
 
     <nav class="dash-nav-tabs" aria-label="Sections">
-      <button type="button" class="dash-nav-tab active" data-nav="map">🗺️ MAP</button>
+      <button type="button" class="dash-nav-tab active" data-nav="map" aria-label="Map view" aria-current="page">🗺️ MAP</button>
       <button id="statsToggle" type="button" class="dash-nav-tab" aria-label="Open research and statistics" aria-expanded="false" aria-controls="statsPanel">📊 STATISTICS</button>
       <button id="forecastToggle" type="button" class="dash-nav-tab" aria-label="Open incident forecast" aria-expanded="false" aria-controls="forecastPanel">🔮 FORECAST</button>
       <button id="reviewToggle" type="button" class="dash-nav-tab" aria-label="Open pending verification review" aria-expanded="false" aria-controls="reviewPanel">🗂️ DATA</button>
@@ -51,8 +52,8 @@
       <div class="dash-control-group">
         <p class="dash-label">View Mode</p>
         <div class="dash-toggle-row" role="group" aria-label="View mode">
-          <button type="button" class="dash-toggle-btn active" data-viewmode="historical">Historical</button>
-          <button type="button" class="dash-toggle-btn dash-disabled" data-viewmode="forecast" disabled
+          <button type="button" class="dash-toggle-btn active" data-viewmode="historical" aria-pressed="true">Historical</button>
+          <button type="button" class="dash-toggle-btn dash-disabled" data-viewmode="forecast" disabled aria-pressed="false"
                   title="Forecast display is pending calibration validation — see the Forecast panel for the real research status.">
             Forecast
           </button>
@@ -70,8 +71,9 @@
 
       <div class="dash-control-group">
         <p class="dash-label">Filters</p>
-        <select id="dashFilterCountry" class="dash-select"><option value="">All Countries</option></select>
-        <select id="dashFilterCategory" class="dash-select"><option value="">All Categories</option></select>
+        <select id="dashFilterCountry" class="dash-select" aria-label="Country"><option value="">All Countries</option></select>
+        <select id="dashFilterCategory" class="dash-select" aria-label="Category"><option value="">All Categories</option></select>
+        <select id="dashFilterRegion" class="dash-select" aria-label="Region"><option value="">All Regions</option></select>
         <label class="dash-inline-label">
           Min. Fatalities
           <input id="dashFilterMinFatalities" type="number" min="0" step="1" value="0">
@@ -375,4 +377,18 @@
       <p class="chart-title">Approved records — copy into history.json</p>
       <p class="review-export-note">
         This static build cannot write to the database directly. Copy the JSON below into
-        <code>history.json</code> a
+        <code>history.json</code> and redeploy, or connect a backend endpoint where marked in script.js.
+      </p>
+      <textarea id="rvExport" readonly rows="10"></textarea>
+    </div>
+  </aside>
+
+  <div id="scrim" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
