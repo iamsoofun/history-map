@@ -136,7 +136,7 @@
     </main>
 
     <aside id="dashRightPanel" class="dash-right-panel">
-      <div class="dash-panel-card" id="dashIncidentDetails">
+      <div class="dash-panel-card" id="dashIncidentDetails" aria-live="polite">
         <h3 class="dash-panel-heading">Incident Details</h3>
         <p class="dash-empty-note">Tap a marker on the map to see the record here.</p>
       </div>
@@ -176,15 +176,15 @@
     </div>
     <div class="dash-stat-card">
       <h4>Incidents by Decade</h4>
-      <canvas id="dashChartIncidentsByDecade"></canvas>
+      <canvas id="dashChartIncidentsByDecade" role="img" aria-label="Bar chart: incidents by decade"></canvas>
     </div>
     <div class="dash-stat-card">
       <h4>Fatalities by Decade</h4>
-      <canvas id="dashChartFatalitiesByDecade"></canvas>
+      <canvas id="dashChartFatalitiesByDecade" role="img" aria-label="Bar chart: fatalities by decade"></canvas>
     </div>
     <div class="dash-stat-card">
       <h4>Top Categories</h4>
-      <canvas id="dashChartTopCategories"></canvas>
+      <canvas id="dashChartTopCategories" role="img" aria-label="Donut chart: top incident categories"></canvas>
     </div>
   </div>
 
@@ -283,11 +283,11 @@
 
     <h3 class="analysis-heading">Incident Analysis</h3>
     <div class="chart-grid">
-      <div class="chart-box"><p class="chart-title">Incidents by decade</p><canvas id="chartIncidentsByDecade"></canvas></div>
-      <div class="chart-box"><p class="chart-title">Incidents by country (top 10)</p><canvas id="chartIncidentsByCountry"></canvas></div>
-      <div class="chart-box"><p class="chart-title">Incidents by region</p><canvas id="chartIncidentsByRegion"></canvas></div>
-      <div class="chart-box"><p class="chart-title">Fatalities by decade</p><canvas id="chartFatalitiesByDecade"></canvas></div>
-      <div class="chart-box"><p class="chart-title">Injuries by decade</p><canvas id="chartInjuriesByDecade"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Incidents by decade</p><canvas id="chartIncidentsByDecade" role="img" aria-label="Bar chart: incidents by decade"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Incidents by country (top 10)</p><canvas id="chartIncidentsByCountry" role="img" aria-label="Bar chart: incidents by country, top 10"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Incidents by region</p><canvas id="chartIncidentsByRegion" role="img" aria-label="Bar chart: incidents by region"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Fatalities by decade</p><canvas id="chartFatalitiesByDecade" role="img" aria-label="Bar chart: fatalities by decade"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Injuries by decade</p><canvas id="chartInjuriesByDecade" role="img" aria-label="Bar chart: injuries by decade"></canvas></div>
     </div>
 
     <div class="ranked-list">
@@ -302,11 +302,11 @@
 
     <h3 class="analysis-heading">Trend Analysis</h3>
     <div class="chart-grid">
-      <div class="chart-box"><p class="chart-title">Incident frequency over time</p><canvas id="chartFrequencyTrend"></canvas></div>
-      <div class="chart-box"><p class="chart-title">Fatality trend over time</p><canvas id="chartFatalityTrend"></canvas></div>
-      <div class="chart-box"><p class="chart-title">Category mix by decade</p><canvas id="chartCategoryTrend"></canvas></div>
-      <div class="chart-box"><p class="chart-title">Cumulative incidents over time</p><canvas id="chartCumulative"></canvas></div>
-      <div class="chart-box"><p class="chart-title">Severity: fatalities vs. injuries</p><canvas id="chartSeverityScatter"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Incident frequency over time</p><canvas id="chartFrequencyTrend" role="img" aria-label="Line chart: incident frequency over time"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Fatality trend over time</p><canvas id="chartFatalityTrend" role="img" aria-label="Line chart: fatality trend over time"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Category mix by decade</p><canvas id="chartCategoryTrend" role="img" aria-label="Chart: category mix by decade"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Cumulative incidents over time</p><canvas id="chartCumulative" role="img" aria-label="Line chart: cumulative incidents over time"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Severity: fatalities vs. injuries</p><canvas id="chartSeverityScatter" role="img" aria-label="Scatter chart: severity, fatalities versus injuries"></canvas></div>
     </div>
     <div id="rsConcentration" class="concentration-note"></div>
 
