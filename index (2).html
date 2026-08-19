@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0E1116">
+  <title>NHIRA — National Historical Incident Research &amp; Analysis</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header id="topbar" class="dash-nav">
+    <div class="brand">
+      <span class="shield" aria-hidden="true">🌐</span>
+      <div class="brand-text">
+        <h1>NHIRA</h1>
+        <p class="subtitle">National Historical Incident Research &amp; Analysis</p>
+      </div>
+    </div>
+
+    <div class="search-wrap dash-search-wrap">
+      <input id="search" type="search" placeholder="Search incidents" autocomplete="off">
+    </div>
+
+    <nav class="dash-nav-tabs" aria-label="Sections">
+      <button type="button" class="dash-nav-tab active" data-nav="map" aria-label="Map view" aria-current="page">🗺️ MAP</button>
+      <button id="statsToggle" type="button" class="dash-nav-tab" aria-label="Open research and statistics" aria-expanded="false" aria-controls="statsPanel">📊 STATISTICS</button>
+      <button id="forecastToggle" type="button" class="dash-nav-tab" aria-label="Open incident forecast" aria-expanded="false" aria-controls="forecastPanel">🔮 FORECAST</button>
+      <button id="reviewToggle" type="button" class="dash-nav-tab" aria-label="Open pending verification review" aria-expanded="false" aria-controls="reviewPanel">🗂️ DATA</button>
+    </nav>
+
+    <div class="dash-nav-right">
+      <span id="dashLastUpdated" class="dash-last-updated">Last updated: —</span>
+    </div>
+  </header>
+
+  <div id="dash">
+    <aside id="mapControlsSidebar" class="dash-sidebar">
+      <h2 class="dash-sidebar-title">Map Controls</h2>
+
+      <div class="dash-control-group">
+        <p class="dash-label">View Mode</p>
+        <div class="dash-toggle-row" role="group" aria-label="View mode">
+          <button type="button" class="dash-toggle-btn active" data-viewmode="historical" aria-pressed="true">Historical</button>
+          <button type="button" class="dash-toggle-btn dash-disabled" data-viewmode="forecast" disabled aria-pressed="false"
+                  title="Forecast display is pending calibration validation — see the Forecast panel for the real research status.">
+            Forecast
+          </button>
+        </div>
+      </div>
+
+      <div class="dash-control-group">
+        <p class="dash-label">Date Range</p>
+        <div class="dash-range-row">
+          <input id="dashStartYear" type="number" min="1900" max="2100" value="1900" aria-label="From year">
+          <span>–</span>
+          <input id="dashEndYear" type="number" min="1900" max="2100" value="2100" aria-label="To year">
+        </div>
+      </div>
+
+      <div class="dash-control-group">
+        <p class="dash-label">Filters</p>
+        <select id="dashFilterCountry" class="dash-select" aria-label="Country"><option value="">All Countries</option></select>
+        <select id="dashFilterCategory" class="dash-select" aria-label="Category"><option value="">All Categories</option></select>
+        <select id="dashFilterRegion" class="dash-select" aria-label="Region"><option value="">All Regions</option></select>
+        <label class="dash-inline-label">
+          Min. Fatalities
+          <input id="dashFilterMinFatalities" type="number" min="0" step="1" value="0">
+        </label>
+      </div>
+
+      <div class="dash-control-group">
+        <p class="dash-label">Map Layers</p>
+        <label class="dash-checkbox-row"><input type="checkbox" id="dashLayerHistorical" checked> Historical Incidents</label>
+        <label class="dash-checkbox-row dash-disabled">
+          <input type="checkbox" id="dashLayerHeat" disabled>
+          Heat Map (Risk Level)
+          <span class="dash-pending-tag">pending validation</span>
+        </label>
+      </div>
+
+      <p class="dash-disclaimer">
+        NHIRA's forecast layers are shown only after passing independent, out-of-sample statistical
+        validation. Nothing here predicts a specific future event, person, or exact location — see the
+        Forecast panel for the full research record, including negative results.
+      </p>
+    </aside>
+
+    <main id="stage">
+      <div id="map"></div>
+
+      <div id="mapModeControl" class="map-mode-control" role="group" aria-label="Map mode">
+        <button type="button" class="map-mode-btn active" data-mode="observed">Observed</button>
+        <button type="button" class="map-mode-btn" data-mode="context">Context</button>
+        <button type="button" class="map-mode-btn" data-mode="forecast">Forecast</button>
+      </div>
+
+      <div id="legend" class="collapsed">
+        <button id="legendToggle" aria-expanded="false" aria-controls="legendList">
+          <span class="legend-icon" aria-hidden="true">◈</span>
+          <span class="legend-word">Legend</span>
+        </button>
+        <ul id="legendList"></ul>
+      </div>
+
+      <div id="dateRangeResearch" class="date-range-research">
+        <div class="range-title">Historical Research Range</div>
+
+        <div class="range-inputs">
+          <label>
+            From
+            <input id="startYear" type="number" min="1900" max="2100" value="1900">
+          </label>
+
+          <label>
+            To
+            <input id="endYear" type="number" min="1900" max="2100" value="2100">
+          </label>
+
+          <button id="rangeSearchBtn" type="button">Search Range</button>
+          <button id="clearRangeBtn" type="button">Clear</button>
+        </div>
+
+        <div id="rangeResults" class="range-results"></div>
+      </div>
+    </main>
+
+    <aside id="dashRightPanel" class="dash-right-panel">
+      <div class="dash-panel-card" id="dashIncidentDetails" aria-live="polite">
+        <h3 class="dash-panel-heading">Incident Details</h3>
+        <p class="dash-empty-note">Tap a marker on the map to see the record here.</p>
+      </div>
+
+      <div class="dash-panel-card">
+        <h3 class="dash-panel-heading">Forecast Summary</h3>
+        <div class="dash-forecast-pending">
+          <span class="dash-pending-badge">⏳ PENDING VALIDATION</span>
+          <p>
+            NHIRA's short-horizon forecast (EWMA-based, 7/10/15-day) has been tested against real,
+            out-of-sample data. Result: <strong>not calibration-supported</strong> for the US across all
+            three horizons — the model beats a naive baseline but does not pass the full-history
+            calibration check. No probability is shown here until that changes.
+          </p>
+          <p class="dash-meta-small">See the RESEARCH panel for the complete evidence chain.</p>
+        </div>
+      </div>
+
+      <div class="dash-panel-card">
+        <h3 class="dash-panel-heading">Highest-Fatality Incidents</h3>
+        <ol id="dashTopFatalities" class="dash-ranked-list"></ol>
+      </div>
+    </aside>
+  </div>
+
+  <div id="dashStatsStrip" class="dash-stats-strip">
+    <div class="dash-stat-card">
+      <h4>Live Statistics (All Time)</h4>
+      <div class="dash-stat-grid">
+        <div><span id="dashStatIncidents">—</span><label>Total Incidents</label></div>
+        <div><span id="dashStatFatalities">—</span><label>Total Fatalities</label></div>
+        <div><span id="dashStatInjuries">—</span><label>Total Injuries</label></div>
+        <div><span id="dashStatCountries">—</span><label>Countries</label></div>
+        <div><span id="dashStatCategories">—</span><label>Categories</label></div>
+        <div><span id="dashStatSources">—</span><label>Source Citations</label></div>
+      </div>
+    </div>
+    <div class="dash-stat-card">
+      <h4>Incidents by Decade</h4>
+      <canvas id="dashChartIncidentsByDecade" role="img" aria-label="Bar chart: incidents by decade"></canvas>
+    </div>
+    <div class="dash-stat-card">
+      <h4>Fatalities by Decade</h4>
+      <canvas id="dashChartFatalitiesByDecade" role="img" aria-label="Bar chart: fatalities by decade"></canvas>
+    </div>
+    <div class="dash-stat-card">
+      <h4>Top Categories</h4>
+      <canvas id="dashChartTopCategories" role="img" aria-label="Donut chart: top incident categories"></canvas>
+    </div>
+  </div>
+
+  <div id="timebar">
+    <div class="timebar-row">
+      <button id="playBtn" class="transport" aria-label="Play timeline">▶</button>
+      <button id="pauseBtn" class="transport" aria-label="Pause timeline">❚❚</button>
+      <button id="nowBtn" class="transport wide" aria-label="Jump to current year">NOW</button>
+      <output id="yearDisplay" for="timeline">1900</output>
+      <span id="eraTag" class="era">recorded</span>
+    </div>
+    <input id="timeline" type="range" min="1900" max="2100" step="1" value="1900" aria-label="Year">
+    <div class="scale" aria-hidden="true">
+      <span>1900</span><span>1950</span><span>2000</span><span>2050</span><span>2100</span>
+    </div>
+  </div>
+
+  <aside id="sidePanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closePanel" aria-label="Close details">✕</button>
+    <div id="panelContent">
+      <h2>Select an incident</h2>
+      <p>Tap a marker to read the record.</p>
+    </div>
+  </aside>
+
+  <aside id="statsPanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closeStats" aria-label="Close research and statistics">✕</button>
+
+    <h2>Research &amp; Statistics</h2>
+    <p class="meta">Numbers are computed live from your current data — they update automatically as incidents are added.</p>
+
+    <div class="research-filters">
+      <label>
+        From
+        <input id="rsStartYear" type="number" min="1900" max="2100" value="1900">
+      </label>
+      <label>
+        To
+        <input id="rsEndYear" type="number" min="1900" max="2100" value="2100">
+      </label>
+      <label>
+        Country
+        <select id="rsCountry"><option value="">All countries</option></select>
+      </label>
+      <label>
+        Category
+        <select id="rsCategory"><option value="">All categories</option></select>
+      </label>
+      <label>
+        Region
+        <select id="rsRegion"><option value="">All regions</option></select>
+      </label>
+      <label>
+        Min fatalities
+        <input id="rsMinFatalities" type="number" min="0" step="1" value="0">
+      </label>
+    </div>
+
+    <div class="research-actions">
+      <button id="rsGenerateBtn" type="button">Generate</button>
+      <button id="rsClearBtn" type="button">Clear</button>
+    </div>
+
+    <div id="rsSummary" class="stats-summary"></div>
+    <button id="methodologyToggle" class="methodology-toggle" type="button" aria-expanded="false" aria-controls="methodologyBody">
+      How is this calculated?
+    </button>
+    <div id="methodologyBody" class="methodology-body" hidden></div>
+
+    <h3 class="analysis-heading">Dataset Coverage</h3>
+    <p class="meta coverage-subhead">
+      This describes the whole NHIRA dataset, not just the filtered results above — it's a snapshot of what NHIRA currently contains and how well-sourced it is.
+    </p>
+    <div id="datasetCoverage" class="stats-summary"></div>
+    <p id="coverageLastUpdated" class="concentration-note"></p>
+    <p id="coverageNeedsReview" class="concentration-note"></p>
+
+    <p class="chart-title">Source coverage</p>
+    <div id="sourceCoverage" class="source-coverage"></div>
+
+    <button id="dataSourcesToggle" class="methodology-toggle" type="button" aria-expanded="false" aria-controls="dataSourcesBody">
+      Data Sources &amp; Definitions
+    </button>
+    <div id="dataSourcesBody" class="methodology-body" hidden></div>
+
+    <ul id="rsBreakdown" class="stats-breakdown"></ul>
+
+    <h3 class="analysis-heading">Forecasting</h3>
+    <p class="meta">
+      A quick read on the currently filtered country's risk model — filter to a single country above to populate this.
+      Open the 🔮 Forecast panel for the full breakdown, backtest, and methodology.
+    </p>
+    <div id="forecastOverview"></div>
+
+    <h3 class="analysis-heading">Incident Analysis</h3>
+    <div class="chart-grid">
+      <div class="chart-box"><p class="chart-title">Incidents by decade</p><canvas id="chartIncidentsByDecade" role="img" aria-label="Bar chart: incidents by decade"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Incidents by country (top 10)</p><canvas id="chartIncidentsByCountry" role="img" aria-label="Bar chart: incidents by country, top 10"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Incidents by region</p><canvas id="chartIncidentsByRegion" role="img" aria-label="Bar chart: incidents by region"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Fatalities by decade</p><canvas id="chartFatalitiesByDecade" role="img" aria-label="Bar chart: fatalities by decade"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Injuries by decade</p><canvas id="chartInjuriesByDecade" role="img" aria-label="Bar chart: injuries by decade"></canvas></div>
+    </div>
+
+    <div class="ranked-list">
+      <p class="chart-title">Highest-fatality incidents</p>
+      <ol id="rsTopFatalities"></ol>
+    </div>
+
+    <div class="ranked-list">
+      <p class="chart-title">Countries with the most incidents</p>
+      <ol id="rsTopCountries"></ol>
+    </div>
+
+    <h3 class="analysis-heading">Trend Analysis</h3>
+    <div class="chart-grid">
+      <div class="chart-box"><p class="chart-title">Incident frequency over time</p><canvas id="chartFrequencyTrend" role="img" aria-label="Line chart: incident frequency over time"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Fatality trend over time</p><canvas id="chartFatalityTrend" role="img" aria-label="Line chart: fatality trend over time"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Category mix by decade</p><canvas id="chartCategoryTrend" role="img" aria-label="Chart: category mix by decade"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Cumulative incidents over time</p><canvas id="chartCumulative" role="img" aria-label="Line chart: cumulative incidents over time"></canvas></div>
+      <div class="chart-box"><p class="chart-title">Severity: fatalities vs. injuries</p><canvas id="chartSeverityScatter" role="img" aria-label="Scatter chart: severity, fatalities versus injuries"></canvas></div>
+    </div>
+    <div id="rsConcentration" class="concentration-note"></div>
+
+    <div id="rsResultsList" class="research-results"></div>
+  </aside>
+
+  <aside id="forecastPanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closeForecast" aria-label="Close forecast">✕</button>
+
+    <h2>Incident Forecast</h2>
+    <p class="meta">
+      Statistical risk categories derived from NHIRA's current historical dataset for the selected country —
+      not a prediction that an incident will occur. See "How is this forecast calculated?" below before treating any number here as authoritative.
+    </p>
+
+    <div class="research-filters forecast-filters">
+      <label>
+        Country
+        <select id="fcCountry"><option value="">Select a country…</option></select>
+      </label>
+    </div>
+
+    <div class="research-actions">
+      <button id="fcGenerateBtn" type="button">Generate Forecast</button>
+    </div>
+
+    <p class="forecast-map-note">
+      To see this on the map, switch the map to <strong>Forecast</strong> mode using the mode control at the top of the map
+      (approximate — plotted at each country's incident centroid, not a true boundary map, and off by default).
+    </p>
+
+    <div id="fcOutput"></div>
+  </aside>
+
+  <aside id="reviewPanel" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <button id="closeReview" aria-label="Close pending verification review">✕</button>
+
+    <h2>Pending Verification</h2>
+    <p class="meta">
+      Candidates detected by automated source checks. Nothing here is published to NHIRA until a human
+      approves it — the collector flags candidates against criteria, it does not make the final classification.
+    </p>
+
+    <div class="review-filters">
+      <label>
+        Reviewer name
+        <input type="text" id="rvReviewerName" placeholder="Your name or initials" autocomplete="off">
+      </label>
+      <label>
+        Show
+        <select id="rvStatusFilter">
+          <option value="all">All candidates</option>
+          <option value="UNVERIFIED">Unverified</option>
+          <option value="NEEDS_RESEARCH">Needs research</option>
+          <option value="VERIFIED">Verified</option>
+          <option value="REJECTED">Rejected</option>
+          <option value="EXPIRED">Expired</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="rvSummary" class="review-summary"></div>
+    <div id="rvList" class="review-list"></div>
+
+    <div id="rvExportWrap" class="review-export" hidden>
+      <p class="chart-title">Approved records — copy into history.json</p>
+      <p class="review-export-note">
+        This static build cannot write to the database directly. Copy the JSON below into
+        <code>history.json</code> and redeploy, or connect a backend endpoint where marked in script.js.
+      </p>
+      <textarea id="rvExport" readonly rows="10"></textarea>
+    </div>
+  </aside>
+
+  <div id="scrim" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
