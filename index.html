@@ -139,6 +139,15 @@
           <div id="rangeResults" class="range-results"></div>
         </div>
       </div>
+
+      <div id="timebar">
+        <button id="playBtn" class="transport" aria-label="Play timeline">▶</button>
+        <button id="pauseBtn" class="transport" aria-label="Pause timeline">❚❚</button>
+        <input id="timeline" type="range" min="1900" max="2100" step="1" value="1900" aria-label="Year">
+        <output id="yearDisplay" for="timeline">1900</output>
+        <span id="eraTag" class="era">recorded</span>
+        <button id="nowBtn" class="transport wide" aria-label="Jump to current year">NOW</button>
+      </div>
     </main>
 
     <aside id="dashRightPanel" class="dash-right-panel">
@@ -191,20 +200,6 @@
     <div class="dash-stat-card">
       <h4>Top Categories</h4>
       <canvas id="dashChartTopCategories" role="img" aria-label="Donut chart: top incident categories"></canvas>
-    </div>
-  </div>
-
-  <div id="timebar">
-    <div class="timebar-row">
-      <button id="playBtn" class="transport" aria-label="Play timeline">▶</button>
-      <button id="pauseBtn" class="transport" aria-label="Pause timeline">❚❚</button>
-      <button id="nowBtn" class="transport wide" aria-label="Jump to current year">NOW</button>
-      <output id="yearDisplay" for="timeline">1900</output>
-      <span id="eraTag" class="era">recorded</span>
-    </div>
-    <input id="timeline" type="range" min="1900" max="2100" step="1" value="1900" aria-label="Year">
-    <div class="scale" aria-hidden="true">
-      <span>1900</span><span>1950</span><span>2000</span><span>2050</span><span>2100</span>
     </div>
   </div>
 
