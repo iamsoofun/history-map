@@ -30,7 +30,7 @@
     </div>
 
     <div class="search-wrap dash-search-wrap">
-      <input id="search" type="search" placeholder="Search incidents" autocomplete="off">
+      <input id="search" type="search" placeholder="Search incidents" aria-label="Search incidents" autocomplete="off">
     </div>
 
     <nav class="dash-nav-tabs" aria-label="Sections">
@@ -114,25 +114,30 @@
         <ul id="legendList"></ul>
       </div>
 
-      <div id="dateRangeResearch" class="date-range-research">
-        <div class="range-title">Historical Research Range</div>
+      <div id="dateRangeResearch" class="date-range-research collapsed">
+        <button id="dateRangeToggle" class="range-title-toggle" type="button" aria-expanded="false" aria-controls="dateRangeBody">
+          <span class="range-title">Historical Research Range</span>
+          <span class="range-toggle-icon" aria-hidden="true">▸</span>
+        </button>
 
-        <div class="range-inputs">
-          <label>
-            From
-            <input id="startYear" type="number" min="1900" max="2100" value="1900">
-          </label>
+        <div id="dateRangeBody" class="range-body">
+          <div class="range-inputs">
+            <label>
+              From
+              <input id="startYear" type="number" min="1900" max="2100" value="1900">
+            </label>
 
-          <label>
-            To
-            <input id="endYear" type="number" min="1900" max="2100" value="2100">
-          </label>
+            <label>
+              To
+              <input id="endYear" type="number" min="1900" max="2100" value="2100">
+            </label>
 
-          <button id="rangeSearchBtn" type="button">Search Range</button>
-          <button id="clearRangeBtn" type="button">Clear</button>
+            <button id="rangeSearchBtn" type="button">Search Range</button>
+            <button id="clearRangeBtn" type="button">Clear</button>
+          </div>
+
+          <div id="rangeResults" class="range-results"></div>
         </div>
-
-        <div id="rangeResults" class="range-results"></div>
       </div>
     </main>
 
