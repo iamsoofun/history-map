@@ -268,6 +268,15 @@
     <p class="chart-title">Source coverage</p>
     <div id="sourceCoverage" class="source-coverage"></div>
 
+    <p class="chart-title">Coverage by country</p>
+    <p class="meta coverage-subhead">
+      Per-country breakdown — the raw record count alone hides which countries are thinly covered
+      or rely on a single source for every record. "2+ sources" is a stricter bar than "verified":
+      a record can be verified against one strong, authoritative source and still not have been
+      independently cross-checked against a second one.
+    </p>
+    <div id="countryCoverageTable" class="country-coverage-table"></div>
+
     <button id="dataSourcesToggle" class="methodology-toggle" type="button" aria-expanded="false" aria-controls="dataSourcesBody">
       Data Sources &amp; Definitions
     </button>
