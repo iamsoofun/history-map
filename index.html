@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -257,6 +256,16 @@
     </button>
     <div id="methodologyBody" class="methodology-body" hidden></div>
 
+    <h3 class="analysis-heading">Record Coverage Over Time</h3>
+    <p class="meta coverage-subhead">
+      How many records NHIRA holds for each decade. Read this before any ranking or comparison
+      elsewhere on the site: record counts reflect both what happened and how completely each
+      period was documented and collected. A decade with more records is not necessarily a decade
+      with more incidents.
+    </p>
+    <div class="chart-box"><canvas id="chartRecordCoverage" role="img" aria-label="Bar chart: NHIRA record count by decade"></canvas></div>
+    <p id="recordCoverageNote" class="concentration-note"></p>
+
     <h3 class="analysis-heading">Dataset Coverage</h3>
     <p class="meta coverage-subhead">
       This describes the whole NHIRA dataset, not just the filtered results above — it's a snapshot of what NHIRA currently contains and how well-sourced it is.
@@ -404,4 +413,5 @@
   <script src="script.js"></script>
 </body>
 
+</html>
 </html>
