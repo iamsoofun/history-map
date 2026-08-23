@@ -8,7 +8,6 @@ then run:  python3 score-fingerprint.py fingerprint-test-fixture.json
 Thresholds are frozen. This script does not choose a candidate; it classifies.
 """
 import json, math, sys, statistics
-
 R = 6371000.0
 def hav(a, b):
     la1, lo1, la2, lo2 = map(math.radians, [a[0], a[1], b[0], b[1]])
@@ -66,7 +65,7 @@ for name in names:
 if len(identified) == 1:   outcome = f"IDENTIFIED — {identified[0]}"
 elif len(identified) > 1:  outcome = f"AMBIGUOUS — {', '.join(identified)} (proceed with none as primary)"
 elif all(r["pct_within_50m"] < 50 for r in report.values()):
-    outcome = "UNRESOLVED — no candidate reproduces >=50% at any residual <=50m"
+    outcome = outcome = "UNRESOLVED — no candidate satisfies the frozen IDENTIFIED rule (>=90% of groups within 10m AND max residual <=50m)"
 else:
     outcome = "MIXED — no candidate reaches 90%; check whether disjoint subsets match different candidates"
 

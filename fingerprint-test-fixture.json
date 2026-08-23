@@ -34,6 +34,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 29.7589382,
      "lng": -95.3676974
+    },
+    "GeoNames P": {
+     "lat": 29.76328,
+     "lng": -95.36327
+    },
+    "GeoNames A": {
+     "lat": 31.31773,
+     "lng": -95.42268
     }
    }
   },
@@ -61,6 +69,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 45.5031824,
      "lng": -73.5698065
+    },
+    "GeoNames P": {
+     "lat": 45.50884,
+     "lng": -73.58781
+    },
+    "GeoNames A": {
+     "lat": 45.50008,
+     "lng": -73.68248
     }
    }
   },
@@ -87,6 +103,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 43.6534817,
      "lng": -79.3839347
+    },
+    "GeoNames P": {
+     "lat": 43.70643,
+     "lng": -79.39864
+    },
+    "GeoNames A": {
+     "lat": 43.69655,
+     "lng": -79.42909
     }
    }
   },
@@ -111,6 +135,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 39.9527237,
      "lng": -75.1635262
+    },
+    "GeoNames P": {
+     "lat": 39.95238,
+     "lng": -75.16362
+    },
+    "GeoNames A": {
+     "lat": 40.00764,
+     "lng": -75.13396
     }
    }
   },
@@ -134,6 +166,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 32.7762719,
      "lng": -96.7968559
+    },
+    "GeoNames P": {
+     "lat": 32.78306,
+     "lng": -96.80667
+    },
+    "GeoNames A": {
+     "lat": 32.76663,
+     "lng": -96.77787
     }
    }
   },
@@ -157,6 +197,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 53.5462055,
      "lng": -113.491241
+    },
+    "GeoNames P": {
+     "lat": 53.55014,
+     "lng": -113.46871
+    },
+    "GeoNames A": {
+     "lat": 53.53713,
+     "lng": -113.49488
     }
    }
   },
@@ -180,6 +228,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 33.3935769,
      "lng": -111.8789222
+    },
+    "GeoNames P": {
+     "lat": 33.29588,
+     "lng": -111.84181
+    },
+    "GeoNames A": {
+     "lat": 33.00898,
+     "lng": -112.04263
     }
    }
   },
@@ -202,6 +258,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 35.0841034,
      "lng": -106.650985
+    },
+    "GeoNames P": {
+     "lat": 35.08449,
+     "lng": -106.65114
+    },
+    "GeoNames A": {
+     "lat": 35.68855,
+     "lng": -106.86584
     }
    }
   },
@@ -224,6 +288,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 38.8339578,
      "lng": -104.825348
+    },
+    "GeoNames P": {
+     "lat": 38.83388,
+     "lng": -104.82136
+    },
+    "GeoNames A": {
+     "lat": 38.88217,
+     "lng": -105.16183
     }
    }
   },
@@ -246,6 +318,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 39.100105,
      "lng": -94.5781416
+    },
+    "GeoNames P": {
+     "lat": 39.09973,
+     "lng": -94.57857
+    },
+    "GeoNames A": {
+     "lat": 39.35241,
+     "lng": -93.98988
     }
    }
   },
@@ -268,6 +348,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 36.1674263,
      "lng": -115.1484131
+    },
+    "GeoNames P": {
+     "lat": 36.17497,
+     "lng": -115.13722
+    },
+    "GeoNames A": {
+     "lat": 36.2152,
+     "lng": -115.01356
     }
    }
   },
@@ -290,6 +378,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 28.5421218,
      "lng": -81.379045
+    },
+    "GeoNames P": {
+     "lat": 28.53834,
+     "lng": -81.37924
+    },
+    "GeoNames A": {
+     "lat": 28.51442,
+     "lng": -81.32348
     }
    }
   },
@@ -312,6 +408,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 38.6254063,
      "lng": -90.190009
+    },
+    "GeoNames P": {
+     "lat": 38.62727,
+     "lng": -90.19789
+    },
+    "GeoNames A": {
+     "lat": 38.64068,
+     "lng": -90.44341
     }
    }
   },
@@ -334,6 +438,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 49.2608724,
      "lng": -123.113952
+    },
+    "GeoNames P": {
+     "lat": 49.24966,
+     "lng": -123.11934
+    },
+    "GeoNames A": {
+     "lat": 49.33296,
+     "lng": -123.00264
     }
    }
   },
@@ -355,6 +467,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 30.2711286,
      "lng": -97.7436995
+    },
+    "GeoNames P": {
+     "lat": 30.26715,
+     "lng": -97.74306
+    },
+    "GeoNames A": {
+     "lat": 29.88702,
+     "lng": -96.27791
     }
    }
   },
@@ -376,6 +496,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 30.4494155,
      "lng": -91.1869659
+    },
+    "GeoNames P": {
+     "lat": 30.44332,
+     "lng": -91.18747
+    },
+    "GeoNames A": {
+     "lat": 30.53824,
+     "lng": -91.09562
     }
    }
   },
@@ -397,6 +525,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 51.0456064,
      "lng": -114.057541
+    },
+    "GeoNames P": {
+     "lat": 51.05011,
+     "lng": -114.08529
+    },
+    "GeoNames A": {
+     "lat": 51.03503,
+     "lng": -114.05201
     }
    }
   },
@@ -418,6 +554,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 35.2272086,
      "lng": -80.8430827
+    },
+    "GeoNames P": {
+     "lat": 35.22709,
+     "lng": -80.84313
+    },
+    "GeoNames A": {
+     "lat": 35.38687,
+     "lng": -80.55204
     }
    }
   },
@@ -439,6 +583,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 41.8755616,
      "lng": -87.6244212
+    },
+    "GeoNames P": {
+     "lat": 41.85003,
+     "lng": -87.65005
+    },
+    "GeoNames A": {
+     "lat": 41.93894,
+     "lng": -88.42866
     }
    }
   },
@@ -460,6 +612,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 42.3315509,
      "lng": -83.0466403
+    },
+    "GeoNames P": {
+     "lat": 42.33143,
+     "lng": -83.04575
+    },
+    "GeoNames A": {
+     "lat": 42.93112,
+     "lng": -82.66437
     }
    }
   },
@@ -481,7 +641,12 @@
     "OpenStreetMap / Nominatim": {
      "lat": 45.9488278,
      "lng": -66.6291827
-    }
+    },
+    "GeoNames P": {
+     "lat": 45.94541,
+     "lng": -66.66558
+    },
+    "GeoNames A": null
    }
   },
   {
@@ -502,6 +667,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 36.7394421,
      "lng": -119.78483
+    },
+    "GeoNames P": {
+     "lat": 36.74773,
+     "lng": -119.77237
+    },
+    "GeoNames A": {
+     "lat": 36.75818,
+     "lng": -119.64932
     }
    }
   },
@@ -523,6 +696,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 38.2542376,
      "lng": -85.759407
+    },
+    "GeoNames P": {
+     "lat": 38.25424,
+     "lng": -85.75941
+    },
+    "GeoNames A": {
+     "lat": 38.21544,
+     "lng": -85.19477
     }
    }
   },
@@ -544,6 +725,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 35.4729886,
      "lng": -97.5170536
+    },
+    "GeoNames P": {
+     "lat": 35.46756,
+     "lng": -97.51643
+    },
+    "GeoNames A": {
+     "lat": 35.55152,
+     "lng": -97.4072
     }
    }
   },
@@ -565,7 +754,12 @@
     "OpenStreetMap / Nominatim": {
      "lat": 43.8975558,
      "lng": -78.8635324
-    }
+    },
+    "GeoNames P": {
+     "lat": 43.90012,
+     "lng": -78.84957
+    },
+    "GeoNames A": null
    }
   },
   {
@@ -586,6 +780,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 45.4208777,
      "lng": -75.6901106
+    },
+    "GeoNames P": {
+     "lat": 45.41117,
+     "lng": -75.69812
+    },
+    "GeoNames A": {
+     "lat": 45.41858,
+     "lng": -75.69717
     }
    }
   },
@@ -607,6 +809,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 29.4246002,
      "lng": -98.4951405
+    },
+    "GeoNames P": {
+     "lat": 29.42412,
+     "lng": -98.49363
+    },
+    "GeoNames A": {
+     "lat": 29.44896,
+     "lng": -98.52002
     }
    }
   },
@@ -628,6 +838,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 30.4380832,
      "lng": -84.2809332
+    },
+    "GeoNames P": {
+     "lat": 30.43826,
+     "lng": -84.28073
+    },
+    "GeoNames A": {
+     "lat": 30.14777,
+     "lng": -84.37561
     }
    }
   },
@@ -648,6 +866,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 33.7544657,
      "lng": -84.3898151
+    },
+    "GeoNames P": {
+     "lat": 33.749,
+     "lng": -84.38798
+    },
+    "GeoNames A": {
+     "lat": 33.65424,
+     "lng": -84.02661
     }
    }
   },
@@ -668,6 +894,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 33.7544657,
      "lng": -84.3898151
+    },
+    "GeoNames P": {
+     "lat": 33.749,
+     "lng": -84.38798
+    },
+    "GeoNames A": {
+     "lat": 33.59083,
+     "lng": -83.49238
     }
    }
   },
@@ -688,6 +922,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 39.2908816,
      "lng": -76.610759
+    },
+    "GeoNames P": {
+     "lat": 39.29038,
+     "lng": -76.61219
+    },
+    "GeoNames A": {
+     "lat": 39.29038,
+     "lng": -76.61219
     }
    }
   },
@@ -708,6 +950,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 33.5206824,
      "lng": -86.8024326
+    },
+    "GeoNames P": {
+     "lat": 33.52066,
+     "lng": -86.80249
+    },
+    "GeoNames A": {
+     "lat": 33.7157,
+     "lng": -86.31469
     }
    }
   },
@@ -728,6 +978,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 33.5206824,
      "lng": -86.8024326
+    },
+    "GeoNames P": {
+     "lat": 33.52066,
+     "lng": -86.80249
+    },
+    "GeoNames A": {
+     "lat": 33.7157,
+     "lng": -86.31469
     }
    }
   },
@@ -748,6 +1006,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 43.0615578,
      "lng": -88.1260678
+    },
+    "GeoNames P": {
+     "lat": 43.06057,
+     "lng": -88.10648
+    },
+    "GeoNames A": {
+     "lat": 43.06399,
+     "lng": -88.12301
     }
    }
   },
@@ -768,6 +1034,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 39.9829308,
      "lng": -75.7652424
+    },
+    "GeoNames P": {
+     "lat": 39.96097,
+     "lng": -75.60804
+    },
+    "GeoNames A": {
+     "lat": 39.97314,
+     "lng": -75.74845
     }
    }
   },
@@ -788,6 +1062,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 39.1012809,
      "lng": -84.5127405
+    },
+    "GeoNames P": {
+     "lat": 39.12711,
+     "lng": -84.51439
+    },
+    "GeoNames A": {
+     "lat": 38.9501,
+     "lng": -84.96503
     }
    }
   },
@@ -808,6 +1090,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 39.9622601,
      "lng": -83.0007065
+    },
+    "GeoNames P": {
+     "lat": 39.96118,
+     "lng": -82.99879
+    },
+    "GeoNames A": {
+     "lat": 40.2994,
+     "lng": -83.37158
     }
    }
   },
@@ -828,6 +1118,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 39.7392364,
      "lng": -104.984862
+    },
+    "GeoNames P": {
+     "lat": 39.73915,
+     "lng": -104.9847
+    },
+    "GeoNames A": {
+     "lat": 39.76204,
+     "lng": -104.87635
     }
    }
   },
@@ -848,6 +1146,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 36.7291152,
      "lng": -108.205445
+    },
+    "GeoNames P": {
+     "lat": 36.72806,
+     "lng": -108.21869
+    },
+    "GeoNames A": {
+     "lat": 36.50847,
+     "lng": -108.3206
     }
    }
   },
@@ -868,6 +1174,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 26.1223084,
      "lng": -80.1433786
+    },
+    "GeoNames P": {
+     "lat": 26.12231,
+     "lng": -80.14338
+    },
+    "GeoNames A": {
+     "lat": 26.15186,
+     "lng": -80.45589
     }
    }
   },
@@ -888,6 +1202,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 25.8267775,
      "lng": -80.2814009
+    },
+    "GeoNames P": {
+     "lat": 25.8576,
+     "lng": -80.27811
+    },
+    "GeoNames A": {
+     "lat": 25.86963,
+     "lng": -80.30456
     }
    }
   },
@@ -908,6 +1230,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 30.3262247,
      "lng": -81.6579179
+    },
+    "GeoNames P": {
+     "lat": 30.33218,
+     "lng": -81.65565
+    },
+    "GeoNames A": {
+     "lat": 29.91218,
+     "lng": -81.40989
     }
    }
   },
@@ -928,6 +1258,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 37.0841838,
      "lng": -94.5133385
+    },
+    "GeoNames P": {
+     "lat": 37.08423,
+     "lng": -94.51328
+    },
+    "GeoNames A": {
+     "lat": 37.20355,
+     "lng": -94.34061
     }
    }
   },
@@ -948,6 +1286,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 42.291707,
      "lng": -85.5872286
+    },
+    "GeoNames P": {
+     "lat": 42.29171,
+     "lng": -85.58723
+    },
+    "GeoNames A": {
+     "lat": 42.24545,
+     "lng": -85.53118
     }
    }
   },
@@ -968,6 +1314,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 39.1134562,
      "lng": -94.626497
+    },
+    "GeoNames P": {
+     "lat": 39.09973,
+     "lng": -94.57857
+    },
+    "GeoNames A": {
+     "lat": 39.11465,
+     "lng": -94.76448
     }
    }
   },
@@ -988,6 +1342,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 34.0234337,
      "lng": -84.6154897
+    },
+    "GeoNames P": {
+     "lat": 34.02343,
+     "lng": -84.61549
+    },
+    "GeoNames A": {
+     "lat": 34.02638,
+     "lng": -84.61784
     }
    }
   },
@@ -1008,6 +1370,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 35.146026,
      "lng": -90.0517786
+    },
+    "GeoNames P": {
+     "lat": 35.14953,
+     "lng": -90.04898
+    },
+    "GeoNames A": {
+     "lat": 35.19708,
+     "lng": -89.41437
     }
    }
   },
@@ -1028,6 +1398,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 25.7929198,
      "lng": -80.1353006
+    },
+    "GeoNames P": {
+     "lat": 25.79065,
+     "lng": -80.13005
+    },
+    "GeoNames A": {
+     "lat": 25.60897,
+     "lng": -80.49867
     }
    }
   },
@@ -1045,7 +1423,9 @@
    "country": "United States",
    "query_string": "Midland and Odessa, Texas, United States",
    "candidate_results": {
-    "OpenStreetMap / Nominatim": null
+    "OpenStreetMap / Nominatim": null,
+    "GeoNames P": null,
+    "GeoNames A": null
    }
   },
   {
@@ -1065,6 +1445,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 43.0386475,
      "lng": -87.9090751
+    },
+    "GeoNames P": {
+     "lat": 43.0389,
+     "lng": -87.90647
+    },
+    "GeoNames A": {
+     "lat": 43.02172,
+     "lng": -87.92908
     }
    }
   },
@@ -1085,6 +1473,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 43.5884727,
      "lng": -79.643658
+    },
+    "GeoNames P": {
+     "lat": 43.5789,
+     "lng": -79.6583
+    },
+    "GeoNames A": {
+     "lat": 43.59905,
+     "lng": -79.66292
     }
    }
   },
@@ -1105,6 +1501,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 46.7323875,
      "lng": -117.000165
+    },
+    "GeoNames P": {
+     "lat": 46.73239,
+     "lng": -117.00017
+    },
+    "GeoNames A": {
+     "lat": 46.81613,
+     "lng": -116.71168
     }
    }
   },
@@ -1125,6 +1529,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 29.9561422,
      "lng": -90.0733934
+    },
+    "GeoNames P": {
+     "lat": 29.95465,
+     "lng": -90.07507
+    },
+    "GeoNames A": {
+     "lat": 30.06864,
+     "lng": -89.92813
     }
    }
   },
@@ -1145,6 +1557,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 49.5003268,
      "lng": -119.593249
+    },
+    "GeoNames P": {
+     "lat": 49.48062,
+     "lng": -119.58584
+    },
+    "GeoNames A": {
+     "lat": 49.49559,
+     "lng": -119.56981
     }
    }
   },
@@ -1165,6 +1585,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 33.4484367,
      "lng": -112.074141
+    },
+    "GeoNames P": {
+     "lat": 33.44838,
+     "lng": -112.07404
+    },
+    "GeoNames A": {
+     "lat": 32.90431,
+     "lng": -111.34471
     }
    }
   },
@@ -1185,7 +1613,12 @@
     "OpenStreetMap / Nominatim": {
      "lat": 43.835765,
      "lng": -79.090576
-    }
+    },
+    "GeoNames P": {
+     "lat": 43.90012,
+     "lng": -79.13289
+    },
+    "GeoNames A": null
    }
   },
   {
@@ -1205,7 +1638,12 @@
     "OpenStreetMap / Nominatim": {
      "lat": 46.8137431,
      "lng": -71.2084061
-    }
+    },
+    "GeoNames P": {
+     "lat": 46.81228,
+     "lng": -71.21454
+    },
+    "GeoNames A": null
    }
   },
   {
@@ -1225,6 +1663,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 39.5261788,
      "lng": -119.812658
+    },
+    "GeoNames P": {
+     "lat": 39.52963,
+     "lng": -119.8138
+    },
+    "GeoNames A": {
+     "lat": 40.66542,
+     "lng": -119.6643
     }
    }
   },
@@ -1245,6 +1691,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 42.2713945,
      "lng": -89.093966
+    },
+    "GeoNames P": {
+     "lat": 42.27113,
+     "lng": -89.094
+    },
+    "GeoNames A": {
+     "lat": 42.32308,
+     "lng": -88.82336
     }
    }
   },
@@ -1265,6 +1719,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 38.5810606,
      "lng": -121.493895
+    },
+    "GeoNames P": {
+     "lat": 38.58157,
+     "lng": -121.4944
+    },
+    "GeoNames A": {
+     "lat": 38.44932,
+     "lng": -121.34424
     }
    }
   },
@@ -1285,6 +1747,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 32.7174202,
      "lng": -117.162772
+    },
+    "GeoNames P": {
+     "lat": 32.71571,
+     "lng": -117.16472
+    },
+    "GeoNames A": {
+     "lat": 33.0282,
+     "lng": -116.77021
     }
    }
   },
@@ -1305,6 +1775,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 37.9747795,
      "lng": -122.5316686
+    },
+    "GeoNames P": {
+     "lat": 37.97353,
+     "lng": -122.53109
+    },
+    "GeoNames A": {
+     "lat": 37.98177,
+     "lng": -122.50727
     }
    }
   },
@@ -1325,6 +1803,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 47.6038321,
      "lng": -122.330062
+    },
+    "GeoNames P": {
+     "lat": 47.60621,
+     "lng": -122.33207
+    },
+    "GeoNames A": {
+     "lat": 47.49084,
+     "lng": -121.83583
     }
    }
   },
@@ -1345,6 +1831,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 34.2677404,
      "lng": -118.7538071
+    },
+    "GeoNames P": {
+     "lat": 34.26945,
+     "lng": -118.78148
+    },
+    "GeoNames A": {
+     "lat": 34.26625,
+     "lng": -118.74899
     }
    }
   },
@@ -1365,6 +1859,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 27.9449854,
      "lng": -82.4583107
+    },
+    "GeoNames P": {
+     "lat": 27.94752,
+     "lng": -82.45843
+    },
+    "GeoNames A": {
+     "lat": 27.90623,
+     "lng": -82.34692
     }
    }
   },
@@ -1385,6 +1887,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 41.6529143,
      "lng": -83.5378173
+    },
+    "GeoNames P": {
+     "lat": 41.66394,
+     "lng": -83.55521
+    },
+    "GeoNames A": {
+     "lat": 41.6018,
+     "lng": -84.13007
     }
    }
   },
@@ -1405,6 +1915,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 43.6534817,
      "lng": -79.3839347
+    },
+    "GeoNames P": {
+     "lat": 43.70643,
+     "lng": -79.39864
+    },
+    "GeoNames A": {
+     "lat": 43.69655,
+     "lng": -79.42909
     }
    }
   },
@@ -1425,6 +1943,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 36.1563122,
      "lng": -95.9927516
+    },
+    "GeoNames P": {
+     "lat": 36.15398,
+     "lng": -95.99277
+    },
+    "GeoNames A": {
+     "lat": 36.12108,
+     "lng": -95.94148
     }
    }
   },
@@ -1445,6 +1971,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 26.715364,
      "lng": -80.0532942
+    },
+    "GeoNames P": {
+     "lat": 26.71534,
+     "lng": -80.05337
+    },
+    "GeoNames A": {
+     "lat": 26.74681,
+     "lng": -80.13151
     }
    }
   },
@@ -1465,6 +1999,14 @@
     "OpenStreetMap / Nominatim": {
      "lat": 37.6922361,
      "lng": -97.3375448
+    },
+    "GeoNames P": {
+     "lat": 37.69224,
+     "lng": -97.33754
+    },
+    "GeoNames A": {
+     "lat": 38.48208,
+     "lng": -101.34736
     }
    }
   }
@@ -1515,10 +2057,10 @@
    "name": "GeoNames P",
    "role": "cross_check",
    "inclusion_basis": "Global open gazetteer, populated-place features",
-   "eligibility_identification": null,
-   "eligibility_reference_artifact": null,
-   "candidate_query_date": null,
-   "candidate_terms_checked_date": null,
+   "eligibility_identification": "PERMITTED",
+   "eligibility_reference_artifact": "PERMITTED",
+   "candidate_query_date": "2026-08-23",
+   "candidate_terms_checked_date": "2026-08-23",
    "candidate_source_version": null,
    "post_hoc_candidate": false
   },
@@ -1526,10 +2068,10 @@
    "name": "GeoNames A",
    "role": "cross_check",
    "inclusion_basis": "Administrative-feature cross-check; catches records geocoded to county or state reference points",
-   "eligibility_identification": null,
-   "eligibility_reference_artifact": null,
-   "candidate_query_date": null,
-   "candidate_terms_checked_date": null,
+   "eligibility_identification": "PERMITTED",
+   "eligibility_reference_artifact": "PERMITTED",
+   "candidate_query_date": "2026-08-23",
+   "candidate_terms_checked_date": "2026-08-23",
    "candidate_source_version": null,
    "post_hoc_candidate": false
   },
