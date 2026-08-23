@@ -1,0 +1,92 @@
+name: DQ-01-L geocoder fixture
+
+on:
+  workflow_dispatch:
+    inputs:
+      eligibility_identification:
+        description: "Frozen terms decision for identification use (e.g. PERMITTED)"
+        required: true
+        type: string
+      eligibility_reference_artifact:
+        description: "Frozen terms decision for permanent reference-artifact use"
+        required: true
+        type: string
+      terms_checked:
+        description: "Date terms were checked (YYYY-MM-DD)"
+        required: true
+        type: string
+      source_version:
+        description: "Provider/source version or endpoint description"
+        required: true
+        default: "OpenStreetMap Nominatim public API"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  geocode:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Validate frozen fixture
+        run: |
+          python3 - <<'PY'
+          import json
+          with open("fingerprint-test-fixture.json", encoding="utf-8") as f:
+              fx = json.load(f)
+          assert fx["frozen_denominator"] == 70, "Frozen denominator is not 70"
+          assert len(fx["groups"]) == 70, "Fixture does not contain exactly 70 groups"
+          assert any(
+              c["name"] == "OpenStreetMap / Nominatim"
+              for c in fx["candidates"]
+          ), "Nominatim is missing from frozen candidate registry"
+          print("Frozen 70-group fixture validated.")
+          PY
+
+      - name: Run Nominatim Stage 1 queries
+        env:
+          ELIGIBILITY_IDENTIFICATION: ${{ inputs.eligibility_identification }}
+          ELIGIBILITY_REFERENCE_ARTIFACT: ${{ inputs.eligibility_reference_artifact }}
+          TERMS_CHECKED: ${{ inputs.terms_checked }}
+          SOURCE_VERSION: ${{ inputs.source_version }}
+        run: |
+          python3 run-fingerprint-queries.py             --candidate "OpenStreetMap / Nominatim"             --eligibility-identification "$ELIGIBILITY_IDENTIFICATION"             --eligibility-reference-artifact "$ELIGIBILITY_REFERENCE_ARTIFACT"             --terms-checked "$TERMS_CHECKED"             --source-version "$SOURCE_VERSION"
+
+      - name: Verify populated fixture
+        run: |
+          python3 - <<'PY'
+          import json
+          with open("fingerprint-test-fixture.json", encoding="utf-8") as f:
+              fx = json.load(f)
+          groups = fx["groups"]
+          vals = [
+              g["candidate_results"].get("OpenStreetMap / Nominatim")
+              for g in groups
+          ]
+          found = sum(v is not None for v in vals)
+          print(f"Nominatim results populated: {found}/70")
+          assert len(groups) == 70
+          assert found > 0, "No Nominatim results were returned"
+          PY
+
+      - name: Commit populated fixture
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fingerprint-test-fixture.json
+          if git diff --cached --quiet; then
+            echo "No fixture changes to commit."
+          else
+            git commit -m "Populate DQ-01-L Nominatim Stage 1 fixture"
+            git push
+          fi
