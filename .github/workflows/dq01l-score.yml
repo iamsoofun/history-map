@@ -1,0 +1,49 @@
+name: DQ-01-L frozen scorer
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run frozen DQ-01-L scorer
+        run: |
+          python3 score-fingerprint.py fingerprint-test-fixture.json
+
+      - name: Verify scorer output
+        run: |
+          python3 - <<'PY'
+          import json
+          with open("fingerprint-test-results.json", encoding="utf-8") as f:
+              r = json.load(f)
+          print("Outcome:", r["outcome"])
+          print("Denominator:", r["denominator"])
+          assert r["denominator"] == 70
+          assert r["candidates"], "No candidate scores were produced"
+          PY
+
+      - name: Commit frozen scoring result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fingerprint-test-results.json
+          if git diff --cached --quiet; then
+            echo "No scoring-result changes to commit."
+          else
+            git commit -m "Score DQ-01-L geocoder fingerprint"
+            git push
+          fi
