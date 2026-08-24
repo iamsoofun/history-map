@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NHIRA — STATE-01 Prospective State Risk Test</title>
+<style>
+:root{--bg:#0e1116;--card:#151a22;--line:#29313d;--text:#eef2f6;--muted:#9ba7b5;--green:#2e7d5b;--yellow:#f0a202;--orange:#d97a17;--red:#b3322b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,sans-serif}header{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px}h1,h2{margin:0 0 8px}h1{font-size:24px}h2{font-size:17px}.sub,.meta,.small{color:var(--muted)}.wrap{max-width:1250px;margin:auto;padding:20px}.grid{display:grid;grid-template-columns:1.3fr .7fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}.badge{padding:4px 8px;border-radius:999px;background:#25303d;color:#cdd6df;font-size:11px;font-weight:700}.status{border-left:4px solid var(--yellow)}table{width:100%;border-collapse:collapse}th,td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-size:11px;text-transform:uppercase}.tier{font-weight:700}.lower{color:#58b88d}.elevated{color:#f4c24e}.high{color:#e79a48}.veryhigh{color:#df6b62}.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stat{border:1px solid var(--line);padding:10px;border-radius:7px}.stat b{display:block;font-size:20px}.freeze{white-space:pre-wrap;background:#0a0d11;border:1px solid var(--line);padding:12px;border-radius:7px;font:12px/1.45 ui-monospace,monospace;overflow:auto}.btn{border:1px solid var(--line);background:#1c2430;color:var(--text);padding:9px 12px;border-radius:7px;cursor:pointer}@media(max-width:850px){.grid{grid-template-columns:1fr}.statgrid{grid-template-columns:repeat(2,1fr)}header{display:block}}
+</style></head>
+<body><header><div><h1>NHIRA — STATE-01</h1><div class="sub">Prospective State-Level Risk Category Test</div></div><div class="badge">RESEARCH · PROSPECTIVE · 365 DAYS</div></header>
+<div class="wrap">
+<div class="card status"><h2>Experiment status</h2><p><b>Candidate freeze.</b> This page computes the eligible state universe and a transparent state-level score from the current <code>history.json</code>. It records a SHA-256 hash of the exact file used so the prediction can be frozen before outcomes are observed.</p><p class="meta">Primary question: does a higher risk tier at freeze predict a higher probability of ≥1 incident during the following 365 days? The score must beat a simple historical-rate ranking, not merely show that high-history states have more incidents.</p></div>
+<div class="grid"><div class="card"><h2>Eligible states</h2><p class="meta">Rule: United States states with at least 6 incidents in the freeze dataset. The universe is fixed at freeze.</p><div class="statgrid" id="summary"></div></div><div class="card"><h2>Freeze controls</h2><button class="btn" id="refresh">Recompute</button> <button class="btn" id="download">Download freeze JSON</button><p class="small">The downloaded artifact should be committed with the same history.json hash before the 365-day window starts.</p></div></div>
+<div class="card"><h2>State ranking</h2><p class="meta">Score: recent activity 25%, historical baseline 20%, acceleration/trend 20%, within-state city concentration 15%, casualty severity 10%, temporal/seasonal pattern 10%. Unavailable factors are excluded and remaining weights rescaled.</p>
+<table><thead><tr><th>Rank</th><th>State</th><th>Incidents</th><th>Recent / yr</th><th>Historical / yr</th><th>Score</th><th>Tier</th><th>Outcome</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="grid"><div class="card"><h2>Required comparator</h2><p>STATE-01 is compared against a simple historical incident-rate ranking. A successful result must demonstrate information beyond that baseline.</p></div><div class="card"><h2>Prospective outcome</h2><p><b>Window:</b> 365 days after freeze.</p><p><b>Outcome:</b> whether each state has ≥1 incident.</p><p><b>Analysis:</b> rank correlation plus elevated-or-above versus lower 2×2.</p></div></div>
+<div class="card"><h2>Freeze record</h2><div class="freeze" id="freeze">Loading history.json…</div></div>
+</div>
+<script>
+const THIS_YEAR=new Date().getFullYear(),MIN=6,WINDOW=2;
+const tier=s=>s>=80?'veryhigh':s>=60?'high':s>=40?'elevated':'lower';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function slope(a){if(a.length<2)return 0;const n=a.length,x=a.map((_,i)=>i),sx=x.reduce((a,b)=>a+b,0),sy=a.reduce((a,b)=>a+b,0),sxy=x.reduce((s,v,i)=>s+v*a[i],0),sxx=x.reduce((s,v)=>s+v*v,0),d=n*sxx-sx*sx;return d?(n*sxy-sx*sy)/d:0}
+function ratioScore(r){return Math.max(0,Math.min(100,Math.round(50+(r-1)*50)))}
+function percentile(v,a){if(a.length<3)return 50;return Math.round(a.filter(x=>x<v).length/a.length*100)}
+async function sha256(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function build(events){
+ const us=events.filter(e=>e.country==='United States'&&e.state&&e.year<=THIS_YEAR),by={};us.forEach(e=>(by[e.state]??=[]).push(e));
+ const eligible=Object.entries(by).filter(([,a])=>a.length>=MIN).map(([state,events])=>({state,events}));
+ const rates=eligible.map(x=>x.events.length/new Set(x.events.map(e=>e.year)).size);
+ const sevRates=eligible.map(x=>x.events.reduce((s,e)=>s+(+e.fatalities||0)+(+e.injuries||0),0)/x.events.length);
+ const rows=eligible.map(x=>{
+  const ev=x.events,years=[...new Set(ev.map(e=>e.year))].sort((a,b)=>a-b),yc=Object.fromEntries(years.map(y=>[y,ev.filter(e=>e.year===y).length]));
+  const recentYears=years.filter(y=>y>THIS_YEAR-10);const yrs=recentYears.length>=2?recentYears:years;
+  const recent=yrs.slice(-WINDOW).reduce((s,y)=>s+(yc[y]||0),0)/Math.max(1,Math.min(WINDOW,yrs.length)),hist=ev.length/years.length;
+  const mid=Math.floor(yrs.length/2),sl=slope(yrs.map(y=>yc[y]||0)),delta=yrs.length>=4?slope(yrs.slice(mid).map(y=>yc[y]||0))-slope(yrs.slice(0,mid).map(y=>yc[y]||0)):0;
+  const cities={};ev.forEach(e=>cities[e.city||'Unknown']=(cities[e.city||'Unknown']||0)+1);const geo=Math.round(Math.max(...Object.values(cities))/ev.length*100);
+  const factors=[ratioScore(recent/hist),percentile(hist,rates),sl>.15?75:sl<-.15?25:Math.max(0,Math.min(100,Math.round(50+delta*25))),geo,percentile(ev.reduce((s,e)=>s+(+e.fatalities||0)+(+e.injuries||0),0)/ev.length,sevRates)];
+  const ws=[25,20,20,15,10].reduce((a,b)=>a+b,0),score=Math.round(factors.reduce((s,v,i)=>s+v*[25,20,20,15,10][i]/ws,0));
+  return{state,incidents:ev.length,recent,hist,score,tier:tier(score)};
+ }).sort((a,b)=>b.score-a.score||b.hist-a.hist);
+ return{rows,states:eligible.map(x=>x.state).sort()}
+}
+async function render(){
+ const raw=await fetch('history.json?ts='+Date.now()).then(r=>r.text()),events=JSON.parse(raw),result=build(events),hash=await sha256(raw);
+ document.getElementById('summary').innerHTML=`<div class="stat"><b>${result.rows.length}</b><span class="small">eligible states</span></div><div class="stat"><b>${events.length}</b><span class="small">records</span></div><div class="stat"><b>${MIN}</b><span class="small">minimum incidents</span></div><div class="stat"><b>${new Date().toISOString().slice(0,10)}</b><span class="small">computed</span></div>`;
+ document.getElementById('rows').innerHTML=result.rows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${esc(r.state)}</b></td><td>${r.incidents}</td><td>${r.recent.toFixed(1)}</td><td>${r.hist.toFixed(1)}</td><td>${r.score}</td><td class="tier ${r.tier}">${r.tier}</td><td>Pending</td></tr>`).join('');
+ const freeze={experiment:'STATE-01',status:'CANDIDATE_FREEZE',computedAt:new Date().toISOString(),dataFile:'history.json',sha256:hash,windowDays:365,minimumIncidents:MIN,eligibleStates:result.states,rows:result.rows};
+ document.getElementById('freeze').textContent=JSON.stringify(freeze,null,2);
+ document.getElementById('download').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(freeze,null,2)],{type:'application/json'}));a.download='state-01-freeze-candidate.json';a.click()}
+}
+document.getElementById('refresh').onclick=render;render().catch(e=>document.getElementById('freeze').textContent='ERROR: '+e);
+</script></body></html>
