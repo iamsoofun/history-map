@@ -269,6 +269,26 @@
       <p id="todayInHistoryNote" class="concentration-note"></p>
     </section>
 
+    <section id="exploreRecord" class="explore-record">
+      <h3 class="analysis-heading">Explore the Record</h3>
+      <p class="meta">
+        Rankings computed over the whole dataset across fixed units — decades, countries,
+        U.S. states, and the most common incident categories. Each ranking shows the size of
+        the comparison it is drawn from. These describe what NHIRA has recorded, which reflects
+        both real events and how completely each period and place has been documented.
+      </p>
+      <div class="explore-tabs" role="tablist" aria-label="Explore the record by">
+        <button type="button" class="explore-tab active" data-explore="time" role="tab" aria-selected="true">Time</button>
+        <button type="button" class="explore-tab" data-explore="geography" role="tab" aria-selected="false">Geography</button>
+        <button type="button" class="explore-tab" data-explore="category" role="tab" aria-selected="false">Category</button>
+      </div>
+      <div id="exploreBody" class="explore-body"></div>
+      <p class="concentration-note">
+        Rankings never define their own regions or time windows — only fixed, pre-set units are
+        compared, and per-capita rates are omitted because NHIRA has no population denominators.
+      </p>
+    </section>
+
     <h3 class="analysis-heading">Record Coverage Over Time</h3>
     <p class="meta coverage-subhead">
       How many records NHIRA holds for each decade. Read this before any ranking or comparison
